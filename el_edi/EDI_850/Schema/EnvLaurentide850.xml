@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<root>
+  <Customer>
+    <Id>30037</Id>
+    <STName>ARIVA</STName>
+    <STAddress1>1330  COURTNEY  PARK  DRIVE</STAddress1>
+    <STAddress2></STAddress2>
+    <STCity>MISSISSAUGA</STCity>
+    <STCountry>CA</STCountry>
+    <STPostalCode>L5T  1K5</STPostalCode>
+    <STState>ON</STState>
+    <PER01>BD</PER01>
+    <PER02>GARRY  MACEACHERN</PER02>
+    <PER03>FX</PER03>
+    <PER04>diane.yuhasz@ariva.ca</PER04>
+    <PER05>TE</PER05>
+    <PER06>905-670-6077</PER06>
+    <PER07></PER07>
+    <PER08></PER08>
+  </Customer>
+  <Order>
+    <Date>2018-12-13</Date>
+    <Number>4500000711</Number>
+    <RequestedShipDate>2018-12-13</RequestedShipDate>
+    <CreatedBy>EDI</CreatedBy>
+    <Status>E</Status>
+    <UserCode>XEDI</UserCode>
+    <OrderItem>
+      <ItemDescription>FENETRE  OC.  ENV.  CODE  DIVERS</ItemDescription>
+      <ItemId></ItemId>
+      <CustomerItemId>WEWVWMSC00B0ESP</CustomerItemId>
+      <ItemLineId>00010</ItemLineId>
+      <ItemQuantity>5000</ItemQuantity>
+      <ItemUnitOfMeasure>EV</ItemUnitOfMeasure>
+      <ItemRate>1</ItemRate>
+      <ItemUnitOfPrice>UM</ItemUnitOfPrice>
+      <TimeModified>2018-12-13T14:01:40-05:00</TimeModified>
+      <Status>E</Status>
+      <RequestedShipDate>2018-12-13</RequestedShipDate>
+    </OrderItem>
+  </Order>
+</root>

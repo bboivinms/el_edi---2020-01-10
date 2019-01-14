@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="root">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Customer">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" type="xs:unsignedShort" />
+              <xs:element name="STName" type="xs:string" />
+              <xs:element name="STAddress1" type="xs:string" />
+              <xs:element name="STAddress2" type="xs:string" />
+              <xs:element name="STCity" type="xs:string" />
+              <xs:element name="STCountry" type="xs:string" />
+              <xs:element name="STPostalCode" type="xs:string" />
+              <xs:element name="STState" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Order">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Date" type="xs:date" />
+              <xs:element name="Number" type="xs:string" />
+              <xs:element name="RequestedShipDate" type="xs:date" />
+              <xs:element name="CreatedBy" type="xs:string" />
+              <xs:element name="Status" type="xs:string" />
+              <xs:element name="UserCode" type="xs:string" />
+              <xs:element maxOccurs="unbounded" name="MSG" type="xs:string" />
+              <xs:element maxOccurs="unbounded" name="OrderItem">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="ItemDescription" type="xs:string" />
+                    <xs:element name="ItemId" type="xs:string" />
+                    <xs:element name="CustomerItemId" type="xs:string" />
+                    <xs:element name="ItemLineId" type="xs:unsignedByte" />
+                    <xs:element name="ItemQuantity" type="xs:unsignedInt" />
+                    <xs:element name="ItemUnitOfMeasure" type="xs:string" />
+                    <xs:element name="ItemRate" type="xs:decimal" />
+                    <xs:element name="ItemUnitOfPrice" type="xs:string" />
+                    <xs:element name="TimeModified" type="xs:dateTime" />
+                    <xs:element name="Status" type="xs:string" />
+                    <xs:element name="RequestedShipDate" type="xs:date" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
