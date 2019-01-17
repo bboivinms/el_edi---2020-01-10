@@ -200,16 +200,16 @@ namespace EDI_850
                         cmd.Parameters.AddWithValue("?iddel_addr", r.Customer.ST_IDDEL_ADDR);
                         cmd.Parameters.AddWithValue("?del_add", r.Customer.STAddress);
                         cmd.Parameters.AddWithValue("?bil_dte", DateTime.Today);
-                        cmd.Parameters.AddWithValue("?cr_by", "EDI");
+                        cmd.Parameters.AddWithValue("?cr_by", r.Order.CreatedBy);
                         cmd.Parameters.AddWithValue("?cr_dtet", r.Order.Date);
                         cmd.Parameters.AddWithValue("?ref", r.Order.Number);
-                        cmd.Parameters.AddWithValue("?statut", "E");
+                        cmd.Parameters.AddWithValue("?statut", r.Order.Status);
                         cmd.Parameters.AddWithValue("?req_dte", cobil_req_dte);
                         cmd.Parameters.AddWithValue("?clientid", arclient_ident);
                         cmd.Parameters.AddWithValue("?client_name", r.Customer.BTName);
                         cmd.Parameters.AddWithValue("?client_addr", r.Customer.BTAddress);
                         cmd.Parameters.AddWithValue("?date_entered", DateTime.Today);
-                        cmd.Parameters.AddWithValue("?ucode", "XEDI");
+                        cmd.Parameters.AddWithValue("?ucode", r.Order.UserCode);
                         cmd.Parameters.AddWithValue("?type_liv", 0);
                     
                         if (cmd.ExecuteNonQuery() != 1)
@@ -233,7 +233,7 @@ namespace EDI_850
                                 "VALUE(?idcobil, ?line, ?statut, ?idprod, ?descr, ?qty, ?price, ?unite, ?conv, ?po_no, ?nopalet, ?nolot, ?idcom, ?qty_bo)";
                             cmdi.Parameters.AddWithValue("?idcobil", idcobil);
                             cmdi.Parameters.AddWithValue("?line", item.Index);
-                            cmdi.Parameters.AddWithValue("?statut", "E");
+                            cmdi.Parameters.AddWithValue("?statut", item.Item.Status);
                             cmdi.Parameters.AddWithValue("?idprod", item.Item.IdProd);
                             cmdi.Parameters.AddWithValue("?descr", item.Item.ItemDescription);
                             cmdi.Parameters.AddWithValue("?qty", item.Item.AdjustedQty);
