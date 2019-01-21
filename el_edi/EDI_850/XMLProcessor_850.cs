@@ -37,10 +37,6 @@ namespace EDI_850
                 Environment.Exit(-1);
             }
 
-            //Open DB connections
-            DB_VIVA.conn.Open();
-            DB_WEB.conn.Open();
-
             try
             {
                 //Create timestamp used as PK on some tables
@@ -58,20 +54,10 @@ namespace EDI_850
                 eb.Send();
 
                 //Check if customer information is valid. If not, stop processing
-                if (!r.Customer.IsValid)
-                {
-                    DB_VIVA.conn.Close();
-                    DB_WEB.conn.Close();
-                    return;
-                }
+                if (!r.Customer.IsValid) { return; }
 
                 //Check if Order information is valid. If not, stop processing
-                if (!r.Order.IsValid)
-                {
-                    DB_VIVA.conn.Close();
-                    DB_WEB.conn.Close();
-                    return;
-                }
+                if (!r.Order.IsValid) { return; }
 
                 //Check if Order information is valid. If not, stop processing
                 //KJ: 2018-11-08: continue processing but with empty record
@@ -121,8 +107,6 @@ namespace EDI_850
                         if (cmd.ExecuteNonQuery() != 1)
                         {
                             tr.Rollback();
-                            DB_VIVA.conn.Close();
-                            DB_WEB.conn.Close();
                             LogWriter.WriteMessage(Program_850.LogEventSource, $"Was unable to create s_cocom in MySql for order {r.Order.Number}");
                             return;
                         }
@@ -156,8 +140,6 @@ namespace EDI_850
                                 if (cmdi.ExecuteNonQuery() != 1)
                                 {
                                     tr.Rollback();
-                                    DB_VIVA.conn.Close();
-                                    DB_WEB.conn.Close();
                                     LogWriter.WriteMessage(Program_850.LogEventSource, $"Was unable to create s_cocomi in MySql for order {r.Order.Number}");
                                     return;
                                 }
@@ -215,8 +197,6 @@ namespace EDI_850
                         if (cmd.ExecuteNonQuery() != 1)
                         {
                             tr.Rollback();
-                            DB_VIVA.conn.Close();
-                            DB_WEB.conn.Close();
                             LogWriter.WriteMessage(Program_850.LogEventSource, $"Was unable to create cobil in MySql for order {r.Order.Number}");
                             return;
                         }
@@ -251,8 +231,6 @@ namespace EDI_850
                                 if (cmdi.ExecuteNonQuery() != 1)
                                 {
                                     tr.Rollback();
-                                    DB_VIVA.conn.Close();
-                                    DB_WEB.conn.Close();
                                     LogWriter.WriteMessage(Program_850.LogEventSource, $"Was unable to create cobili in MySql for order {r.Order.Number}");
                                     return;
                                 }
@@ -269,8 +247,6 @@ namespace EDI_850
             }
             finally
             {
-                DB_VIVA.conn.Close();
-                DB_WEB.conn.Close();
             }
 
         }

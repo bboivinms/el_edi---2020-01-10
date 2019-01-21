@@ -12,6 +12,8 @@ namespace EDI_RSS
 {
     public class Vendor
     {
+
+        protected string DB_RSS_Connection;
         protected string DB_VIVA_Connection;
         protected string DB_WEB_Connection;
 
@@ -33,11 +35,17 @@ namespace EDI_RSS
 
         private void After_Setup()
         {
+            IDataRecord RSS_edi_rss;
+
+            DB_RSS = new EDI_DB.Data.CDB_RSS(DB_RSS_Connection);
+            RSS_edi_rss = DB_RSS.GetDBConnection();
+
+            if (RSS_edi_rss != null) DB_VIVA_Connection = RSS_edi_rss["edi_db_viva"].ToString();
+
             DB_VIVA = new EDI_DB.Data.CDB_VIVA(DB_VIVA_Connection);
+
             DB_WEB = new EDI_DB.Data.CDB_WEB(DB_WEB_Connection);
             DB_Logger = new EDI_DB.Data.CDB_Logger(DB_WEB_Connection);
         }
-
-
     }
 }

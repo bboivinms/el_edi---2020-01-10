@@ -208,7 +208,7 @@
     <value>The pallet price is zero. Please validate.</value>
   </data>
   <data name="NewSTAddress" xml:space="preserve">
-    <value>The new adress is:</value>
+    <value>The new address is:</value>
   </data>
   <data name="ProdCodeEmpty" xml:space="preserve">
     <value>The Enveloppes Laurentides code was not sent by the client</value>

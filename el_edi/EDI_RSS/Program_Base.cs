@@ -80,7 +80,7 @@ namespace EDI_RSS
 
             Params.Add("?IDedi_rss", IDedi_rss.ToString());
 
-            results = DB_VIVA.HExecuteSQLQuery(@"SELECT * FROM edi_rss WHERE rss_done = 0 AND IDedi_rss = ?IDedi_rss", Params);
+            results = DB_VIVA.HExecuteSQLQuery(@"SELECT * FROM rss_bus.edi_rss LEFT JOIN rss_bus.edi_path ON edi_path.edi_path = edi_rss.rss_datapath WHERE rss_done = 0 AND IDedi_rss = ?IDedi_rss", Params);
 
             if (results == null) { return null; }
             if (results.Count == 0) { return null; }
@@ -95,7 +95,7 @@ namespace EDI_RSS
             Params.Add("?rss_status", Status);
             Params.Add("?rss_error", Error);
 
-            DB_VIVA.HExecuteSQLQuery(@"  UPDATE edi_rss SET 
+            DB_RSS.HExecuteSQLQuery(@"  UPDATE rss_bus.edi_rss SET 
                                                     rss_done = 1, 
                                                     rss_status = ?rss_status, 
                                                     rss_error = ?rss_error      

@@ -43,10 +43,10 @@ namespace EDI_RSS
             if (result == null) return false;
 
             if (result["rss_request"].ToString() == "855P" &&
-                result["rss_client"].ToString() == "ALL") { new Program_855(); SetIDedi_RSS_done(); return true; }
+                result["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(result["855_port"].ToString()); new Program_855(); SetIDedi_RSS_done(); return true; }
 
             if (result["rss_request"].ToString() == "810P" &&
-                result["rss_client"].ToString() == "ALL") { new Program_810(); SetIDedi_RSS_done(); return true; }
+                result["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(result["810_port"].ToString()); new Program_810(); SetIDedi_RSS_done(); return true; }
 
             return false;
         }
@@ -64,7 +64,7 @@ namespace EDI_RSS
             Params.Add("?rss_client", rss_client);
             Params.Add("?rss_request", rss_request);
 
-            IDedi_rss = DB_VIVA.HExecuteSQLNonQuery(@"INSERT INTO edi_rss (rss_client, rss_request) VALUES (?rss_client, ?rss_request)", Params);
+            IDedi_rss = DB_VIVA.HExecuteSQLNonQuery(@"INSERT INTO rss_bus.edi_rss (rss_client, rss_request) VALUES (?rss_client, ?rss_request)", Params);
             if (IDedi_rss <= 0) return;
             EdiFilename = IDedi_rss.ToString() + $"-{rss_request}-{rss_client}.txt";
 
@@ -95,12 +95,10 @@ namespace EDI_RSS
 
             try
             {
-                DB_VIVA.Open();
                 cmd.ExecuteNonQuery();
             }
             finally
             {
-                DB_VIVA.Close();
             }
         }
     }

@@ -142,8 +142,8 @@ namespace EDI_850.Schema
             if (DataAddress != null)
             {
                 ST_IDDEL_ADDR = Convert.ToInt32(DataAddress["iddel_addr"].ToString());
-                STAddress = DataAddress["Address"].ToString();
-                STName = DataAddress["Name"].ToString();
+                STAddress = DataAddress["address"].ToString();
+                STName = DataAddress["name"].ToString();
             }
             else
             {
@@ -721,7 +721,6 @@ namespace EDI_850.Schema
                 cmd.CommandText = "SELECT idprod FROM ivprixdcli WHERE idclient = ?arclient_ident AND codecli = ?codecli";
                 cmd.Parameters.AddWithValue("?arclient_ident", arclient_ident);
                 cmd.Parameters.AddWithValue("?codecli", CustomerItemId);
-
                 result = cmd.ExecuteScalar();
 
                 if (result != DBNull.Value && result != null)

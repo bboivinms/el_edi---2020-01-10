@@ -30,6 +30,7 @@ namespace EDI_DB.Data
         public static string Error = "";
 
         public static CDB_Logger DB_Logger;
+        public static CDB_RSS DB_RSS;
         public static CDB_VIVA DB_VIVA;
         public static CDB_WEB DB_WEB;
 
@@ -51,16 +52,12 @@ namespace EDI_DB.Data
             arclient_short_name = "";
 
             if (arclient_ident == 30037) arclient_short_name = "ariva";
+        }
 
-            // Using test only for live and tests
-            RSS_send_path = "";
-            if(TransactionCode == "855" || TransactionCode == "810")
-            {
-                if (UseSystem == "live") { RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\data_test\envl\ET_{arclient_short_name}\ET_{arclient_short_name}_xml_x12_{TransactionCode}_rss\Send"; }
-                if (UseSystem == "local") { RSS_send_path = @"C:\TMP"; }
-                else { RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\data_test\envl\ET_{arclient_short_name}\ET_{arclient_short_name}_xml_x12_{TransactionCode}_rss\Send"; }
-                Status += "RSS_send_path: " + RSS_send_path + NL;
-            }
+        public static void Setup_RSS_send_path(string sRSS_send_path)
+        {
+            RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{sRSS_send_path}\Send";
+            if (UseSystem == "local") { RSS_send_path = @"C:\TMP"; }
         }
 
         public static string IIF_LIVE(string IfLive, string IfTest)
@@ -108,7 +105,7 @@ namespace EDI_DB.Data
 
     public class DB_Parent
     {
-        public Dictionary<string, string> Params { get; set; }
+        public Dictionary<string, string> Params { get; set; } = new Dictionary<string, string>();
 
         public MySqlConnection conn { get; set; }
 
@@ -116,62 +113,16 @@ namespace EDI_DB.Data
 
         public MySqlCommand CreateCommand() { return conn.CreateCommand(); }
 
-        public void Open() { conn.Open(); }
+        // public void Open() { conn.Open(); }
 
-        public void Close() { conn.Close(); }
-
-    }
-
-    public class CDB_Logger : DB_Parent
-    {
-        public CDB_Logger(string Connection)
-        {
-            conn = new MySqlConnection(Connection);
-        }
-
-        public void LogData(string message, string mysql_type = "EDI_LogData")
-        {
-            MySqlCommand cmd = CreateCommand();
-            cmd.CommandType = CommandType.Text;
-            cmd.CommandText = @"INSERT INTO mysql_log (mysql_log, mysql_type) VALUES (?mysql_log, ?mysql_type); ";
-
-            cmd.Parameters.AddWithValue("?mysql_log" , message);
-            cmd.Parameters.AddWithValue("?mysql_type", mysql_type);
-
-            try
-            {
-                Open();
-                cmd.ExecuteNonQuery();
-            }
-            finally
-            {
-                Close();
-            }
-        }
-    }
-
-    public class CDB_WEB : DB_Parent
-    {
-        public CDB_WEB(string Connection)
-        {
-            conn = new MySqlConnection(Connection);
-        }
-    }
-
-    public class CDB_VIVA : DB_Parent
-    {
+        // public void Close() { conn.Close(); }
         
-        public CDB_VIVA(string Connection)
-        {
-            conn = new MySqlConnection(Connection);
-        }
-
         public long HExecuteSQLNonQuery(string slpMySQLQuery, Dictionary<string, string> Params = null)
         {
             MySqlCommand cmd = conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
             cmd.CommandText = slpMySQLQuery;
-            
+
             try
             {
                 if (Params != null)
@@ -182,17 +133,14 @@ namespace EDI_DB.Data
                     }
                 }
 
-                conn.Open();
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
-                conn.Close();
                 return 0;
             }
             finally
             {
-                conn.Close();
             }
 
             // WIP
@@ -217,29 +165,108 @@ namespace EDI_DB.Data
                     }
                 }
 
-                conn.Open();
                 MySqlDataReader rd = cmd.ExecuteReader();
                 sdPCursor = rd.Cast<IDataRecord>().ToList();
+                rd.Close();
             }
             catch
             {
-                conn.Close();
                 return null;
             }
             finally
             {
-                conn.Close();
             }
 
             // WIP
             return sdPCursor;
         }
 
+        ~DB_Parent()
+        {
+            try
+            {
+                conn.Close();
+            }
+            finally
+            {
+            }
+        }
+
+    }
+
+    public class CDB_Logger : DB_Parent
+    {
+        public CDB_Logger(string Connection)
+        {
+            conn = new MySqlConnection(Connection);
+            conn.Open();
+        }
+
+        public void LogData(string message, string mysql_type = "EDI_LogData")
+        {
+            MySqlCommand cmd = CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = @"INSERT INTO mysql_log (mysql_log, mysql_type) VALUES (?mysql_log, ?mysql_type); ";
+
+            cmd.Parameters.AddWithValue("?mysql_log" , message);
+            cmd.Parameters.AddWithValue("?mysql_type", mysql_type);
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            finally
+            {
+            }
+        }
+    }
+
+    public class CDB_RSS : DB_Parent
+    {
+        public CDB_RSS(string Connection)
+        {
+            conn = new MySqlConnection(Connection);
+            conn.Open();
+        }
+
+        public IDataRecord GetDBConnection()
+        {
+            List<IDataRecord> results;
+            Params.Clear();
+            Params.Add("rss_datapath", PortId);
+
+            results = HExecuteSQLQuery(@"SELECT * FROM edi_rss WHERE rss_datapath = ?rss_datapath", Params);
+
+            if (results == null) { return null; }
+            if (results.Count == 0) { return null; }
+
+            return results[0];
+        }
+    }
+
+    public class CDB_WEB : DB_Parent
+    {
+        public CDB_WEB(string Connection)
+        {
+            conn = new MySqlConnection(Connection);
+            conn.Open();
+        }
+    }
+    
+    public class CDB_VIVA : DB_Parent
+    {
+        
+        public CDB_VIVA(string Connection)
+        {
+            conn = new MySqlConnection(Connection);
+            conn.Open();
+        }
+        
         public IDataRecord GetAddressBT(int arclient_ident)
         {
             List<IDataRecord> results;
             Params.Clear();
-            Params.Add("arclient_ident", "arclient_ident");
+            Params.Add("arclient_ident", arclient_ident.ToString());
 
             results = HExecuteSQLQuery(@"
                 SELECT 
@@ -263,11 +290,11 @@ namespace EDI_DB.Data
             MySqlCommand cmd = conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
             cmd.CommandText = @"SELECT * FROM (
-                                (SELECT CONCAT('4', CAST(ident AS CHAR)) AS iddel_addr, 2 AS myorder, ident, name, CONCAT(name, ' ', addr1, ' ', city) AS adresse,
+                                (SELECT CONCAT('4', CAST(ident AS CHAR)) AS iddel_addr, 2 AS myorder, ident, name, CONCAT(name, ' ', addr1, ' ', city) AS address,
 					                    addr1, addr2, city, state, zip, country
 					                FROM arclient WHERE ident=?arclient_ident)
 	                                UNION ALL 
-	                            (SELECT CONCAT('1', CAST(ident AS CHAR)) AS iddel_addr, 1 AS myorder, cliid as ident, name, CONCAT(name, ' ', addr1, ' ', city) AS adresse,
+	                            (SELECT CONCAT('1', CAST(ident AS CHAR)) AS iddel_addr, 1 AS myorder, cliid as ident, name, CONCAT(name, ' ', addr1, ' ', city) AS address,
 					                    addr1, addr2, city, state, zip, country
 					                FROM ffaddr   WHERE cliid=?arclient_ident)) AS ffaddr_union
                                 WHERE REPLACE(zip, ' ', '') = ?pZip
@@ -276,12 +303,12 @@ namespace EDI_DB.Data
 
             /* // references to arcliass is currently not used
 	                    UNION ALL 
-                        (SELECT CONCAT('2', CAST(arclient.ident AS CHAR)) AS iddel_addr, 2 AS myorder, arclient.ident, name, CONCAT('as: ', name, ' ', addr1, ' ', city) as adresse,
+                        (SELECT CONCAT('2', CAST(arclient.ident AS CHAR)) AS iddel_addr, 2 AS myorder, arclient.ident, name, CONCAT('as: ', name, ' ', addr1, ' ', city) as address,
 					                     addr1, addr2, city, state, zip, country
 					                     FROM arcliass INNER JOIN arclient ON arcliass.idarclient_as = arclient.ident
 					                     WHERE arcliass.idarclient=?arclient_ident)
 	                     UNION ALL 
-	                    (SELECT CONCAT('3', CAST(ffaddr.ident AS CHAR)) AS iddel_addr, 2 AS myorder, cliid as ident, name, CONCAT('as: ', name, ' ', addr1, ' ', city) as adresse,
+	                    (SELECT CONCAT('3', CAST(ffaddr.ident AS CHAR)) AS iddel_addr, 2 AS myorder, cliid as ident, name, CONCAT('as: ', name, ' ', addr1, ' ', city) as address,
 				                     addr1, addr2, city, state, zip, country
 				                     FROM arcliass INNER JOIN ffaddr ON arcliass.idarclient_as = ffaddr.cliid
 	 			                     WHERE arcliass.idarclient=?arclient_ident) 
@@ -294,9 +321,9 @@ namespace EDI_DB.Data
 
             try
             {
-                conn.Open();
                 MySqlDataReader rd = cmd.ExecuteReader();
                 result = rd.Cast<IDataRecord>().ToList();
+                rd.Close();
                 if (result.Count > 0) { return result[0];}
             }
             catch (System.Exception e)
@@ -306,7 +333,6 @@ namespace EDI_DB.Data
             }
             finally
             {
-                conn.Close();
             }
 
             return null;
