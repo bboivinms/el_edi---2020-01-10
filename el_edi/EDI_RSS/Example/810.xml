@@ -1,0 +1,153 @@
+﻿<?xml version="1.0"?>
+<TransactionSet>
+  <TX-00401-810 type="TransactionSet">
+    <Meta>
+      <!--Transaction Set Identifier Code-->
+      <ST01><!--Invoice-->810</ST01>
+      <!--Transaction Set Control Number-->
+      <ST02>0001</ST02>
+    </Meta>
+    <BIG type="Segment">
+      <!--Date-->
+      <BIG01>20150708</BIG01>
+      <!--Invoice Number-->
+      <BIG02>3003014445</BIG02>
+      <!--Date-->
+      <BIG03/>
+      <!--Purchase Order Number-->
+      <BIG04>0476553272</BIG04>
+      <!--Release Number-->
+      <BIG05/>
+      <!--Change Order Sequence Number-->
+      <BIG06/>
+      <!--Transaction Type Code-->
+      <BIG07><!--Debit Memo-->DR</BIG07>
+    </BIG>
+    <CUR type="Segment">
+      <!--Entity Identifier Code-->
+      <CUR01><!--Selling Party-->SE</CUR01>
+      <!--Currency Code-->
+      <CUR02>USD</CUR02>
+    </CUR>
+    <REF type="Segment">
+      <!--Reference Identification Qualifier-->
+      <REF01><!--Originating Company Identifier-->8M</REF01>
+      <!--Reference Identification-->
+      <REF02>0056</REF02>
+    </REF>
+    <N1Loop1 type="Loop">
+      <N1 type="Segment">
+        <!--Entity Identifier Code-->
+        <N101><!--Buying Party (Purchaser)-->BY</N101>
+        <!--Name-->
+        <N102>Company</N102>
+        <!--Identification Code Qualifier-->
+        <N103><!--Assigned by Buyer or Buyer's Agent-->92</N103>
+        <!--Identification Code-->
+        <N104>544380</N104>
+      </N1>
+      <N3 type="Segment">
+        <!--Address Information-->
+        <N301>Address</N301>
+      </N3>
+      <N4 type="Segment">
+        <!--City Name-->
+        <N401>City</N401>
+        <!--State or Province Code-->
+        <N402>CA</N402>
+        <!--Postal Code-->
+        <N403>Postal Code</N403>
+      </N4>
+    </N1Loop1>
+    <N1Loop1 type="Loop">
+      <N1 type="Segment">
+        <!--Entity Identifier Code-->
+        <N101><!--Ship To-->ST</N101>
+        <!--Name-->
+        <N102>Name</N102>
+        <!--Identification Code Qualifier-->
+        <N103><!--Assigned by Buyer or Buyer's Agent-->92</N103>
+        <!--Identification Code-->
+        <N104>0607047800010</N104>
+      </N1>
+      <N3 type="Segment">
+        <!--Address Information-->
+        <N301>Address</N301>
+      </N3>
+      <N4 type="Segment">
+        <!--City Name-->
+        <N401>City</N401>
+        <!--State or Province Code-->
+        <N402/>
+        <!--Postal Code-->
+        <N403>200131</N403>
+        <!--Country Code-->
+        <N404>US</N404>
+      </N4>
+    </N1Loop1>
+    <N1Loop1 type="Loop">
+      <N1 type="Segment">
+        <!--Entity Identifier Code-->
+        <N101>RE</N101>
+        <!--Name-->
+        <N102>Name</N102>
+        <!--Identification Code Qualifier-->
+        <N103><!--Assigned by Buyer or Buyer's Agent-->92</N103>
+        <!--Identification Code-->
+        <N104>5095956</N104>
+      </N1>
+      <N3 type="Segment">
+        <!--Address Information-->
+        <N301>Address</N301>
+      </N3>
+      <N4 type="Segment">
+        <!--City Name-->
+        <N401>City</N401>
+        <!--State or Province Code-->
+        <N402>IL</N402>
+        <!--Postal Code-->
+        <N403>Postal Code</N403>
+      </N4>
+    </N1Loop1>
+    <IT1Loop1 type="Loop">
+      <IT1 type="Segment">
+        <!--Assigned Identification-->
+        <IT101>20</IT101>
+        <!--Quantity Invoiced-->
+        <IT102>2500</IT102>
+        <!--Unit or Basis for Measurement Code-->
+        <IT103><!--Each-->EA</IT103>
+        <!--Unit Price-->
+        <IT104>36.96</IT104>
+        <!--Basis of Unit Price Code-->
+        <IT105/>
+        <!--Product/Service ID Qualifier-->
+        <IT106><!--Buyer's Part Number-->BP</IT106>
+        <!--Product/Service ID-->
+        <IT107>335S0594</IT107>
+      </IT1>
+      <REF type="Segment">
+        <!--Reference Identification Qualifier-->
+        <REF01><!--Delivery Reference-->KK</REF01>
+        <!--Reference Identification-->
+        <REF02>0099778154</REF02>
+      </REF>
+      <REF type="Segment">
+        <!--Reference Identification Qualifier-->
+        <REF01><!--Purchase Order Number-->PO</REF01>
+        <!--Reference Identification-->
+        <REF02>0476553272</REF02>
+        <!--Description-->
+        <REF03>20</REF03>
+      </REF>
+    </IT1Loop1>
+    <TDS type="Segment">
+      <!--Amount-->
+      <TDS01>9240000</TDS01>
+    </TDS>
+    <CTT type="Segment">
+      <!--Number of Line Items-->
+      <CTT01>1</CTT01>
+    </CTT>
+  </TX-00401-810>
+</TransactionSet>

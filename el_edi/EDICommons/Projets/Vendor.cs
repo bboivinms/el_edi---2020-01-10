@@ -59,10 +59,14 @@ namespace EDI_RSS
             vendor.SetupViva(DB_VIVA_Connection);
             vendor.SetupWeb(DB_WEB_Connection);
 
+            Status += "DB_VIVA_Connection: " + DB_VIVA_Connection + NL;
+            Status += "DB_WEB_Connection: " + DB_WEB_Connection + NL;
+
             DB_VIVA = new EDI_DB.Data.CDB_VIVA(DB_VIVA_Connection);
 
             DB_WEB = new EDI_DB.Data.CDB_WEB(DB_WEB_Connection);
             DB_Logger = new EDI_DB.Data.CDB_Logger(DB_WEB_Connection);
+
         }
     }
 }

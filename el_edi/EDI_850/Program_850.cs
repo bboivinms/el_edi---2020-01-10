@@ -12,14 +12,21 @@ namespace EDI_850
 
         static void Main(string[] args)
         {
-            if (args.Length != 2)
+            if (args.Length < 2)
             {
-                LogWriter.WriteMessage(LogEventSource, $"Incorrect number of arguments. Expected 2, got {args.Length}");
+                LogWriter.WriteMessage(LogEventSource, $"Incorrect number of arguments. Expected at least 2, got {args.Length}");
                 return;
             }
 
             XmlFilePath = args[0];
             UseSystem = args[1].ToLower();
+
+            Status += "args.Length: " + args.Length + NL;
+
+            PortId = args.Length >= 3 ? args[2] : "Unknown";
+
+            Status += "PortId: " + PortId + NL;
+            Status += "XmlFilePath: " + XmlFilePath + NL;
 
             if (!File.Exists(XmlFilePath))
             {
@@ -39,6 +46,8 @@ namespace EDI_850
 
             XMLProcessor_850 proc = new XMLProcessor_850();
             proc.ProcessOrder();
+
+            DB_Logger.LogData(Status);
         }
 
     }
