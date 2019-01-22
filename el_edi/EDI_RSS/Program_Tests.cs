@@ -14,7 +14,7 @@ namespace EDI_RSS
     {
         public void Test()
         {
-            if (UseSystem == "local") Test_810_STEP_2();
+            if (UseSystem == "local") { IsLocalTest = true; Test_810_STEP_2(); }
         }
 
         // Called by auto timer on 254 machine using parameters
@@ -41,8 +41,8 @@ namespace EDI_RSS
         // Parameters
         // Filename             // Starts with the corresponding IDedi_rss WHERE rss_done = 0
 
-        public void Test_855_STEP_2() { SetParams("Local", "edi_rss", "NONE", "21-855P-ALL.txt", ""); }
-        public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "NONE", "22-810P-ALL.txt", ""); }
+        public void Test_855_STEP_2() { SetParams("Local", "edi_rss", "NONE", "13-855P-ALL.txt", ""); }
+        public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "NONE", "2-810P-ALL.txt", ""); }
 
         // Processes The filename to be set as sent that was processed in 000-STEP-2
         // edi_000.Sent = true WHERE Filename = { Filename }

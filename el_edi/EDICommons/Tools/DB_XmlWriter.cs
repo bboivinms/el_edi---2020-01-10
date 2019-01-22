@@ -8,6 +8,7 @@ using System.Xml;
 using System.Data;
 using System.IO;
 using EDI_DB.Data;
+using static EDI_DB.Data.Base;
 
 namespace EDI_DB.Data
 {

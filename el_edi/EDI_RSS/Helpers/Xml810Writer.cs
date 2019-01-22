@@ -84,6 +84,7 @@ namespace EDI_RSS.Helpers
                 //REF segment
                 // WriteSegment("REF", "Segment", "VR", "TBD"); //TODO: get the EL supplier ID for the current customer
 
+                /* 
                 WriteN1Loop1(EntityCode1.VN, EntityCode2.SellerCode, CData,
                     "iddel_addr", "",
                     "cocom_del_name",
@@ -92,7 +93,7 @@ namespace EDI_RSS.Helpers
                     "cocom_dcity",
                     "cocom_dstate",
                     "cocom_dzip"
-                );
+                ); */
 
                 /*
                 //DTM segment
