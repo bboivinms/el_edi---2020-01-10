@@ -25,14 +25,20 @@ namespace EDI_RSS
             string edi_ident;
 
             Status += "Program_855" + NL + "UseSystem: " + UseSystem + NL + "TheFilename: " + Filename + NL;
+            Status += "RSS_send_path: " + RSS_send_path + NL;
+            Status += "DB_VIVA: " + DB_VIVA.conn.ConnectionString + NL;
+            Status += "PortID: " + PortId + NL;
 
             try
             {
                 //Create/Update edi_855 table to "catch" differences since last time we ran this interface
+                Status += "CreateNew" + NL;
                 CreateNew();
+                Status += "UpdateExisting" + NL;
                 UpdateExisting();
 
                 //After create/update of 855 data, edi_855 rows marked as "New" and "Not Sent" are used to generate the actual X12 855 document(s)
+                Status += "GetData" + NL;
                 List<IDataRecord> RawData = GetData();
 
                 if (RawData == null)
@@ -90,7 +96,7 @@ namespace EDI_RSS
                                 join cobili on cocom.ident = cobili.idcom and cocomi.idprod = cobili.idprod
                                 left join cobil on cobil.ident = cobili.idcobil
                                 left join edi_855 on cocom.ident = edi_855.IdCocom
-                                where cocom.CR_BY = 'XEDI'
+                                WHERE LEFT(cocom.CR_BY, 4) = 'XEDI'
                                 GROUP BY cocom.ident
                                 having isnull(edi_855.Validator)) as TempQuery;
                                 commit; ", Params);
@@ -111,7 +117,7 @@ namespace EDI_RSS
                     LEFT JOIN cobili ON cocom.ident = cobili.idcom AND cocomi.idprod = cobili.idprod
                     LEFT JOIN cobil ON cobil.ident = cobili.idcobil
                     LEFT JOIN edi_855 ON cocom.ident = edi_855.IdCocom
-                    WHERE cocom.CR_BY = 'XEDI' AND edi_855.Status = 'N'
+                    WHERE LEFT(cocom.CR_BY, 4) = 'XEDI' AND edi_855.Status = 'N'
                     GROUP BY cocom.ident
                     HAVING (NewValidator <> edi_855.Validator)) AS TmpQuery);
 
@@ -125,7 +131,7 @@ namespace EDI_RSS
                     LEFT JOIN cobili ON cocom.ident = cobili.idcom AND cocomi.idprod = cobili.idprod
                     LEFT JOIN cobil ON cobil.ident = cobili.idcobil
                     LEFT JOIN edi_855 on cocom.ident = edi_855.IdCocom
-                    WHERE cocom.CR_BY = 'XEDI' AND edi_855.Status = 'N'
+                    WHERE LEFT(cocom.CR_BY, 4) = 'XEDI' AND edi_855.Status = 'N'
                     GROUP BY cocom.ident
                     HAVING (NewValidator <> edi_855.Validator)) AS TempQuery;
 
@@ -146,7 +152,7 @@ namespace EDI_RSS
                 left join cobili on cocom.ident = cobili.idcom and cocomi.idprod = cobili.idprod
                 left join cobil on cobil.ident = cobili.idcobil
                 left join edi_855 on cocom.ident = edi_855.idcocom
-                where cocom.cr_by = 'XEDI' 
+                WHERE LEFT(cocom.cr_by, 4) = 'XEDI' 
                 GROUP BY cocom.ident
                 having (isnull(edi_855.Validator) OR NewValidator <> edi_855.Validator)
                 ");
@@ -161,8 +167,7 @@ namespace EDI_RSS
                         edi_855.ident AS edi_855_ident, edi_855.filename AS edi_855_filename
                 FROM cocom 
                 INNER JOIN edi_855 ON edi_855.idcocom = cocom.ident
-                WHERE cocom.CR_BY = 'XEDI' AND edi_855.Status = 'N' AND edi_855.Sent = false
-                AND cocom.ident = '12135'
+                WHERE LEFT(cocom.CR_BY, 4) = 'XEDI' AND edi_855.Status = 'N' AND edi_855.Sent = false
                 GROUP BY cocom.ident
                 ");
 
@@ -191,7 +196,7 @@ namespace EDI_RSS
                 INNER JOIN ivprod ON ivprod.ident = cocomi.idprod
                 INNER JOIN edi_855 ON edi_855.idcocom = cocom.ident
                 LEFT JOIN ivprixdcli ON (ivprixdcli.idclient = cocom.clientid AND ivprixdcli.idprod = cocomi.idprod AND IFNULL(ivprixdcli.codecli, '') <> '')
-                WHERE cocom.cr_by = 'XEDI' AND edi_855.Status = 'N' AND edi_855.Sent = false
+                WHERE LEFT(cocom.cr_by, 4) = 'XEDI' AND edi_855.Status = 'N' AND edi_855.Sent = false
                 AND cocom.ident = ?cocom_ident
                 ORDER BY cocom.ident, cocomi.line
                 ", Params);
@@ -218,7 +223,7 @@ namespace EDI_RSS
                 LEFT JOIN cobili ON cobili.idcom = cocom.ident AND cobili.idprod = cocomi.IDPROD
                 LEFT JOIN cobil ON cobil.ident = cobili.IDCOBIL
                 LEFT JOIN ivprixdcli ON (ivprixdcli.idclient = cocom.clientid AND ivprixdcli.idprod = cocomi.idprod AND IFNULL(ivprixdcli.codecli, '') <> '')
-                WHERE cocom.CR_BY = 'XEDI' AND edi_855.Status = 'N' AND edi_855.Sent = false
+                WHERE LEFT(cocom.CR_BY, 4) = 'XEDI' AND edi_855.Status = 'N' AND edi_855.Sent = false
                       AND cocom.ident = ?cocom_ident AND cocomi.line = ?cocomi_line
                 ", Params);
         }

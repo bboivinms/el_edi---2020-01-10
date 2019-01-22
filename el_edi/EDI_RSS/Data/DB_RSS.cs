@@ -38,15 +38,13 @@ namespace EDI_RSS
 
         public bool ProcessStep2()
         {
-            // Load Idedi_rss
-            IDataRecord result = LoadIdedi_rss();
-            if (result == null) return false;
+            if (gDataIDedi_rss == null) return false;
 
-            if (result["rss_request"].ToString() == "855P" &&
-                result["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(result["855_port"].ToString()); new Program_855(); SetIDedi_RSS_done(); return true; }
+            if (gDataIDedi_rss["rss_request"].ToString() == "855P" &&
+                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["855_port"].ToString()); new Program_855(); SetIDedi_RSS_done(); return true; }
 
-            if (result["rss_request"].ToString() == "810P" &&
-                result["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(result["810_port"].ToString()); new Program_810(); SetIDedi_RSS_done(); return true; }
+            if (gDataIDedi_rss["rss_request"].ToString() == "810P" &&
+                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["810_port"].ToString()); new Program_810(); SetIDedi_RSS_done(); return true; }
 
             return false;
         }

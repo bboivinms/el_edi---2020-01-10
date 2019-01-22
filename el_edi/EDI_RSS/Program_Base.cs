@@ -24,17 +24,20 @@ namespace EDI_RSS
         {
             bool ParamsOK = args.Length >= 5;
 
+            ProcessVendor();
+
             UseSystem = ParamsOK ? args[0].ToLower() : "Unknown";
             TransactionCode = ParamsOK ? args[1] : "Unknown";
             PortId = ParamsOK ? args[2] : "Unknown";
             Filename = ParamsOK ? args[3].Replace(" ", "") : ""; // RSSBus is sometimes adding spaces before and after hyphens (-)
             ErrorMessage = ParamsOK ? args[4] : $"ERROR: Main(): mysql.UpdateSent() not processed: Incorrect number of arguments. Expected at least 5, got { args.Length } ";
-
-            vendor = new Vendor_EL();
             
-            if (!ParamsOK) DB_Logger.LogData(ErrorMessage, LogEventSource);
-
             return ParamsOK;
+        }
+
+        public void ProcessVendor()
+        {
+            vendor = new Vendor_EL();
         }
 
         public void UpdateFilename(string tablaname, string filename, string edi_ident)
@@ -56,6 +59,9 @@ namespace EDI_RSS
         {
             LogEventSource = "EDI RSS Processor";
             IsProcessArgs = ProcessArgs(args);
+            if (!IsProcessArgs) DB_Logger.LogData(ErrorMessage, LogEventSource);
+            Test();
+            vendor.After_Setup();
             SetIDedi_rss();
         }
 
@@ -74,13 +80,13 @@ namespace EDI_RSS
             }
         }
 
-        public IDataRecord LoadIdedi_rss()
+        public IDataRecord GetIdedi_rss()
         {
             List<IDataRecord> results;
 
             Params.Add("?IDedi_rss", IDedi_rss.ToString());
 
-            results = DB_VIVA.HExecuteSQLQuery(@"SELECT * FROM rss_bus.edi_rss LEFT JOIN rss_bus.edi_path ON edi_path.edi_path = edi_rss.rss_datapath WHERE rss_done = 0 AND IDedi_rss = ?IDedi_rss", Params);
+            results = DB_RSS.HExecuteSQLQuery(@"SELECT * FROM edi_rss LEFT JOIN rss_bus.edi_path ON edi_path.edi_path = edi_rss.rss_datapath WHERE rss_done = 0 AND IDedi_rss = ?IDedi_rss", Params);
 
             if (results == null) { return null; }
             if (results.Count == 0) { return null; }
@@ -108,6 +114,7 @@ namespace EDI_RSS
             // get rss_request + other info in table for dispatching
             // do a MySQL query based on the ID in FileName
             IDedi_rss = GetFirstInt(Filename);
+            gDataIDedi_rss = GetIdedi_rss();
         }
         
         public void SetParams(string TheUseSystem, string TheTransactionCode, string ThePortId, string TheFilename, string TheErrorMessage)

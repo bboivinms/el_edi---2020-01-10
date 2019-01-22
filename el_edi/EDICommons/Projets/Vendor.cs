@@ -19,8 +19,7 @@ namespace EDI_RSS
 
         public Vendor()
         {
-            Setup();
-            After_Setup(); // Connection strings should be initialized in Setup override
+            SetupRSS("rss_bus");
         }
 
         protected string DB_String(string Server, string UserId, string Password, string DB_Name)
@@ -28,19 +27,32 @@ namespace EDI_RSS
             return $"server={Server};user id={UserId};password={Password};database={DB_Name};persistsecurityinfo=True;Allow User Variables=True;";
         }
 
-        virtual protected void Setup()
+        virtual public void SetupRSS(string DB_Name)
         {
-
         }
 
-        private void After_Setup()
+        virtual public void SetupViva(string DB_Name)
+        {
+        }
+
+        virtual public void SetupWeb(string DB_Name)
+        {
+        }
+
+        virtual public string GetDB_String(string DB_Name)
+        {
+            return "";
+        }
+
+        public void After_Setup()
         {
             IDataRecord RSS_edi_rss;
 
             DB_RSS = new EDI_DB.Data.CDB_RSS(DB_RSS_Connection);
             RSS_edi_rss = DB_RSS.GetDBConnection();
 
-            if (RSS_edi_rss != null) DB_VIVA_Connection = RSS_edi_rss["edi_db_viva"].ToString();
+            if (RSS_edi_rss != null) DB_VIVA_Connection = GetDB_String(RSS_edi_rss["edi_db_viva"].ToString());
+            else if (gDataIDedi_rss != null) DB_VIVA_Connection = GetDB_String(gDataIDedi_rss["edi_db_viva"].ToString());
 
             DB_VIVA = new EDI_DB.Data.CDB_VIVA(DB_VIVA_Connection);
 

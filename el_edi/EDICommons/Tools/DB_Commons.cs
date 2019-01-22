@@ -38,6 +38,8 @@ namespace EDI_DB.Data
         public static string arclient_short_name;
         public static long IDedi_rss = 0;
 
+        public static IDataRecord gDataIDedi_rss;
+            
         public static bool TimePassed(int hour, int minute)
         {
             if (hour < 0 || hour > 24) hour = 0;
@@ -233,9 +235,10 @@ namespace EDI_DB.Data
         {
             List<IDataRecord> results;
             Params.Clear();
-            Params.Add("rss_datapath", PortId);
+            Params.Add("PortId", PortId);
 
-            results = HExecuteSQLQuery(@"SELECT * FROM edi_rss WHERE rss_datapath = ?rss_datapath", Params);
+            results = HExecuteSQLQuery(@"
+            SELECT * FROM edi_port WHERE edi_port.edi_port = ?PortId", Params);
 
             if (results == null) { return null; }
             if (results.Count == 0) { return null; }
