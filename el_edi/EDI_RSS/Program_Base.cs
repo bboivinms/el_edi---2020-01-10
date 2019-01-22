@@ -6,13 +6,15 @@ namespace EDI_RSS
 {
     public partial class Program_Base
     {
+        protected static Program_RSS program_rss;
+
         static void Main(string[] args)
         {
-            Program_RSS program_rss = new Program_RSS(args);
+            program_rss = new Program_RSS();
+            program_rss.Setup(args);
 
             if (!IsProcessArgs) return;
 
-            program_rss.Test();
             program_rss.ProcessRSS();
         }
 
@@ -27,11 +29,16 @@ namespace EDI_RSS
             ProcessVendor();
 
             UseSystem = ParamsOK ? args[0].ToLower() : "Unknown";
-            TransactionCode = ParamsOK ? args[1] : "Unknown";
-            PortId = ParamsOK ? args[2] : "Unknown";
-            Filename = ParamsOK ? args[3].Replace(" ", "") : ""; // RSSBus is sometimes adding spaces before and after hyphens (-)
-            ErrorMessage = ParamsOK ? args[4] : $"ERROR: Main(): mysql.UpdateSent() not processed: Incorrect number of arguments. Expected at least 5, got { args.Length } ";
-            
+
+            program_rss.Test();
+
+            if (!IsLocalTest)
+            { 
+                TransactionCode = ParamsOK ? args[1] : "Unknown";
+                PortId = ParamsOK ? args[2] : "Unknown";
+                Filename = ParamsOK ? args[3].Replace(" ", "") : ""; // RSSBus is sometimes adding spaces before and after hyphens (-)
+                ErrorMessage = ParamsOK ? args[4] : $"ERROR: Main(): mysql.UpdateSent() not processed: Incorrect number of arguments. Expected at least 5, got { args.Length } ";
+            }
             return ParamsOK;
         }
 
@@ -55,14 +62,19 @@ namespace EDI_RSS
         public static string EdiFilename = "";
 
 
-        public Program_RSS(string[] args)
+        public Program_RSS()
+        {
+        }
+
+        public void Setup(string[] args)
         {
             LogEventSource = "EDI RSS Processor";
-            IsProcessArgs = ProcessArgs(args);
-            if (!IsProcessArgs) DB_Logger.LogData(ErrorMessage, LogEventSource);
-            Test();
-            vendor.After_Setup();
+
+            if (!(IsProcessArgs = ProcessArgs(args))) DB_Logger.LogData(ErrorMessage, LogEventSource);
+
+            DB_RSS = new EDI_DB.Data.CDB_RSS(vendor.SetupRSS("rss_bus"));
             SetIDedi_rss();
+            vendor.After_Setup();
         }
 
         public void DisPatch_IDedi_rss()
@@ -125,7 +137,6 @@ namespace EDI_RSS
             PortId = ThePortId;
             Filename = TheFilename;
             ErrorMessage = TheErrorMessage;
-            SetIDedi_rss();
         }
 
         public int GetFirstInt(string text)

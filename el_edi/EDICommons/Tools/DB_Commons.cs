@@ -29,6 +29,8 @@ namespace EDI_DB.Data
         public static string Status = "";
         public static string Error = "";
 
+        public static bool IsLocalTest = false;
+
         public static CDB_Logger DB_Logger;
         public static CDB_RSS DB_RSS;
         public static CDB_VIVA DB_VIVA;

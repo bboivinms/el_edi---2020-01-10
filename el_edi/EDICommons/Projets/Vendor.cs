@@ -27,16 +27,19 @@ namespace EDI_RSS
             return $"server={Server};user id={UserId};password={Password};database={DB_Name};persistsecurityinfo=True;Allow User Variables=True;";
         }
 
-        virtual public void SetupRSS(string DB_Name)
+        virtual public string SetupRSS(string DB_Name = "rss_bus")
         {
+            return "";
         }
 
-        virtual public void SetupViva(string DB_Name)
+        virtual public string SetupViva(string DB_Name)
         {
+            return "";
         }
 
-        virtual public void SetupWeb(string DB_Name)
+        virtual public string SetupWeb(string DB_Name)
         {
+            return "";
         }
 
         virtual public string GetDB_String(string DB_Name)
@@ -48,11 +51,13 @@ namespace EDI_RSS
         {
             IDataRecord RSS_edi_rss;
 
-            DB_RSS = new EDI_DB.Data.CDB_RSS(DB_RSS_Connection);
             RSS_edi_rss = DB_RSS.GetDBConnection();
 
             if (RSS_edi_rss != null) DB_VIVA_Connection = GetDB_String(RSS_edi_rss["edi_db_viva"].ToString());
             else if (gDataIDedi_rss != null) DB_VIVA_Connection = GetDB_String(gDataIDedi_rss["edi_db_viva"].ToString());
+
+            vendor.SetupViva(DB_VIVA_Connection);
+            vendor.SetupWeb(DB_WEB_Connection);
 
             DB_VIVA = new EDI_DB.Data.CDB_VIVA(DB_VIVA_Connection);
 

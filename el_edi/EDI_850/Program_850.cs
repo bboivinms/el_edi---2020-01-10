@@ -34,6 +34,8 @@ namespace EDI_850
             }
 
             vendor = new EDI_RSS.Vendor_EL();
+            DB_RSS = new EDI_DB.Data.CDB_RSS(vendor.SetupRSS("rss_bus"));
+            vendor.After_Setup();
 
             XMLProcessor_850 proc = new XMLProcessor_850();
             proc.ProcessOrder();
