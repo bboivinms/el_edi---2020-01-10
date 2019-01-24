@@ -121,51 +121,63 @@ namespace EDI_DB.Data
 
         // public void Close() { conn.Close(); }
         
-        public long HExecuteSQLNonQuery(string slpMySQLQuery, Dictionary<string, string> Params = null)
+        public long HExecuteSQLNonQuery(string slpMySQLQuery, Dictionary<string, string> pParams = null)
         {
             MySqlCommand cmd = conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
             cmd.CommandText = slpMySQLQuery;
+            long LastInsertedId = 0;
+
+            string Parameters = "";
 
             try
             {
-                if (Params != null)
+                if (pParams != null)
                 {
-                    foreach (KeyValuePair<string, string> Param in Params)
+                    foreach (KeyValuePair<string, string> pParam in pParams)
                     {
-                        cmd.Parameters.AddWithValue(Param.Key, Param.Value);
+                        cmd.Parameters.AddWithValue(pParam.Key, pParam.Value);
+                        Parameters += "Key: " + pParam.Key + " Value: " + pParam.Value + NL;
                     }
                 }
 
                 cmd.ExecuteNonQuery();
+
+                LastInsertedId = cmd.LastInsertedId;
             }
             catch (Exception ex)
             {
-                return 0;
+                DB_Logger.LogData("ERROR: " + ex.Message + NL + ex.ToString() + NL + "SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL);
             }
             finally
             {
+                Status += "HExecuteSQLNonQuery: SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL;
+                Status += "Connection: " + conn.ConnectionString + NL;
+                Status += "HExecuteSQLNonQuery END" + NL;
             }
 
             // WIP
-            return cmd.LastInsertedId;
+            return LastInsertedId;
         }
 
-        public List<IDataRecord> HExecuteSQLQuery(string slpMySQLQuery, Dictionary<string, string> Params = null)
+        public List<IDataRecord> HExecuteSQLQuery(string slpMySQLQuery, Dictionary<string, string> pParams = null)
         {
             MySqlCommand cmd = conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
             cmd.CommandText = slpMySQLQuery;
+
+            string Parameters = "";
 
             List<IDataRecord> sdPCursor = null;
 
             try
             {
-                if (Params != null)
+                if (pParams != null)
                 {
-                    foreach (KeyValuePair<string, string> Param in Params)
+                    foreach (KeyValuePair<string, string> pParam in pParams)
                     {
-                        cmd.Parameters.AddWithValue(Param.Key, Param.Value);
+                        cmd.Parameters.AddWithValue(pParam.Key, pParam.Value);
+                        Parameters += "Key: " + pParam.Key + " Value: " + pParam.Value + NL;
                     }
                 }
 
@@ -173,12 +185,16 @@ namespace EDI_DB.Data
                 sdPCursor = rd.Cast<IDataRecord>().ToList();
                 rd.Close();
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+                DB_Logger.LogData("ERROR: " + ex.Message + NL + ex.ToString() + NL + "SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL + "Connection: " + conn.ConnectionString + NL);
+                sdPCursor = null;
             }
             finally
             {
+                Status += "HExecuteSQLQuery: SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL;
+                Status += "Connection: " + conn.ConnectionString + NL;
+                Status += "HExecuteSQLQuery END" + NL;
             }
 
             // WIP
