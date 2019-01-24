@@ -97,8 +97,8 @@ namespace EDI_RSS
             List<IDataRecord> results;
 
             Params.Add("?IDedi_rss", IDedi_rss.ToString());
-
-            results = DB_RSS.HExecuteSQLQuery(@"SELECT * FROM edi_rss LEFT JOIN rss_bus.edi_path ON edi_path.edi_path = edi_rss.rss_datapath WHERE rss_done = 0 AND IDedi_rss = ?IDedi_rss", Params);
+            //Enlever "(OR rss_done = 1)"
+            results = DB_RSS.HExecuteSQLQuery(@"SELECT * FROM edi_rss LEFT JOIN rss_bus.edi_path ON edi_path.edi_path = edi_rss.rss_datapath WHERE (rss_done = 0 OR rss_done = 1) AND IDedi_rss = ?IDedi_rss", Params);
 
             if (results == null) { return null; }
             if (results.Count == 0) { return null; }

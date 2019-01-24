@@ -288,6 +288,31 @@ namespace EDI_DB.Data
             return results[0];
         }
 
+        public IDataRecord GetAddressVN(int arclient_ident)
+        {
+            List<IDataRecord> results;
+            Params.Clear();
+            Params.Add("arclient_ident", arclient_ident.ToString());
+
+            results = HExecuteSQLQuery(@"
+                SELECT 
+                    CONCAT('4', CAST(ident AS CHAR)) AS iddel_addr,
+                    Name AS arclient_name,
+                    addr1 AS arclient_addr1,
+                    addr2 AS arclient_addr2,
+                    city AS arclient_city,
+                    state AS arclient_state, 
+                    zip AS arclient_zip, 
+                    country AS arclient_country
+                FROM arclient 
+                WHERE ident = ?arclient_ident", Params);
+
+            if (results == null) { return null; }
+            if (results.Count == 0) { return null; }
+
+            return results[0];
+        }
+
         public IDataRecord GetAddressST(int arclient_ident, string pZip)
         {
             pZip = pZip.ToUpper().Replace(" ", "");

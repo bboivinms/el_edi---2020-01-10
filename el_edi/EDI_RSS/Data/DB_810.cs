@@ -83,8 +83,9 @@ namespace EDI_RSS
                         edi_810.ident AS edi_810_ident, edi_810.filename AS edi_810_filename
                 FROM arinv 
                 INNER JOIN edi_810 ON edi_810.arinv_ident = arinv.ident
-                WHERE   edi_810.Sent = false AND
-                        arinv_ident = 14353
+                WHERE edi_810.Sent = false 
+                      AND
+                      arinv_ident = 14353
                 ");
         }
 
@@ -101,7 +102,8 @@ namespace EDI_RSS
                 INNER JOIN ivprod ON ivprod.ident = arinvd.idprod
                 INNER JOIN edi_810 ON edi_810.arinv_ident = arinv.ident
                 LEFT JOIN ivprixdcli ON (ivprixdcli.idclient = arinv.custid AND ivprixdcli.idprod = arinvd.idprod AND IFNULL(ivprixdcli.codecli, '') <> '')
-                WHERE   edi_810.Sent = false AND
+                WHERE   edi_810.Sent = false 
+                        AND
                         arinv.ident = ?arinv_ident
                 ORDER BY arinvd.ident, arinvd.invline
                 ", Params);

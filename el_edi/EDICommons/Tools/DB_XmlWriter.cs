@@ -9,6 +9,7 @@ using System.Data;
 using System.IO;
 using EDI_DB.Data;
 using static EDI_DB.Data.Base;
+using System.Diagnostics;
 
 namespace EDI_DB.Data
 {
@@ -76,6 +77,55 @@ namespace EDI_DB.Data
             public static string[] SellerCode = { "91", "Assigned by Seller or Seller's Agent" };
         }
 
+        /// It write the N1Loop1 xml tag for the arclient
+        public void WriteN1Loop1_arclient()
+        {
+            IDataRecord result = DB_VIVA.GetAddressVN(arclient_ident);
+            CIDataRecord data_record = new CIDataRecord(result);
+
+            //writer.WriteStartElement("N1Loop1");
+            //writer.WriteAttributeString("type", "Loop");
+            //{
+            //    WriteSegment("N1", "Segment", "pEntityIdentifierCode: " + EntityCode1.VN[1], EntityCode1.VN[0], "arclient_name", data_record["arclient_name"], EntityCode2.SellerCode[1], EntityCode2.SellerCode[0], "iddel_addr",  data_record["iddel_addr"]);
+            //    if (result["arclient_addr1"].ToString() != "")
+            //    {
+            //        WriteSegment("N3", "Segment", "arclient_addr1", data_record["arclient_addr1"], "arclient_addr2", data_record["arclient_addr2"]);
+            //        WriteSegment("N4", "Segment", "arclient_city", data_record["arclient_city"], "arclient_state", data_record["arclient_state"], "arclient_zip", data_record["arclient_zip"], "Fixed: Canada", "CA");
+            //    }
+
+            //}
+            //writer.WriteEndElement(); //N1Loop1
+
+            //write N1Loop1 xml tag for vendor
+            WriteN1Loop1(EntityCode1.VN, EntityCode2.SellerCode, data_record,
+                "iddel_addr",
+                data_record["iddel_addr"],
+                "arclient_name",
+                "arclient_addr1",
+                "arclient_addr2",
+                "arclient_city",
+                "arclient_state",
+                "arclient_zip"
+            );
+
+            //write N1Loop1 xml tag for ship to
+            WriteN1Loop1(EntityCode1.ST, EntityCode2.SellerCode, data_record,
+               "iddel_addr",
+               data_record["iddel_addr"],
+               "arclient_name",
+               "arclient_addr1",
+               "arclient_addr2",
+               "arclient_city",
+               "arclient_state",
+               "arclient_zip"
+           );
+        }
+
+        /// <summary>
+        /// public void WriteN1Loop1: Is a void method 
+        /// that does not return anything and takes 11 parameters.
+        /// It write the N1Loop1 xml tag
+        /// </summary> 
         public void WriteN1Loop1(
             string[] pEntityCode1,
             string[] pEntityCode2,
@@ -94,7 +144,7 @@ namespace EDI_DB.Data
             writer.WriteAttributeString("type", "Loop");
             {
                 WriteSegment("N1", "Segment", "pEntityIdentifierCode: " + pEntityCode1[1], pEntityCode1[0], Data_name, data_record[Data_name], pEntityCode2[1], pEntityCode2[0], Comment_pId_addr, pId_addr);
-                if (Data_addr1 != "")
+                if (data_record[Data_addr1] != "")
                 {
                     WriteSegment("N3", "Segment", Data_addr1, data_record[Data_addr1], Data_addr2, data_record[Data_addr2]);
                     WriteSegment("N4", "Segment", Data_city, data_record[Data_city], Data_state, data_record[Data_state], Data_zip, data_record[Data_zip], "Fixed: Canada", "CA");
@@ -103,6 +153,7 @@ namespace EDI_DB.Data
             }
             writer.WriteEndElement(); //N1Loop1
         }
+
 
         private string Comment(string pComment)
         {
