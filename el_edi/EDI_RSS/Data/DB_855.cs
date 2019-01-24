@@ -64,6 +64,7 @@ namespace EDI_RSS
                         xml.Write(this);
 
                         UpdateFilename("edi_855", xml.OutputFileName, edi_ident);
+
                     }
                 }
 
@@ -77,9 +78,6 @@ namespace EDI_RSS
             finally
             {
             }
-
-            //trans.Commit();
-
         }
 
         public void CreateNew()
@@ -88,7 +86,7 @@ namespace EDI_RSS
                                 insert into edi_855(IdCocom, Status, Validator)
                                 select Id, Stat, NewValidator from
                                 (select cocom.ident as Id, 'N' as Stat,
-                                        GROUP_CONCAT(cocomi.line, '|', cocomi.idprod, '|', cocomi.QTY_ORD, '|', ifnull(cobili.QTY, ''), '|', ifnull(cocomi.req_date, ''), '|', ifnull(cobil.REQ_DTE, '')
+                                        GROUP_CONCAT(cocomi.line, '|', cocomi.idprod, '|', cocomi.QTY_ORD, '|', ifnull(cobili.QTY, ''), '|', ifnull(cocom.req_dte, ''), '|', ifnull(cobil.REQ_DTE, '')
                                         ORDER BY cocomi.line SEPARATOR '\r') AS NewValidator, edi_855.Validator
                                 from cocom
                                 inner join cocomi on cocom.ident = cocomi.idco
@@ -108,9 +106,9 @@ namespace EDI_RSS
                   @"START TRANSACTION;
 
                     SET @Ids := 
-                    (SELECT Id FROM
+                    (SELECT GROUP_CONCAT(Id) FROM
                     (SELECT edi_855.Ident as Id,
-		                    GROUP_CONCAT(cocomi.line,'|',cocomi.idprod, '|', cocomi.QTY_ORD, '|', ifnull(cobili.QTY, ''), '|',ifnull(cocomi.req_date, ''), '|', ifnull(cobil.REQ_DTE, '') 
+		                    GROUP_CONCAT(cocomi.line,'|',cocomi.idprod, '|', cocomi.QTY_ORD, '|', ifnull(cobili.QTY, ''), '|',ifnull(cocom.req_dte, ''), '|', ifnull(cobil.REQ_DTE, '') 
                             ORDER BY cocomi.line SEPARATOR '\r') AS NewValidator, edi_855.Validator, edi_855.Status
                     FROM cocom
                     INNER JOIN cocomi ON cocom.ident = cocomi.idco
@@ -124,7 +122,7 @@ namespace EDI_RSS
                     INSERT INTO edi_855 (IdCocom, Status, Validator)
                     SELECT Id, Stat, NewValidator FROM
                     (SELECT cocom.ident AS Id, 'N' AS Stat,
-		                    GROUP_CONCAT(cocomi.line,'|',cocomi.idprod, '|', cocomi.QTY_ORD, '|', ifnull(cobili.QTY, ''), '|',ifnull(cocomi.req_date, ''), '|', ifnull(cobil.REQ_DTE, '') 
+		                    GROUP_CONCAT(cocomi.line,'|',cocomi.idprod, '|', cocomi.QTY_ORD, '|', ifnull(cobili.QTY, ''), '|',ifnull(cocom.req_dte, ''), '|', ifnull(cobil.REQ_DTE, '') 
                             ORDER BY cocomi.line SEPARATOR '\r') AS NewValidator, edi_855.Validator, edi_855.Status
                     FROM cocom
                     INNER JOIN cocomi ON cocom.ident = cocomi.idco
@@ -137,25 +135,10 @@ namespace EDI_RSS
 
                     UPDATE edi_855
                     SET Status = 'O'
-                    WHERE FIND_IN_SET(Ident, @Ids);
+                    WHERE FIND_IN_SET(Ident, @Ids) AND ident <> 0;
 
                     COMMIT;");
 
-        }
-
-
-        public List<IDataRecord> GetChanges()
-        {
-            return DB_VIVA.HExecuteSQLQuery(
-                @"select cocom.ident, GROUP_CONCAT(cocomi.line,'|',cocomi.idprod, '|', cocomi.qty_ord, '|', ifnull(cobili.qty, ''), '|', ifnull(cobil.req_dte, '') ORDER BY cocomi.line SEPARATOR '\r') AS NewValidator, edi_855.* from cocom
-                inner join cocomi on cocom.ident = cocomi.idco
-                left join cobili on cocom.ident = cobili.idcom and cocomi.idprod = cobili.idprod
-                left join cobil on cobil.ident = cobili.idcobil
-                left join edi_855 on cocom.ident = edi_855.idcocom
-                WHERE LEFT(cocom.cr_by, 4) = 'XEDI' 
-                GROUP BY cocom.ident
-                having (isnull(edi_855.Validator) OR NewValidator <> edi_855.Validator)
-                ");
         }
 
         public List<IDataRecord> GetData()

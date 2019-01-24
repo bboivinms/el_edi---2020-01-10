@@ -41,10 +41,10 @@ namespace EDI_RSS
             if (gDataIDedi_rss == null) return false;
 
             if (gDataIDedi_rss["rss_request"].ToString() == "855P" &&
-                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["855_port"].ToString()); new Program_855(); SetIDedi_RSS_done(); return true; }
+                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["855_port"].ToString()); new Program_855(); SetIDedi_RSS_done(); DB_Logger.LogData(Status); return true; }
 
             if (gDataIDedi_rss["rss_request"].ToString() == "810P" &&
-                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["810_port"].ToString()); new Program_810(); SetIDedi_RSS_done(); return true; }
+                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["810_port"].ToString()); new Program_810(); SetIDedi_RSS_done(); DB_Logger.LogData(Status); return true; }
 
             return false;
         }
@@ -67,37 +67,33 @@ namespace EDI_RSS
             EdiFilename = IDedi_rss.ToString() + $"-{rss_request}-{rss_client}.txt";
 
             DisPatch_IDedi_rss();
+
+            DB_Logger.LogData(Status);
         }
         
         public void P_STEP_3(string Tablename)
         {
             DB_Logger.LogData($"Main(): UseSystem {UseSystem} TransactionCode {TransactionCode} PortId {PortId} Filename {Filename} Tablename {Tablename} ErrorMessage {ErrorMessage}", LogEventSource);
+            DB_Logger.LogData(Status);
             UpdateSent(Tablename, Filename);
         }
 
-        public void UpdateSent(string table, string filename)
+        public void UpdateSent(string table, string Filename)
         {
             // DBLogger.LogData($"DB_RSS(): UpdateSent: Using table: {table} and filename: {filename}", Program_RSS.LogEventSource);
 
             if (table != "edi_855" && table != "edi_810")
             {
-                DB_Logger.LogData($"ERROR: DB_RSS(): UpdateSent: Abort: Table not found {table} (filename: {filename})", LogEventSource);
+                DB_Logger.LogData($"ERROR: DB_RSS(): UpdateSent: Abort: Table not found {table} (Filename: {Filename})", LogEventSource);
                 return;
             }
 
-            MySqlCommand cmd = DB_VIVA.CreateCommand();
-            cmd.CommandType = CommandType.Text;
-            cmd.CommandText = @"UPDATE " + table + " SET sent = true WHERE LOCATE(Filename,?Filename); ";
+            Params.Clear();
+            Params.Add("?Filename", Filename);
+            DB_VIVA.HExecuteSQLQuery (@"UPDATE " + table + " SET sent = true WHERE LOCATE(Filename, ?Filename); ", Params);
 
-            cmd.Parameters.AddWithValue("?filename", filename);
+            DB_Logger.LogData($"UPDATE {table} SET sent = true WHERE LOCATE(Filename,{Filename});" + NL + "DB_VIVA.conn.ConnectionString: " + DB_VIVA.conn.ConnectionString + NL);
 
-            try
-            {
-                cmd.ExecuteNonQuery();
-            }
-            finally
-            {
-            }
         }
     }
 

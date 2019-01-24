@@ -53,7 +53,8 @@ namespace EDI_RSS
             Params.Add("?filename", filename);
             Params.Add("?edi_ident", edi_ident);
 
-            DB_VIVA.HExecuteSQLNonQuery(@"UPDATE " + tablaname + " SET filename = ?filename WHERE ident = ?edi_ident; ", Params);
+            DB_Logger.LogData($"UPDATE {tablaname} SET filename = {filename} WHERE (ident+0) = {edi_ident}; " + NL + "DB_VIVA.conn.ConnectionString: " + DB_VIVA.conn.ConnectionString + NL);
+            DB_VIVA.HExecuteSQLQuery(@"UPDATE " + tablaname + " SET filename = ?filename WHERE ident = ?edi_ident; ", Params);
         }
     }
 

@@ -49,14 +49,16 @@ namespace EDI_RSS
 
         public void After_Setup()
         {
+            string DB_VIVA_name = "";
+
             IDataRecord RSS_edi_rss;
 
             RSS_edi_rss = DB_RSS.GetDBConnection();
 
-            if (RSS_edi_rss != null) DB_VIVA_Connection = GetDB_String(RSS_edi_rss["edi_db_viva"].ToString());
-            else if (gDataIDedi_rss != null) DB_VIVA_Connection = GetDB_String(gDataIDedi_rss["edi_db_viva"].ToString());
+            if (RSS_edi_rss != null) DB_VIVA_name = RSS_edi_rss["edi_db_viva"].ToString();
+            else if (gDataIDedi_rss != null) DB_VIVA_name = gDataIDedi_rss["edi_db_viva"].ToString();
 
-            vendor.SetupViva(DB_VIVA_Connection);
+            vendor.SetupViva(DB_VIVA_name);
             vendor.SetupWeb(DB_WEB_Connection);
 
             Status += "DB_VIVA_Connection: " + DB_VIVA_Connection + NL;
