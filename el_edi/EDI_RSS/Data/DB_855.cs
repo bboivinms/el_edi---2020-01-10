@@ -78,9 +78,6 @@ namespace EDI_RSS
             finally
             {
             }
-
-            //trans.Commit();
-
         }
 
         public void CreateNew()

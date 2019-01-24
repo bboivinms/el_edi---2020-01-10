@@ -3,40 +3,40 @@
   <Customer>
     <Id>30037</Id>
     <STName>ARIVA</STName>
-    <STAddress1>1330  COURTNEY  PARK  DRIVE</STAddress1>
+    <STAddress1>2125  23e  AVENUE</STAddress1>
     <STAddress2></STAddress2>
-    <STCity>MISSISSAUGA</STCity>
+    <STCity>LACHINE</STCity>
     <STCountry>CA</STCountry>
-    <STPostalCode>L5T  1K5</STPostalCode>
-    <STState>ON</STState>
+    <STPostalCode>H8T  1X5</STPostalCode>
+    <STState>QC</STState>
     <PER01>BD</PER01>
     <PER02>GARRY  MACEACHERN</PER02>
     <PER03>FX</PER03>
-    <PER04>diane.yuhasz@ariva.ca</PER04>
+    <PER04>905-670-6070</PER04>
     <PER05>TE</PER05>
     <PER06>905-670-6077</PER06>
     <PER07></PER07>
     <PER08></PER08>
   </Customer>
   <Order>
-    <Date>2018-12-13</Date>
-    <Number>4500000711</Number>
-    <RequestedShipDate>2018-12-13</RequestedShipDate>
-    <CreatedBy>EDI</CreatedBy>
-    <Status>E</Status>
-    <UserCode>XEDI</UserCode>
+    <Date>2019-01-22</Date>
+    <Number>4501004657</Number>
+    <RequestedShipDate>2019-01-22</RequestedShipDate>
+    <CreatedBy>EDI-ETE</CreatedBy>
+    <Status>EDI-ETE</Status>
+    <UserCode>XEDI-ETE</UserCode>
     <OrderItem>
-      <ItemDescription>FENETRE  OC.  ENV.  CODE  DIVERS</ItemDescription>
-      <ItemId></ItemId>
-      <CustomerItemId>WEWVWMSC00B0ESP</CustomerItemId>
+      <ItemDescription>UTILITY  WINDOW  #10  FSC  WH  24#  4.125X9.5</ItemDescription>
+      <ItemId>10VEBL24FW01</ItemId>
+      <CustomerItemId>WEPMWW10WHB4E33</CustomerItemId>
       <ItemLineId>00010</ItemLineId>
-      <ItemQuantity>5000</ItemQuantity>
+      <ItemQuantity>150000</ItemQuantity>
       <ItemUnitOfMeasure>EV</ItemUnitOfMeasure>
-      <ItemRate>1</ItemRate>
+      <ItemRate>21.15</ItemRate>
       <ItemUnitOfPrice>UM</ItemUnitOfPrice>
-      <TimeModified>2018-12-13T14:01:40-05:00</TimeModified>
-      <Status>E</Status>
-      <RequestedShipDate>2018-12-13</RequestedShipDate>
+      <TimeModified>2019-01-22T10:32:16-05:00</TimeModified>
+      <Status>EDI-ETE</Status>
+      <RequestedShipDate>2019-01-22</RequestedShipDate>
     </OrderItem>
   </Order>
 </root>
