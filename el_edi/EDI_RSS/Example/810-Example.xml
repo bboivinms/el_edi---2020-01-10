@@ -1,0 +1,140 @@
+﻿<TransactionSet>
+  <TX-00401-810 type="TransactionSet">
+    <Meta>
+      <STO1>810</STO1>
+      <STO2>0022</STO2>
+    </Meta>
+    <BIG type="Segment">
+      <!--Invoice Date -->
+      <BIG01>20181019</BIG01>
+      <!--Invoice Number -->
+      <BIG02>1234</BIG02>
+      <!--Fixed: Client Purchase Order Date-->
+      <BIG03 />
+      <!--Client Purchase Order Number -->
+      <BIG04>PO_1234_NUMBER</BIG04>
+      <!--Fixed: Release Number-->
+      <BIG05 />
+      <!--Fixed: Change Order Sequence Number-->
+      <BIG06 />
+      <!--Fixed: Transaction Type Code: PR Product(or Service)-->
+      <BIG07>PR</BIG07>
+    </BIG>
+    <CUR type="Segment">
+      <!--Fixed: Entity Identifier Code: Vendor-->
+      <CUR01>VN</CUR01>
+      <!--Fixed: Currency Code-->
+      <CUR02>CAD</CUR02>
+    </CUR>
+    <N1Loop1 type="Loop">
+      <N1 type="Segment">
+        <!--pEntityIdentifierCode: Vendor-->
+        <N101>VN</N101>
+        <!--name-->
+        <N102>VendorName</N102>
+        <!--Assigned by Seller or Seller's Agent-->
+        <N103>91</N103>
+        <!--Address code-->
+        <N104>12345A</N104>
+      </N1>
+      <N3 type="Segment">
+        <!--addr1-->
+        <N301>Address line 1</N301>
+        <!--addr2-->
+        <N302>Address line 2</N302>
+      </N3>
+      <N4 type="Segment">
+        <!--city-->
+        <N401>Québec</N401>
+        <!--state-->
+        <N402>QC</N402>
+        <!--zip-->
+        <N403>A0A A0A</N403>
+        <!--Fixed: Canada-->
+        <N404>CA</N404>
+      </N4>
+    </N1Loop1>
+    <N1Loop1 type="Loop">
+      <N1 type="Segment">
+        <!--pEntityIdentifierCode: Ship To-->
+        <N101>ST</N101>
+        <!--name-->
+        <N102>ShipToName</N102>
+        <!--Assigned by Seller or Seller's Agent-->
+        <N103>91</N103>
+        <!--iddel_addr-->
+        <N104>12345B</N104>
+      </N1>
+      <N3 type="Segment">
+        <!--addr1-->
+        <N301>Address line 1</N301>
+        <!--addr2-->
+        <N302>Address line 2</N302>
+      </N3>
+      <N4 type="Segment">
+        <!--city-->
+        <N401>Québec</N401>
+        <!--state-->
+        <N402>QC</N402>
+        <!--zip-->
+        <N403>A0A A0A</N403>
+        <!--Fixed: Canada-->
+        <N404>CA</N404>
+      </N4>
+    </N1Loop1>
+    <IT1Loop1 type="Loop">
+      <IT1 type="Segment">
+        <!--Assigned Identification-->
+        <IT101>20</IT101>
+        <!--Quantity Invoiced-->
+        <IT102>2500</IT102>
+        <!--Unit or Basis for Measurement Code: Each-->
+        <IT103>EA</IT103>
+        <!--Unit Price-->
+        <IT104>12.34</IT104>
+        <!--Basis of Unit Price Code: /Mille-->
+        <IT105>TP</IT105>
+        <!--Product/Service ID Qualifier: Fixed: Customer Item No-->
+        <IT106>CT</IT106>
+        <!--Product/Service ID-->
+        <IT107>1234CT</IT107>
+        <!--Product/Service ID Qualifier: Fixed: Vendor's (Seller's) Part Number-->
+        <IT108>VP</IT108>
+        <!--Product/Service ID-->
+        <IT109>1234VP</IT109>
+      </IT1>
+      <REF type="Segment">
+        <!--Reference Identification Qualifier : Delivery Reference-->
+        <REF01>KK</REF01>
+        <!--Reference Identification-->
+        <REF02>0099778154</REF02>
+      </REF>
+      <REF type="Segment">
+        <!--Reference Identification Qualifier: Purchase Order Number-->
+        <REF01>PO</REF01>
+        <!--Reference Identification-->
+        <REF02>0476553272</REF02>
+        <!--Description-->
+        <REF03>20</REF03>
+      </REF>
+    </IT1Loop1>
+    <TDS type="Segment">
+      <!--Total Invoice Amount-->
+      <TDS01>12654</TDS01>
+      <!--Total Amount Subject to Discount-->
+      <TDS02>6686</TDS02>
+      <!--Discounted Amount Due-->
+      <TDS03>12402</TDS03>
+      <!--Terms Discount Amount-->
+      <TDS04>252</TDS04>
+    </TDS>
+    <CTTLoop1 type="Loop">
+      <CTT type="Segment">
+        <!--Calc:	Number of Line Items-->
+        <CTT01>1</CTT01>
+        <!--Calc: Hash Total-->
+        <CTT02>2500</CTT02>
+      </CTT>
+    </CTTLoop1>
+  </TX-00401-810>
+</TransactionSet>

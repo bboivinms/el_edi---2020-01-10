@@ -73,9 +73,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Example\810-Example.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Example\810.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Example\856-Example.xml" />
+    <Content Include="Example\856.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

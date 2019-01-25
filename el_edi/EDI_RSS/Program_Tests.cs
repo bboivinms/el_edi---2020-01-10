@@ -42,7 +42,7 @@ namespace EDI_RSS
         // Filename             // Starts with the corresponding IDedi_rss WHERE rss_done = 0
 
         public void Test_855_STEP_2() { SetParams("Local", "edi_rss", "NONE", "13-855P-ALL.txt", ""); }
-        public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "NONE", "2-810P-ALL.txt", ""); }
+        public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "NONE", "3-810P-ALL.txt", ""); }
 
         // Processes The filename to be set as sent that was processed in 000-STEP-2
         // edi_000.Sent = true WHERE Filename = { Filename }

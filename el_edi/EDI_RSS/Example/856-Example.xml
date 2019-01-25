@@ -1,0 +1,168 @@
+﻿<TransactionSet>
+  <TX-00401-856 type="TransactionSet">
+    <Meta>
+      <!--Transaction Set Identifier Code: Ship Notice/Manifest-->
+      <ST01>856</ST01>
+      <!--Transaction Set Control Number-->
+      <ST02>0029</ST02>
+    </Meta>
+    <BSN type="Segment">
+      <!--Transaction Set Purpose Code: Original-->
+      <BSN01>00</BSN01>
+      <!--Shipment Identification-->
+      <BSN02>0403734501</BSN02>
+      <!--Date-->
+      <BSN03>20150708</BSN03>
+      <!--Time-->
+      <BSN04>162859</BSN04>
+    </BSN>
+    <DTM type="Segment">
+      <!--Date/Time Qualifier: Shipped-->
+      <DTM01>011</DTM01>
+      <!--Date-->
+      <DTM02>20150708</DTM02>
+    </DTM>
+    <HLLoop1 type="Loop">
+      <HL type="Segment">
+        <!--Hierarchical ID Number-->
+        <HL01>1</HL01>
+        <!--Hierarchical Parent ID Number-->
+        <HL02/>
+        <!--Hierarchical Level Code: Shipment-->
+        <HL03>S</HL03>
+        <!--Hierarchical Child Code: Additional Subordinate HL Data Segment in This Hierarchical Structure.-->
+        <HL04>1</HL04>
+      </HL>
+      <PRF type="Segment">
+        <!--Purchase Order Number-->
+        <PRF01>0476553696</PRF01>
+        <!--Release Number-->
+        <PRF02/>
+        <!--Change Order Sequence Number-->
+        <PRF03/>
+        <!--Date-->
+        <PRF04>20150708</PRF04>
+      </PRF>
+      <TD1 type="Segment">
+        <!--Packaging Code: Pallet: Standard-->
+        <TD101>PLT90</TD101>
+        <!--Lading Quantity-->
+        <TD102>1</TD102>
+      </TD1>
+      <TD5 type="Segment">
+        <!--Routing Sequence Code: Origin Carrier (Air, Motor, or Ocean)-->
+        <TD501>O</TD501>
+        <!--Identification Code Qualifier: Standard Carrier Alpha Code (SCAC)-->
+        <TD502>2</TD502>
+        <!--Identification Code-->
+        <TD503>ID_CODE</TD503>
+        <!--Transportation Method/Type Code: Supplier Truck-->
+        <TD504>SR</TD504>
+      </TD5>
+      <REF type="Segment">
+        <!--Reference Identification Qualifier: Bill of Lading Number-->
+        <REF01>BM</REF01>
+        <!--Reference Identification-->
+        <REF02>EDITEST403734501</REF02>
+      </REF>
+      <REF type="Segment">
+        <!--Reference Identification Qualifier: Customer Reference Number-->
+        <REF01>CR</REF01>
+        <!--Reference Identification-->
+        <REF02>4900043704</REF02>
+      </REF>
+    </HLLoop1>
+    <HLLoop1 type="Loop">
+      <HL type="Segment">
+        <!--Hierarchical ID Number-->
+        <HL01>2</HL01>
+        <!--Hierarchical Parent ID Number-->
+        <HL02>1</HL02>
+        <!--Hierarchical Level Code: Order-->
+        <HL03>O</HL03>
+        <!--Hierarchical Child Code: Additional Subordinate HL Data Segment in This Hierarchical Structure.-->
+        <HL04>1</HL04>
+      </HL>
+      <N1Loop1 type="Loop">
+        <N1 type="Segment">
+          <!--Entity Identifier Code: Ship To-->
+          <N101>ST</N101>
+          <!--Name-->
+          <N102>Name</N102>
+          <!--Identification Code Qualifier: Assigned by Buyer or Buyer's Agent-->
+          <N103>92</N103>
+          <!--Identification Code-->
+          <N104>0042001808</N104>
+        </N1>
+      </N1Loop1>
+      <N1Loop1 type="Loop">
+        <N1 type="Segment">
+          <!--Entity Identifier Code: Ship From-->
+          <N101>SF</N101>
+          <!--Name-->
+          <N102>NameT</N102>
+        </N1>
+        <N3 type="Segment">
+          <!--Address Information-->
+          <N301>Address</N301>
+        </N3>
+        <N4 type="Segment">
+          <!--City Name-->
+          <N401>City</N401>
+          <!--State or Province Code-->
+          <N402>SG</N402>
+          <!--Postal Code-->
+          <N403>339942</N403>
+          <!--Country Code-->
+          <N404>SG</N404>
+        </N4>
+      </N1Loop1>
+    </HLLoop1>
+    <HLLoop1 type="Loop">
+      <HL type="Segment">
+        <!--Hierarchical ID Number-->
+        <HL01>3</HL01>
+        <!--Hierarchical Parent ID Number-->
+        <HL02>2</HL02>
+        <!--Hierarchical Level Code: Item-->
+        <HL03>I</HL03>
+        <!--Hierarchical Child Code: No Subordinate HL Segment in This Hierarchical Structure.-->
+        <HL04>0</HL04>
+      </HL>
+      <LIN type="Segment">
+        <!--Assigned Identification-->
+        <LIN01>10</LIN01>
+        <!--Product/Service ID Qualifier: Buyer's Part Number-->
+        <LIN02>BP</LIN02>
+        <!--Product/Service ID-->
+        <LIN03>335S0548</LIN03>
+        <!--Product/Service ID Qualifier: Vendor's (Seller's) Part Number-->
+        <LIN04>VP</LIN04>
+        <!--Product/Service ID-->
+        <LIN05>Product</LIN05>
+      </LIN>
+      <SN1 type="Segment">
+        <!--Assigned Identification-->
+        <SN101>10</SN101>
+        <!--Number of Units Shipped-->
+        <SN102>1100</SN102>
+        <!--Unit or Basis for Measurement Code: Each-->
+        <SN103>EA</SN103>
+        <!--Quantity Ordered-->
+        <SN104>1100</SN104>
+        <!--Basis of Unit Price Code: /Mille-->
+        <SN105>TP</SN105>
+      </SN1>
+      <MAN type="Segment">
+        <!--Marks and Numbers Qualifier: Carrier-Assigned Package ID Number-->
+        <MAN01>CP</MAN01>
+        <!--Marks and Numbers-->
+        <MAN02>Marks</MAN02>
+      </MAN>
+    </HLLoop1>
+    <CTT type="Segment">
+      <!--Number of Line Items-->
+      <CTT01>1</CTT01>
+    </CTT>
+  </TX-00401-856>
+</TransactionSet>
