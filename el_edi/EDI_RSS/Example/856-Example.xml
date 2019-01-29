@@ -148,16 +148,18 @@
         <SN102>1100</SN102>
         <!--Unit or Basis for Measurement Code: Each-->
         <SN103>EA</SN103>
+        <!--Quantity Shipped to Date-->
+        <SN104>0</SN104>
         <!--Quantity Ordered-->
-        <SN104>1100</SN104>
-        <!--Basis of Unit Price Code: /Mille-->
-        <SN105>TP</SN105>
+        <SN105>1100</SN105>
+        <!--Unit or Basis for Measurement Code: Each-->
+        <SN105>EA</SN105>
       </SN1>
       <MAN type="Segment">
-        <!--Marks and Numbers Qualifier: Carrier-Assigned Package ID Number-->
-        <MAN01>CP</MAN01>
-        <!--Marks and Numbers-->
-        <MAN02>Marks</MAN02>
+        <!--Marks and Numbers Qualifier: Shipper Assigned-->
+        <MAN01>SM</MAN01>
+        <!--Marks and Numbers: SSCC-18 Number or TBD (To Be Determined)-->
+        <MAN02>Code</MAN02>
       </MAN>
     </HLLoop1>
     <CTT type="Segment">

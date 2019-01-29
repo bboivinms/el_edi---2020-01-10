@@ -26,6 +26,12 @@
       <!--Fixed: Currency Code-->
       <CUR02>CAD</CUR02>
     </CUR>
+    <REF type="Segment">
+      <!--Reference Identification Qualifier: Bill of Lading Number-->
+      <REF01>IK</REF01>
+      <!--Reference Identification-->
+      <REF02>EDITEST403734501</REF02>
+    </REF>
     <N1Loop1 type="Loop">
       <N1 type="Segment">
         <!--pEntityIdentifierCode: Vendor-->
@@ -103,6 +109,20 @@
         <!--Product/Service ID-->
         <IT109>1234VP</IT109>
       </IT1>
+    </IT1Loop1>
+    <PIDLoop1 type="Loop">
+      <PID type="Segment">
+        <!--PID01: Item Description Type : Free-form-->
+        <PID01>F</PID01>
+        <!--PID02: Product/Process Characteristic Code : Fixed-->
+        <PID02></PID02>
+        <!--PID03: Agency Qualifier Code: Fixed-->
+        <PID03></PID03>
+        <!--PID04: Product Description Code: Fixed	-->
+        <PID04></PID04>
+        <!--PID05: Description-->
+        <PID05>Product description</PID05>
+      </PID>
       <REF type="Segment">
         <!--Reference Identification Qualifier : Delivery Reference-->
         <REF01>KK</REF01>
@@ -114,10 +134,14 @@
         <REF01>PO</REF01>
         <!--Reference Identification-->
         <REF02>0476553272</REF02>
-        <!--Description-->
-        <REF03>20</REF03>
       </REF>
-    </IT1Loop1>
+      <REF type="Segment">
+        <!--Reference Identification Qualifier: Vendor Order Number-->
+        <REF01>VN</REF01>
+        <!--Reference Identification-->
+        <REF02>0476553272</REF02>
+      </REF>
+    </PIDLoop1>
     <TDS type="Segment">
       <!--Total Invoice Amount-->
       <TDS01>12654</TDS01>
@@ -128,6 +152,22 @@
       <!--Terms Discount Amount-->
       <TDS04>252</TDS04>
     </TDS>
+    <TXI type="Segment">
+      <!--Tax Type Code : State/Provincial Tax-->
+      <TXI01>SP</TXI01>
+      <!--	Monetary Amount-->
+      <TXI02>1.12</TXI02>
+      <!--Percent: Percentage expressed as a decimal-->
+      <TXI03>0.05</TXI03>
+    </TXI>
+    <TXI type="Segment">
+      <!--Tax Type Code : Federal Tax-->
+      <TXI01>FD</TXI01>
+      <!--	Monetary Amount-->
+      <TXI02>1.12</TXI02>
+      <!--Percent: Percentage expressed as a decimal-->
+      <TXI03>0.05</TXI03>
+    </TXI>
     <CTTLoop1 type="Loop">
       <CTT type="Segment">
         <!--Calc:	Number of Line Items-->
