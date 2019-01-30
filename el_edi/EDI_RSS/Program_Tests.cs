@@ -14,7 +14,7 @@ namespace EDI_RSS
     {
         public void Test()
         {
-            if (UseSystem == "local") { IsLocalTest = true; Test_810_STEP_2(); }
+            if (UseSystem == "local") { IsLocalTest = true; Test_856_STEP_2(); }
         }
 
         // Called by auto timer on 254 machine using parameters
@@ -30,6 +30,7 @@ namespace EDI_RSS
 
         public void Test_855_STEP_1() { SetParams("Local", "edi_rss", "NONE", "855P-ALL", ""); }
         public void Test_810_STEP_1() { SetParams("Local", "edi_rss", "NONE", "810P-ALL", ""); }
+        public void Test_856_STEP_1() { SetParams("Local", "edi_rss", "NONE", "856P-ALL", ""); }
 
         // Activates Program_000 and stores corresponding 000 XML files in RSS_send_path (C:\TMP for Local)
         // CreateNew()          // Creates new records
@@ -43,6 +44,7 @@ namespace EDI_RSS
 
         public void Test_855_STEP_2() { SetParams("Local", "edi_rss", "NONE", "13-855P-ALL.txt", ""); }
         public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "NONE", "3-810P-ALL.txt", ""); }
+        public void Test_856_STEP_2() { SetParams("Local", "edi_rss", "NONE", "5-856P-ALL.txt", ""); }
 
         // Processes The filename to be set as sent that was processed in 000-STEP-2
         // edi_000.Sent = true WHERE Filename = { Filename }
@@ -51,6 +53,7 @@ namespace EDI_RSS
         // Filename             // Changes every time STEP-2 is processed, references a edi_000.Filename
         public void Test_855_STEP_3() { SetParams("Local", "855", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
         public void Test_810_STEP_3() { SetParams("Local", "810", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
+        public void Test_856_STEP_3() { SetParams("Local", "856", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
 
     }
 }

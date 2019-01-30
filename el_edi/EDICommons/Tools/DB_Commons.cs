@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using EDI_DB.Data;
 using static EDI_DB.Data.Base;
 using EDI_RSS;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace EDI_DB.Data
 {
@@ -304,7 +306,7 @@ namespace EDI_DB.Data
             return results[0];
         }
 
-        public IDataRecord GetAddressVN(int arclient_ident)
+        public IDataRecord GetAddressArclient(int arclient_ident)
         {
             List<IDataRecord> results;
             Params.Clear();
@@ -327,6 +329,44 @@ namespace EDI_DB.Data
             if (results.Count == 0) { return null; }
 
             return results[0];
+        }
+
+        public string GetPostalCode(string arinv_ident)
+        {
+            List<IDataRecord> results;
+            string postalCode;
+            Params.Clear();
+            Params.Add("arinv_ident", arinv_ident);
+
+            results = HExecuteSQLQuery(@"
+                SELECT 
+                   VLIVREA 
+                FROM vivadata4.arinv
+                WHERE IDENT = ?arinv_ident", Params);
+
+            postalCode = FindPostalCode(results[0]["VLIVREA"].ToString());
+
+            if (results == null) { return null; }
+            if (results.Count == 0) { return null; }
+
+            return postalCode;
+        }
+
+        //Find a postal code in a text with endline
+        public string FindPostalCode(string input)
+        {
+            string[] lines = input.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            string pattern = @"[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9] *$";
+
+            foreach (string line in lines)
+            {
+                
+                if (Regex.IsMatch(line, pattern))
+                {
+                    return line;
+                }
+            }
+            return "";
         }
 
         public IDataRecord GetAddressST(int arclient_ident, string pZip)
@@ -383,7 +423,33 @@ namespace EDI_DB.Data
 
             return null;
         }
+
+        public IDataRecord GetAddressWscie(int cie_id = 1)
+        {
+            List<IDataRecord> results;
+            Params.Clear();
+            Params.Add("cie_id", cie_id.ToString());
+
+            results = HExecuteSQLQuery(@"
+                SELECT 
+                    cie_id AS wscie_cie_id,
+                    cie_name AS wscie_name,
+                    cie_adr1 AS wscie_adr1,
+                    cie_adr2 AS wscie_adr2,
+                    cie_city AS wscie_city,
+                    cie_state AS wscie_state, 
+                    cie_zip AS wscie_zip, 
+                    cie_country AS wscie_country
+                FROM wscie 
+                WHERE cie_id = ?cie_id", Params);
+
+            if (results == null) { return null; }
+            if (results.Count == 0) { return null; }
+
+            return results[0];
+        }
     }
+
 
     public class CIDataRecord
     {

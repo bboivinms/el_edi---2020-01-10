@@ -11,21 +11,21 @@ using static EDI_DB.Data.Base;
 
 namespace EDI_RSS
 {
-    public class Program_810 : EDI_RSS.Program_Base
+    public class Program_856 : EDI_RSS.Program_Base
     {
-        public Program_810()
+        public Program_856()
         {
-            TransactionCode = "810";
+            TransactionCode = "856";
 
-            LogEventSource = "EDI 810 Processor";
+            LogEventSource = "EDI 856 Processor";
 
-            Xml810Writer xml = null;
+            Xml856Writer xml = null;
 
             List<IDataRecord> RawDataDetails;
             string arinv_ident;
             string edi_ident;
 
-            Status += "Program_810" + NL + "UseSystem: " + UseSystem + NL + "TheFilename: " + Filename + NL;
+            Status += "Program_856" + NL + "UseSystem: " + UseSystem + NL + "TheFilename: " + Filename + NL;
 
             try
             {
@@ -44,11 +44,11 @@ namespace EDI_RSS
 
                     RawDataDetails = GetDataDetails(arinv_ident);
 
-                    xml = new Xml810Writer(Data, RawDataDetails);
+                    xml = new Xml856Writer(Data, RawDataDetails);
 
                     xml.Write(this);
 
-                    UpdateFilename("edi_810", xml.OutputFileName, edi_ident);
+                    UpdateFilename("edi_856", xml.OutputFileName, edi_ident);
                 } 
 
             }

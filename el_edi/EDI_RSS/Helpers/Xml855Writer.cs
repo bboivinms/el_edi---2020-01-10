@@ -116,7 +116,7 @@ namespace EDI_RSS.Helpers
                             "cocomi_price"              , DataCocomiItem["cocomi_price"].ToString(), //Unit Price
                             "UnitMappings(unite): " + DataCocomiItem["cocomi_unite"].ToString()
                                                         , UnitMappings(DataCocomiItem["cocomi_unite"].ToString()), //Basis of Unit Price Code
-                            "Fixed: Customer Item No"   , "CB", 
+                            "Fixed: Buyer's Catalog Number", "CB", 
                             "ivprixdcli_codecli"        , DataCocomiItem["ivprixdcli_codecli"].ToString(), 
                             "Fixed: Vendor's (Seller's) Part Number", "VP",
                             $"ivprod_code (ivprod_ident={DataCocomiItem["ivprod_ident"].ToString()})", DataCocomiItem["ivprod_code"].ToString() 

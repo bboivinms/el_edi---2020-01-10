@@ -32,7 +32,7 @@ namespace EDI_RSS.Helpers
 
             XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
 
-            Status += "Xml855Writer " + NL;
+            Status += "Xml810Writer " + NL;
             Status += "OutputFileName: " + OutputFileName + NL;
             Status += "XmlFilePath: " + XmlFilePath + NL;
         }
@@ -59,108 +59,83 @@ namespace EDI_RSS.Helpers
                 writer.WriteAttributeString("type", "TransactionSet");
 
                 writer.WriteStartElement("Meta");
-
-                writer.WriteElementString("STO1", "", "810"); // Transaction Set Identifier Code: 855 - Purchase Order Acknowledgment
-                writer.WriteElementString("STO2", "", TransactionControlNumber); // Transaction Set Control Number
-
+                {
+                    writer.WriteElementString("STO1", "", "810"); // Transaction Set Identifier Code: 855 - Purchase Order Acknowledgment
+                    writer.WriteElementString("STO2", "", TransactionControlNumber); // Transaction Set Control Number
+                }
                 writer.WriteEndElement(); //Meta
 
                 //BAK segement
                 // BIG07 BB Billback : CO Corrected / CR Credit Memo / DR Debit Memo / DU Duplicate / RE Rebill
                 // PR Product(or Service) Is the usual default but should be explicit to avoid wrong assumptions by the receiving party.
-                WriteSegment("BIG", "Segment", "Invoice Date: arinv_invdte", string.Format("{0:yyyyMMdd}", Data["arinv_invdte"]),
-                                               "Invoice Number: arinv_ident", Data["arinv_ident"].ToString(),
-                                               "Fixed: Client Purchase Order Date", "",
-                                               "Client Purchase Order Number: arinv_po", Data["arinv_po"].ToString(),
-                                               "Fixed: Release Number", "",
-                                               "Fixed: Change Order Sequence Number", "",
-                                               "Fixed: Transaction Type Code: PR Product(or Service)", "PR"
-                                               );
+                WriteSegment("BIG", "Segment", "BIG01 : Invoice Date: arinv_invdte", string.Format("{0:yyyyMMdd}", Data["arinv_invdte"]),
+                                               "BIG02 : Invoice Number: arinv_invno", Data["arinv_invno"].ToString(),
+                                               "BIG03 : Fixed: Client Purchase Order Date", "",
+                                               "BIG04 : Client Purchase Order Number: arinv_po", Data["arinv_po"].ToString(),
+                                               "BIG05 : Fixed: Release Number", "",
+                                               "BIG06 : Fixed: Change Order Sequence Number", "",
+                                               "BIG07 : Fixed: Transaction Type Code: PR Product(or Service)", "PR");
 
-                WriteSegment("CUR", "Segment", "Fixed: Entity Identifier Code: Vendor", "VN",
-                                               "Fixed: Currency Code", "CAD"
-                                               );
+                WriteSegment("CUR", "Segment", "CUR01 : Fixed: Entity Identifier Code: Vendor", "VN",
+                                               "CUR02 : Fixed: Currency Code", "CAD");
 
                 //REF segment
-                // WriteSegment("REF", "Segment", "VR", "TBD"); //TODO: get the EL supplier ID for the current customer
+                WriteSegment("REF", "Segment", "REF01 : Reference Identification Qualifier : Fixed : Bill of Lading Number", "IK",
+                                               "REF02 : Reference Identification : arinv_idbil", Data["arinv_idbil"].ToString());
 
-                WriteN1Loop1_arclient();
+                //REF segment
+                //WriteSegment("REF", "Segment", "VR", "TBD"); //TODO: get the EL supplier ID for the current customer
 
-                //WriteN1Loop1(EntityCode1.VN, EntityCode2.SellerCode, CData,
-                //    "iddel_addr",
-                //    "",
-                //    "cocom_del_name",
-                //    "cocom_daddr1",
-                //    "cocom_daddr2",
-                //    "cocom_dcity",
-                //    "cocom_dstate",
-                //    "cocom_dzip"
-                //);
 
-                /*
-                //DTM segment
-                //TODO: decide if we will send the DTM once for the order, once per item, or both
-                // WriteSegment("DTM", "Segment", "002", string.Format("{0:yyyyMMdd}", RawDataPO.ElementAt(0)["cocomi_req_date"])); //Requested shipping date
-
-                //N1 segment
-                // N103 : "91": "Assigned by Seller or Seller's Agent"
-                writer.WriteStartElement("N1Loop1");
-                writer.WriteAttributeString("type", "Loop");
-                {
-                    List<IDataRecord> RawDataAddress = Program_855.DB_VIVA.GetAddress(ClientId, Data["cocom_dzip"].ToString());
-                    IDataRecord DataAddress;
-
-                    string iddel_addr = "";
-
-                    if (RawDataAddress.Count > 0) { DataAddress = RawDataAddress[0]; iddel_addr = DataAddress["iddel_addr"].ToString(); }
-
-                    WriteSegment("N1", "Segment", "Fixed: Ship To", "ST", "cocom_del_name", Data["cocom_del_name"].ToString(), "Fixed: Assigned by Seller or Seller's Agent", "91", "iddel_addr", iddel_addr);
-                    if (Data["cocom_daddr1"].ToString() != "")
-                    {
-                        WriteSegment("N3", "Segment", "cocom_daddr1", Data["cocom_daddr1"].ToString(), "cocom_daddr2", Data["cocom_daddr2"].ToString());
-                        WriteSegment("N4", "Segment", "cocom_dcity", Data["cocom_dcity"].ToString(), "cocom_dstate", Data["cocom_dstate"].ToString(), "cocom_dzip", Data["cocom_dzip"].ToString(), "Fixed: Canada", "CA");
-                    }
-
-                }
-                writer.WriteEndElement(); //N1Loop1
+                WriteN1Loop1_arclient(Data, EntityCode1.BY);
+                WriteN1Loop1_ffaddr(Data, EntityCode1.ST);
+                WriteN1Loop1_wscie(EntityCode1.VN);
 
                 foreach (var DataDetail in RawDataDetails)
                 {
-                    Decimal QtyOrdered = Convert.ToDecimal("0" + DataDetail["cocomi_qty_ord"]);
+                    int QtyInvoiced = Convert.ToInt32(DataDetail["arinvd_qty"]);
 
                     TotalNumberOfLineItem++;
-                    TotalNumberOfLineItemQty += QtyOrdered;
+                    TotalNumberOfLineItemQty += QtyInvoiced;
 
-                    writer.WriteStartElement("PO1Loop1");
-                    writer.WriteAttributeString("type", "Loop");
-                    {
-                        WriteSegment("PO1", "Segment",
-                            "Calc: cocomi_line * 10", (Convert.ToInt16(DataDetail["cocomi_line"]) * 10).ToString(), //Assigned Identification (line number)
-                            "cocomi_qty_ord", DataDetail["cocomi_qty_ord"].ToString(), //Quantity Ordered
-                            "Fixed: Unit: Envelope", "EV", //Unit or Basis for Measurement Code
-                            "cocomi_price", DataDetail["cocomi_price"].ToString(), //Unit Price
-                            "UnitMappings(unite): " + DataDetail["cocomi_unite"].ToString()
-                                                        , UnitMappings(DataDetail["cocomi_unite"].ToString()), //Basis of Unit Price Code
-                            "Fixed: Customer Item No", "CB",
-                            "ivprixdcli_codecli", DataDetail["ivprixdcli_codecli"].ToString(),
-                            "Fixed: Vendor's (Seller's) Part Number", "VP",
-                            $"ivprod_code (ivprod_ident={DataDetail["ivprod_ident"].ToString()})", DataDetail["ivprod_code"].ToString()
-                            );
+                    WriteIT1Loop1(DataDetail);
+                    WritePIDLoop1(DataDetail);
 
-                        WriteSegment("REF", "Segment", "Fixed: Purchase Order Number", "PO", "cocom_clientpo", Data["cocom_clientpo"].ToString());
-                        WriteSegment("REF", "Segment", "Fixed: Vendor Order Number", "VN", "cocom_ident", Data["cocom_ident"].ToString());
-
-                        //CTP segment
-                        // WriteSegment("CTP", "Segment", "DI", "UCP", item["cocomi_price"].ToString()); // Pricing Information // Already in PO01
-
-                        //DTM segment
-                        // WriteSegment("DTM", "Segment", "068", "20200101"); // Date time reference // 017 Estimated Delivery / 067 Current Schedule Delivery // Already in ACK
-
-                    }
-                    writer.WriteEndElement(); //POLoop1
-                    
                 }
-                */
+
+                //TDS segment
+                WriteSegment("TDS", "Segment", "TDS01 : Total Invoice Amount : arinv_inv_mnt", Data["arinv_inv_mnt"].ToString());
+                //"TDS02 : Total Amount Subject to Discount", "",
+                //"TDS03 : Discounted Amount Due", "",
+                //"TDS04 : Terms Discount Amount", ""
+
+                //tps
+                if (Convert.ToInt32(Data["arinv_inv_tx_gst"]) != 0 && Convert.ToInt32(Data["arinv_tpstaux"]) != 0)
+                {
+                    //TXI segment
+                    WriteSegment("TXI", "Segment", "TXI01 : Tax Type Code : Fixed : State/Provincial Tax", "SP",
+                                                   "TXI02 : Monetary Amount", Data["arinv_inv_tx_gst"].ToString(),
+                                                   "TXI03 : Percent: Percentage expressed as a decimal", (Convert.ToDecimal(Data["arinv_tpstaux"]) / 100).ToString());
+                }
+
+                //tvq
+                if (Convert.ToInt32(Data["arinv_inv_tx_pst"]) != 0 && Convert.ToInt32(Data["arinv_tvqtaux"]) != 0)
+                {
+                    //TXI segment
+                    WriteSegment("TXI", "Segment", "TXI01 : Tax Type Code : Fixed : Federal Tax", "FD",
+                                                   "TXI02 : Monetary Amount", Data["arinv_inv_tx_pst"].ToString(),
+                                                   "TXI03 : Percent: Percentage expressed as a decimal", (Convert.ToDecimal(Data["arinv_tvqtaux"])/100).ToString());
+                }
+
+                //tvh
+                if (Convert.ToInt32(Data["arinv_inv_tx_tvh"]) != 0 && Convert.ToInt32(Data["arinv_tvhtaux"]) != 0)
+                {
+                    //TXI segment
+                    WriteSegment("TXI", "Segment", "TXI01 : Tax Type Code : Fixed : State Sales Tax", "ST",
+                                                   "TXI02 : Monetary Amount", Data["arinv_inv_tx_tvh"].ToString(),
+                                                   "TXI03 : Percent: Percentage expressed as a decimal", (Convert.ToDecimal(Data["arinv_tvhtaux"]) / 100).ToString());
+                }
+
                 //CTT Loop
                 WriteSegmentLoop("CTTLoop1", "Loop", "CTT", "Segment",
                     "Calc: TotalNumberOfLineItem", TotalNumberOfLineItem.ToString(),
