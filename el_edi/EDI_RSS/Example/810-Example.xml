@@ -8,10 +8,10 @@
       <!--Invoice Date -->
       <BIG01>20181019</BIG01>
       <!--Invoice Number -->
-      <BIG02>1234</BIG02>
-      <!--Fixed: Client Purchase Order Date-->
-      <BIG03 />
-      <!--Client Purchase Order Number -->
+      <BIG02>IN_1234_NUMBER</BIG02>
+      <!--Purchase Order Date-->
+      <BIG03>20181010</BIG03>
+      <!--Purchase Order Number -->
       <BIG04>PO_1234_NUMBER</BIG04>
       <!--Fixed: Release Number-->
       <BIG05 />
@@ -28,33 +28,35 @@
     </CUR>
     <REF type="Segment">
       <!--Reference Identification Qualifier: Bill of Lading Number-->
-      <REF01>IK</REF01>
+      <REF01>BM</REF01>
       <!--Reference Identification-->
-      <REF02>EDITEST403734501</REF02>
+      <REF02>BM_1234_NUMBER</REF02>
     </REF>
     <N1Loop1 type="Loop">
       <N1 type="Segment">
-        <!--pEntityIdentifierCode: Vendor-->
+        <!--Entity Identifier Code: Vendor-->
         <N101>VN</N101>
         <!--name-->
-        <N102>VendorName</N102>
-        <!--Assigned by Seller or Seller's Agent-->
-        <N103>91</N103>
+        <N102>VN_Name</N102>
+        <!--Identification Code Qualifier-->
+        <!--91: Assigned by Seller or Seller's Agent-->
+        <!--92: Assigned by Buyer or Buyer's Agent-->
+        <N103>92</N103>
         <!--Address code-->
-        <N104>12345A</N104>
+        <N104>VN_1234_CODE</N104>
       </N1>
       <N3 type="Segment">
-        <!--addr1-->
+        <!--Address 1-->
         <N301>Address line 1</N301>
-        <!--addr2-->
+        <!--Address 2-->
         <N302>Address line 2</N302>
       </N3>
       <N4 type="Segment">
-        <!--city-->
+        <!--City-->
         <N401>Québec</N401>
-        <!--state-->
+        <!--Province-->
         <N402>QC</N402>
-        <!--zip-->
+        <!--Postal Code-->
         <N403>A0A A0A</N403>
         <!--Fixed: Canada-->
         <N404>CA</N404>
@@ -62,27 +64,29 @@
     </N1Loop1>
     <N1Loop1 type="Loop">
       <N1 type="Segment">
-        <!--pEntityIdentifierCode: Ship To-->
+        <!--Entity Identifier Code: Ship To-->
         <N101>ST</N101>
-        <!--name-->
-        <N102>ShipToName</N102>
-        <!--Assigned by Seller or Seller's Agent-->
-        <N103>91</N103>
-        <!--iddel_addr-->
-        <N104>12345B</N104>
+        <!--Name-->
+        <N102>ST_Name</N102>
+        <!--Identification Code Qualifier-->
+        <!--91: Assigned by Seller or Seller's Agent-->
+        <!--92: Assigned by Buyer or Buyer's Agent-->
+        <N103>92</N103>
+        <!--Address Code-->
+        <N104>ST_CODE</N104>
       </N1>
       <N3 type="Segment">
-        <!--addr1-->
+        <!--Address 1-->
         <N301>Address line 1</N301>
-        <!--addr2-->
+        <!--Address 2-->
         <N302>Address line 2</N302>
       </N3>
       <N4 type="Segment">
-        <!--city-->
+        <!--City-->
         <N401>Québec</N401>
-        <!--state-->
+        <!--Province-->
         <N402>QC</N402>
-        <!--zip-->
+        <!--Postal Code-->
         <N403>A0A A0A</N403>
         <!--Fixed: Canada-->
         <N404>CA</N404>
@@ -91,23 +95,23 @@
     <IT1Loop1 type="Loop">
       <IT1 type="Segment">
         <!--Assigned Identification-->
-        <IT101>20</IT101>
+        <IT101>10</IT101>
         <!--Quantity Invoiced-->
         <IT102>2500</IT102>
         <!--Unit or Basis for Measurement Code: Each-->
         <IT103>EA</IT103>
         <!--Unit Price-->
         <IT104>12.34</IT104>
-        <!--Basis of Unit Price Code: /Mille-->
+        <!--Basis of Unit Price Code: Price per Thousand-->
         <IT105>TP</IT105>
         <!--Product/Service ID Qualifier: Fixed: Customer Item No-->
         <IT106>CT</IT106>
         <!--Product/Service ID-->
-        <IT107>1234CT</IT107>
+        <IT107>CT_1234_NUMBER</IT107>
         <!--Product/Service ID Qualifier: Fixed: Vendor's (Seller's) Part Number-->
         <IT108>VP</IT108>
         <!--Product/Service ID-->
-        <IT109>1234VP</IT109>
+        <IT109>VP_1234_NUMBER</IT109>
       </IT1>
     </IT1Loop1>
     <PIDLoop1 type="Loop">
@@ -127,44 +131,38 @@
         <!--Reference Identification Qualifier : Delivery Reference-->
         <REF01>KK</REF01>
         <!--Reference Identification-->
-        <REF02>0099778154</REF02>
+        <REF02>KK_1234_NUMBER</REF02>
       </REF>
       <REF type="Segment">
         <!--Reference Identification Qualifier: Purchase Order Number-->
         <REF01>PO</REF01>
         <!--Reference Identification-->
-        <REF02>0476553272</REF02>
+        <REF02>PO_1234_NUMBER</REF02>
       </REF>
       <REF type="Segment">
         <!--Reference Identification Qualifier: Vendor Order Number-->
         <REF01>VN</REF01>
         <!--Reference Identification-->
-        <REF02>0476553272</REF02>
+        <REF02>VN_1234_NUMBER</REF02>
       </REF>
     </PIDLoop1>
     <TDS type="Segment">
       <!--Total Invoice Amount-->
-      <TDS01>12654</TDS01>
-      <!--Total Amount Subject to Discount-->
-      <TDS02>6686</TDS02>
-      <!--Discounted Amount Due-->
-      <TDS03>12402</TDS03>
-      <!--Terms Discount Amount-->
-      <TDS04>252</TDS04>
+      <TDS01>30.85</TDS01>
     </TDS>
     <TXI type="Segment">
       <!--Tax Type Code : State/Provincial Tax-->
       <TXI01>SP</TXI01>
       <!--	Monetary Amount-->
-      <TXI02>1.12</TXI02>
+      <TXI02>3.08</TXI02>
       <!--Percent: Percentage expressed as a decimal-->
-      <TXI03>0.05</TXI03>
+      <TXI03>0.09975</TXI03>
     </TXI>
     <TXI type="Segment">
       <!--Tax Type Code : Federal Tax-->
       <TXI01>FD</TXI01>
       <!--	Monetary Amount-->
-      <TXI02>1.12</TXI02>
+      <TXI02>1.54</TXI02>
       <!--Percent: Percentage expressed as a decimal-->
       <TXI03>0.05</TXI03>
     </TXI>
