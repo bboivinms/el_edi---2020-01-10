@@ -10,17 +10,23 @@
       <!--Transaction Set Purpose Code: Original-->
       <BSN01>00</BSN01>
       <!--Shipment Identification-->
-      <BSN02>0403734501</BSN02>
-      <!--Date-->
-      <BSN03>20150708</BSN03>
-      <!--Time-->
+      <BSN02>SH_1234_NUMBER</BSN02>
+      <!--Shipment Date-->
+      <BSN03>20181010</BSN03>
+      <!--Shipment Time-->
       <BSN04>162859</BSN04>
     </BSN>
     <DTM type="Segment">
       <!--Date/Time Qualifier: Shipped-->
       <DTM01>011</DTM01>
       <!--Date-->
-      <DTM02>20150708</DTM02>
+      <DTM02>20181010</DTM02>
+    </DTM>
+    <DTM type="Segment">
+      <!--Date/Time Qualifier: Estimated Delivery-->
+      <DTM01>017</DTM01>
+      <!--Date-->
+      <DTM02>20181011</DTM02>
     </DTM>
     <HLLoop1 type="Loop">
       <HL type="Segment">
@@ -53,13 +59,13 @@
         <!--Reference Identification Qualifier: Bill of Lading Number-->
         <REF01>BM</REF01>
         <!--Reference Identification-->
-        <REF02>EDITEST403734501</REF02>
+        <REF02>BM_1234_NUMBER</REF02>
       </REF>
       <REF type="Segment">
         <!--Reference Identification Qualifier: Customer Reference Number-->
         <REF01>CR</REF01>
         <!--Reference Identification-->
-        <REF02>4900043704</REF02>
+        <REF02>CR_1234_NUMBER</REF02>
       </REF>
     </HLLoop1>
     <N1Loop1 type="Loop">
@@ -67,11 +73,13 @@
         <!--Entity Identifier Code: Ship To-->
         <N101>ST</N101>
         <!--Name-->
-        <N102>Name</N102>
-        <!--Identification Code Qualifier: Assigned by Buyer or Buyer's Agent-->
+        <N102>ST_Name</N102>
+        <!--Identification Code Qualifier-->
+        <!--91: Assigned by Seller or Seller's Agent-->
+        <!--92: Assigned by Buyer or Buyer's Agent-->
         <N103>92</N103>
-        <!--Identification Code-->
-        <N104>0042001808</N104>
+        <!--Address Code-->
+        <N104>ST_CODE</N104>
       </N1>
       <N3 type="Segment">
         <!--Address 1-->
@@ -80,11 +88,11 @@
         <N302>Address line 2</N302>
       </N3>
       <N4 type="Segment">
-        <!--city-->
+        <!--City-->
         <N401>Québec</N401>
-        <!--state-->
+        <!--Province-->
         <N402>QC</N402>
-        <!--zip-->
+        <!--Postal Code-->
         <N403>A0A A0A</N403>
         <!--Fixed: Canada-->
         <N404>CA</N404>
@@ -95,11 +103,13 @@
         <!--Entity Identifier Code: Ship From-->
         <N101>SF</N101>
         <!--Name-->
-        <N102>NameT</N102>
-        <!--Identification Code Qualifier: Assigned by Buyer or Buyer's Agent-->
+        <N102>SF_Name</N102>
+        <!--Identification Code Qualifier-->
+        <!--91: Assigned by Seller or Seller's Agent-->
+        <!--92: Assigned by Buyer or Buyer's Agent-->
         <N103>92</N103>
-        <!--Identification Code-->
-        <N104>0042001809</N104>
+        <!--Address Code-->
+        <N104>SF_CODE</N104>
       </N1>
       <N3 type="Segment">
         <!--Address 1-->
@@ -108,11 +118,11 @@
         <N302>Address line 2</N302>
       </N3>
       <N4 type="Segment">
-        <!--city-->
+        <!--City-->
         <N401>Québec</N401>
-        <!--state-->
+        <!--Province-->
         <N402>QC</N402>
-        <!--zip-->
+        <!--Postal Code-->
         <N403>A0A A0A</N403>
         <!--Fixed: Canada-->
         <N404>CA</N404>
@@ -131,25 +141,19 @@
       </HL>
       <PRF type="Segment">
         <!--Purchase Order Number-->
-        <PRF01>0476553696</PRF01>
+        <PRF01>PO_1234_NUMBER</PRF01>
         <!--Release Number-->
         <PRF02/>
         <!--Change Order Sequence Number-->
         <PRF03/>
         <!--Date-->
-        <PRF04>20150708</PRF04>
+        <PRF04>20180910</PRF04>
       </PRF>
-      <REF type="Segment">
-        <!--Reference Identification Qualifier: Purchase Order Number-->
-        <REF01>PO</REF01>
-        <!--Reference Identification-->
-        <REF02>0476553272</REF02>
-      </REF>
       <REF type="Segment">
         <!--Reference Identification Qualifier: Vendor Order Number-->
         <REF01>VN</REF01>
         <!--Reference Identification-->
-        <REF02>0476553272</REF02>
+        <REF02>VN_1234_NUMBER</REF02>
       </REF>
     </HLLoop1>
     <HLLoop1 type="Loop">
@@ -169,11 +173,11 @@
         <!--Product/Service ID Qualifier: Buyer's Part Number-->
         <LIN02>BP</LIN02>
         <!--Product/Service ID-->
-        <LIN03>335S0548</LIN03>
+        <LIN03>BP_1234_NUMBER</LIN03>
         <!--Product/Service ID Qualifier: Vendor's (Seller's) Part Number-->
         <LIN04>VP</LIN04>
         <!--Product/Service ID-->
-        <LIN05>Product</LIN05>
+        <LIN05>VP_1234_NUMBER</LIN05>
       </LIN>
       <SN1 type="Segment">
         <!--Assigned Identification-->
