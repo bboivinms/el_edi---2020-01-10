@@ -57,9 +57,10 @@
     <Compile Include="Data\DB_810.cs" />
     <Compile Include="Data\DB_855.cs" />
     <Compile Include="Data\DB_RSS.cs" />
-    <Compile Include="Helpers\Xml856Writer.cs" />
-    <Compile Include="Helpers\Xml810Writer.cs" />
-    <Compile Include="Helpers\Xml855Writer.cs" />
+    <Compile Include="WscieBuyer\Xml850Writer.cs" />
+    <Compile Include="WscieVendor\Xml856Writer.cs" />
+    <Compile Include="WscieVendor\Xml810Writer.cs" />
+    <Compile Include="WscieVendor\Xml855Writer.cs" />
     <Compile Include="Program_Base.cs" />
     <Compile Include="Program_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
