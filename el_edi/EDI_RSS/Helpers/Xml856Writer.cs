@@ -26,10 +26,9 @@ namespace EDI_RSS.Helpers
 
             RawDataDetails = TheDataDetails;
 
-            //ClientID = Data["arinv_custid"].ToString();
+            ClientID = Data["cobil_clientid"].ToString();
 
-            //OutputFileName = $"{ClientID}-{Data["arinv_ident"].ToString()}-{Base.ToAlphaNumeric(Data["arinv_po"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
-            OutputFileName = $"{"7777"}-{"123456789"}-{Base.ToAlphaNumeric("123ABC")}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
+            OutputFileName = $"{ClientID}-{Data["cobil_ident"].ToString()}-{Base.ToAlphaNumeric(Data["cobil_clientpo"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
 
             XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
 
@@ -48,7 +47,7 @@ namespace EDI_RSS.Helpers
             settings.IndentChars = "\t";
             settings.OmitXmlDeclaration = true;
 
-            //int ClientId = Convert.ToInt32(Data["arinv_custid"]);
+            int ClientId = Convert.ToInt32(Data["cobil_clientid"]);
             Decimal TotalNumberOfLineItem = 0;
             Decimal TotalNumberOfLineItemQty = 0;
 
@@ -61,17 +60,28 @@ namespace EDI_RSS.Helpers
 
                 writer.WriteStartElement("Meta");
                 {
-                    writer.WriteElementString("STO1", "STO1 : Transaction Set Identifier Code: Ship Notice/Manifest", "856");
-                    writer.WriteElementString("STO2", "STO2 : Transaction Set Control Number", TransactionControlNumber); 
+                    writer.WriteElementString("STO1", "", "856"); //STO1 : Transaction Set Identifier Code: Ship Notice/Manifest
+                    writer.WriteElementString("STO2", "", TransactionControlNumber);  //STO2 : Transaction Set Control Number
                 }
                 writer.WriteEndElement(); //Meta
 
                 //BSN segment
                 WriteSegment("BSN", "Segment", "BSN01 : Transaction Set Purpose Code: Fixed : Original", "00",
-                                               "BSN02 : Shipment Identification :", "0403734501",
-                                               "BSN03 : Date :", string.Format("{0:yyyyMMdd}", "20150708"),
-                                               "BSN04 : Time :", "162859");
-               
+                                               "BSN02 : Shipment Identification : cobil_ident", Data["cobil_ident"].ToString(),
+                                               "BSN03 : Date : edi_856_ship_date", string.Format("{0:yyyyMMdd}", Data["edi_856_ship_date"]),
+                                               "BSN04 : Time : edi_856_ship_date", string.Format("{0:HHmmss}", Data["edi_856_ship_date"]));
+
+                //DTM segment Shipped
+                WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier: Fixed : Shipped", "011",
+                                               "DTM02 : Date : cobil_bil_dte", string.Format("{0:yyyyMMdd}", Data["cobil_bil_dte"]));
+
+                DateTime cobil_bil_dte = DateTime.Parse(Data["cobil_bil_dte"].ToString());
+                //DTM segment Estimated Delivery
+                WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier: Fixed : Estimated Delivery", "017",
+                                               "DTM02 : Date : cobil_bil_dte", string.Format("{0:yyyyMMdd}", cobil_bil_dte.AddDays(1)));
+
+                WriteHLLoop1();
+
                 //BAK segement
                 // BIG07 BB Billback : CO Corrected / CR Credit Memo / DR Debit Memo / DU Duplicate / RE Rebill
                 // PR Product(or Service) Is the usual default but should be explicit to avoid wrong assumptions by the receiving party.
@@ -156,5 +166,39 @@ namespace EDI_RSS.Helpers
             } // Using XMLWriter
 
         } // Write()
-    }
-}
+
+        public void WriteHLLoop1()
+        {
+            writer.WriteStartElement("HLLoop1");
+            writer.WriteAttributeString("type", "Loop");
+            {
+                WriteSegment("HL", "Segment",
+                    "HL01 : Hierarchical ID Number", "1", //<--
+                    "HL02 : Hierarchical Parent ID Number", "", //<--
+                    "HL03 : Hierarchical Level Code: Fixed : Shipment", "S",
+                    "HL04 : Hierarchical Child Code: Fixed : Additional Subordinate HL Data Segment in This Hierarchical Structure", "1");
+
+                WriteSegment("TD1", "Segment",
+                    "TD101 : Packaging Code: Fixed : Pallet: Standard", "PLT90",
+                    "TD102 : Lading Quantity", "1"); //<--
+
+                WriteSegment("TD5", "Segment",
+                    "TD501 : Routing Sequence Code: Fixed : Origin Carrier (Air, Motor, or Ocean)", "O",
+                    "TD502 : Identification Code Qualifier: Fixed : Standard Carrier Alpha Code (SCAC)", "2",
+                    "TD503 : Identification Code", "",  //<--
+                    "TD504 : Transportation Method/Type Code: Fixed : Supplier Truck", "SR");
+
+                //BM
+                WriteSegment("REF", "Segment",
+                  "REF01 : Reference Identification Qualifier : Bill of Lading Number", "BM",
+                  "REF02 : Reference Identification : ", ""); //<--
+
+                //CR
+                WriteSegment("REF", "Segment",
+                  "REF01 : Reference Identification Qualifier: Customer Reference Number", "CR",
+                  "REF02 : Reference Identification : ", ""); //<--
+            }
+            writer.WriteEndElement(); //HLLoop1
+        }
+    } //class Xml856Writer
+} //namespaces EDI_RSS.Helpers
