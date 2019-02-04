@@ -68,6 +68,7 @@ namespace EDI_DB.Data
         public static class EntityCode1
         {
             public static string[] ST = { "ST", "Ship To" };
+            public static string[] SF = { "SF", "Ship From" };
             public static string[] BY = { "BY", "Buying Party (Purchaser)" };
             public static string[] VN = { "VN", "Vendor" };
         }
@@ -75,15 +76,16 @@ namespace EDI_DB.Data
         public static class EntityCode2
         {
             public static string[] SellerCode = { "91", "Assigned by Seller or Seller's Agent" };
+            public static string[] BuyerCode =  { "92", "Assigned by Buyer or Buyer's Agent" };
         }
 
         /// It write the N1Loop1 xml tag for the arclient
-        public void WriteN1Loop1_arclient(IDataRecord Data, string[] entityCode1)
+        public void WriteN1Loop1_arclient(IDataRecord Data, string[] entityCode1, string[] entityCode2)
         {
             CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclient(int.Parse(Data["arinv_custid"].ToString())));
 
             //write N1Loop1 xml tag for vendor
-            WriteN1Loop1(entityCode1, EntityCode2.SellerCode, data_record,
+            WriteN1Loop1(entityCode1, entityCode2, data_record,
                 "iddel_addr",
                 data_record["iddel_addr"],
                 "arclient_name",
@@ -95,14 +97,14 @@ namespace EDI_DB.Data
             );
         }
 
-        public void WriteN1Loop1_ffaddr(IDataRecord Data, string[] entityCode1)
+        public void WriteN1Loop1_ffaddr(IDataRecord Data, string[] entityCode1, string[] entityCode2)
         {
             string postalCode = DB_VIVA.GetPostalCode(Data["arinv_ident"].ToString());
 
             CIDataRecord addressST_Data = new CIDataRecord(DB_VIVA.GetAddressST(int.Parse(Data["arinv_custid"].ToString()), postalCode));
 
             //write N1Loop1 xml tag for shipto
-            WriteN1Loop1(entityCode1, EntityCode2.SellerCode, addressST_Data,
+            WriteN1Loop1(entityCode1, entityCode2, addressST_Data,
                 "iddel_addr",
                 addressST_Data["iddel_addr"],
                 "name",
@@ -114,12 +116,12 @@ namespace EDI_DB.Data
             );
         }
 
-        public void WriteN1Loop1_wscie(string[] entityCode1)
+        public void WriteN1Loop1_wscie(string[] entityCode1, string[] entityCode2)
         {
             CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressWscie());
 
             //write N1Loop1 xml tag for 
-            WriteN1Loop1(entityCode1, EntityCode2.SellerCode, data_record,
+            WriteN1Loop1(entityCode1, entityCode2, data_record,
                 "wscie_cie_id",
                 data_record["wscie_cie_id"],
                 "wscie_name",
@@ -167,53 +169,8 @@ namespace EDI_DB.Data
             writer.WriteEndElement(); //N1Loop1
         }
 
-        public void WriteIT1Loop1(IDataRecord TheDataDetails)
-        {
-            writer.WriteStartElement("IT1Loop1");
-            writer.WriteAttributeString("type", "Loop");
-            {
-                WriteSegment("IT1", "Segment",
-                    "IT101 : Assigned Identification : Calc: arinvd_invline * 10", (Convert.ToInt32(TheDataDetails["arinvd_invline"]) * 10).ToString(),
-                    "IT102 : Quantity Invoiced : arinvd_qty", Convert.ToInt32(TheDataDetails["arinvd_qty"]).ToString(), //convert 
-                    "IT103 : Unit or Basis for Measurement Code : Fixed : Each", "EA", 
-                    "IT104 : Unit Price : arinvd_inv_mnt_unit", TheDataDetails["arinvd_inv_mnt_unit"].ToString(), 
-                    "IT105 : Basis of Unit Price Code : UnitMappings(unite): " + TheDataDetails["arinvd_unite"].ToString(), UnitMappings(TheDataDetails["arinvd_unite"].ToString()),
-                    "IT106 : Product/Service ID Qualifier : Fixed: Buyer's Catalog Number", "CB",
-                    "IT107 : Product/Service ID : ivprixdcli_codecli", TheDataDetails["ivprixdcli_codecli"].ToString(),
-                    "IT108 : Product/Service ID Qualifier : Fixed: Vendor's (Seller's) Part Number", "VP",
-                    "IT109 : Product/Service ID : ivprod_code", TheDataDetails["ivprod_code"].ToString());
-
-            }
-            writer.WriteEndElement(); //IT1Loop1
-        }
-
-        public void WritePIDLoop1(IDataRecord TheDataDetails)
-        {
-
-            writer.WriteStartElement("PIDLoop1");
-            writer.WriteAttributeString("type", "Loop");
-            {
-                WriteSegment("PID", "Segment",
-                    "PID01 : Item Description Type : Fixed : Free-form", "F",
-                    "PID02 : Product/Process Characteristic Code : Fixed", "",
-                    "PID03 : Agency Qualifier Code: Fixed", "",
-                    "PID04 : Product Description Code: Fixed", "",
-                    "PID05 : Description : ivprod_desc", TheDataDetails["ivprod_desc"].ToString());
-
-                WriteSegment("REF", "Segment",
-                   "REF01 : Reference Identification Qualifier : Delivery Reference", "KK",
-                   "REF02 : Reference Identification : arinvd_idbil", TheDataDetails["arinvd_idbil"].ToString());
-
-                WriteSegment("REF", "Segment",
-                  "REF01 : Reference Identification Qualifier: Purchase Order Number", "PO",
-                  "REF02 : Reference Identification : cocom_clientpo", TheDataDetails["cocom_clientpo"].ToString());
-
-                WriteSegment("REF", "Segment",
-                  "REF01 : Reference Identification Qualifier: Vendor Order Number", "VN",
-                  "REF02 : Reference Identification : cocom_ident", TheDataDetails["cocom_ident"].ToString());
-            }
-            writer.WriteEndElement(); //PIDLoop1
-        }
+        
+        
 
         private string Comment(string pComment)
         {
