@@ -75,11 +75,11 @@ namespace EDI_850.Schema
             SetCustomerBT();
 
             // Get Buyer information
-            BYName  = GetBY("BD");
-            BYFax   = GetBY("FX");
-            BYEmail = GetBY("EM");
+            BYName  = GetBY("BD"); // Buyer Name or Department
+            BYFax   = GetBY("FX"); // Facsimile (FAX)
+            BYEmail = GetBY("EM"); // Electronic Mail
 
-            if(BYEmail == "" && BYFax.Contains("@")) { BYEmail = BYFax; BYFax = ""; }
+            if (BYEmail == "" && BYFax.Contains("@")) { BYEmail = BYFax; BYFax = ""; }
 
             //Validate Customer ShipTo address
             SetCustomerSTAddress();
