@@ -1,0 +1,272 @@
+﻿<TransactionSet>
+  <TX-00403-850 type="TransactionSet">
+    <Meta>
+      <!--Transaction Set Identifier Code-->
+      <ST01>
+        <!--Purchase Order-->850
+      </ST01>
+      <!--Transaction Set Control Number-->
+      <ST02>040948857</ST02>
+    </Meta>
+    <BEG type="Segment">
+      <!--Transaction Set Purpose Code-->
+      <BEG01>
+        <!--Original-->00
+      </BEG01>
+      <!--Purchase Order Type Code-->
+      <BEG02>
+        <!--Stand-alone Order-->SA
+      </BEG02>
+      <!--Purchase Order Number-->
+      <BEG03>4501005588</BEG03>
+      <!--Release Number-->
+      <BEG04/>
+      <!--Date-->
+      <BEG05>20190204</BEG05>
+    </BEG>
+    <CUR type="Segment">
+      <!--Entity Identifier Code-->
+      <CUR01>
+        <!--Buying Party (Purchaser)-->BY
+      </CUR01>
+      <!--Currency Code-->
+      <CUR02>CAD</CUR02>
+    </CUR>
+    <REF type="Segment">
+      <!--Reference Identification Qualifier-->
+      <REF01>
+        <!--Purchase Order Number-->PO
+      </REF01>
+      <!--Reference Identification-->
+      <REF02>4501005588</REF02>
+    </REF>
+    <FOB type="Segment">
+      <!--Shipment Method of Payment-->
+      <FOB01>PS</FOB01>
+      <!--Location Qualifier-->
+      <FOB02>
+        <!--Mutually Defined-->ZZ
+      </FOB02>
+      <!--Description-->
+      <FOB03>DESTINATION</FOB03>
+      <!--Transportation Terms Qualifier Code-->
+      <FOB04>
+        <!--Incoterms-->01
+      </FOB04>
+      <!--Transportation Terms Code-->
+      <FOB05>
+        <!--Free on Board-->FOB
+      </FOB05>
+    </FOB>
+    <ITD type="Segment">
+      <!--Terms Type Code-->
+      <ITD01/>
+      <!--Terms Basis Date Code-->
+      <ITD02>
+        <!--Invoice Date-->3
+      </ITD02>
+      <!--Terms Discount Percent-->
+      <ITD03>1</ITD03>
+      <!--Terms Discount Due Date-->
+      <ITD04/>
+      <!--Terms Discount Days Due-->
+      <ITD05>10</ITD05>
+      <!--Terms Net Due Date-->
+      <ITD06/>
+      <!--Terms Net Days-->
+      <ITD07>30</ITD07>
+    </ITD>
+    <DTM type="Segment">
+      <!--Date/Time Qualifier-->
+      <DTM01>
+        <!--Purchase Order-->004
+      </DTM01>
+      <!--Date-->
+      <DTM02>20190204</DTM02>
+      <!--Time-->
+      <DTM03>094812</DTM03>
+    </DTM>
+    <DTM type="Segment">
+      <!--Date/Time Qualifier-->
+      <DTM01>
+        <!--Delivery Requested-->002
+      </DTM01>
+      <!--Date-->
+      <DTM02>20190204</DTM02>
+    </DTM>
+    <N1Loop1 type="Loop">
+      <N1 type="Segment">
+        <!--Entity Identifier Code-->
+        <N101>
+          <!--Buying Party (Purchaser)-->BY
+        </N101>
+        <!--Name-->
+        <N102>ARIVA,  A  Div  Domtar</N102>
+        <!--Identification Code Qualifier-->
+        <N103>
+          <!--Assigned by Buyer or Buyer&apos;s Agent-->92
+        </N103>
+        <!--Identification Code-->
+        <N104>2000</N104>
+      </N1>
+      <PER type="Segment">
+        <!--Contact Function Code-->
+        <PER01>
+          <!--Buyer Name or Department-->BD
+        </PER01>
+        <!--Name-->
+        <PER02>GARRY  MACEACHERN</PER02>
+        <!--Communication Number Qualifier-->
+        <PER03>
+          <!--Facsimile-->FX
+        </PER03>
+        <!--Communication Number-->
+        <PER04>905-670-6070</PER04>
+        <!--Communication Number Qualifier-->
+        <PER05>
+          <!--Telephone-->TE
+        </PER05>
+        <!--Communication Number-->
+        <PER06>905-670-6077</PER06>
+      </PER>
+    </N1Loop1>
+    <N1Loop1 type="Loop">
+      <N1 type="Segment">
+        <!--Entity Identifier Code-->
+        <N101>
+          <!--Vendor-->VN
+        </N101>
+        <!--Name-->
+        <N102>ENVELOPPE  LAURENTIDE  INC.</N102>
+        <!--Identification Code Qualifier-->
+        <N103>
+          <!--Assigned by Buyer or Buyer&apos;s Agent-->92
+        </N103>
+        <!--Identification Code-->
+        <N104>0000020036</N104>
+      </N1>
+      <PER type="Segment">
+        <!--Contact Function Code-->
+        <PER01>
+          <!--General Contact-->CN
+        </PER01>
+        <!--Name-->
+        <PER02>ALEX  DAVID  GAUTHIER</PER02>
+        <!--Communication Number Qualifier-->
+        <PER03>
+          <!--Telephone-->TE
+        </PER03>
+        <!--Communication Number-->
+        <PER04>1-514-345-9870</PER04>
+      </PER>
+    </N1Loop1>
+    <N1Loop1 type="Loop">
+      <N1 type="Segment">
+        <!--Entity Identifier Code-->
+        <N101>
+          <!--Ship To-->ST
+        </N101>
+        <!--Name-->
+        <N102>ARIVA</N102>
+        <!--Identification Code Qualifier-->
+        <N103>
+          <!--Assigned by Buyer or Buyer&apos;s Agent-->92
+        </N103>
+        <!--Identification Code-->
+        <N104>2000</N104>
+      </N1>
+      <N3 type="Segment">
+        <!--Address Information-->
+        <N301>2125  23e  AVENUE</N301>
+      </N3>
+      <N4 type="Segment">
+        <!--City Name-->
+        <N401>LACHINE</N401>
+        <!--State or Province Code-->
+        <N402>QC</N402>
+        <!--Postal Code-->
+        <N403>H8T  1X5</N403>
+        <!--Country Code-->
+        <N404>CA</N404>
+      </N4>
+      <PER type="Segment">
+        <!--Contact Function Code-->
+        <PER01>
+          <!--General Contact-->CN
+        </PER01>
+        <!--Name-->
+        <PER02>ARIVA</PER02>
+        <!--Communication Number Qualifier-->
+        <PER03>
+          <!--Telephone-->TE
+        </PER03>
+        <!--Communication Number-->
+        <PER04>514-636-5006</PER04>
+        <!--Communication Number Qualifier-->
+        <PER05>
+          <!--Facsimile-->FX
+        </PER05>
+        <!--Communication Number-->
+        <PER06>514-636-5011</PER06>
+      </PER>
+    </N1Loop1>
+    <PO1Loop1 type="Loop">
+      <PO1 type="Segment">
+        <!--Assigned Identification-->
+        <PO101>00010</PO101>
+        <!--Quantity Ordered-->
+        <PO102>5000</PO102>
+        <!--Unit or Basis for Measurement Code-->
+        <PO103>
+          <!--Envelope-->EV
+        </PO103>
+        <!--Unit Price-->
+        <PO104>125.49</PO104>
+        <!--Basis of Unit Price Code-->
+        <PO105>
+          <!--Price per Unit of Measure-->UM
+        </PO105>
+        <!--Product/Service ID Qualifier-->
+        <PO106>
+          <!--Buyer&apos;s Part Number-->BP
+        </PO106>
+        <!--Product/Service ID-->
+        <PO107>CEWVW007WAB4EEL</PO107>
+        <!--Product/Service ID Qualifier-->
+        <PO108>
+          <!--Vendor&apos;s (Seller&apos;s) Part Number-->VP
+        </PO108>
+        <!--Product/Service ID-->
+        <PO109>12DEGR24OB02</PO109>
+      </PO1>
+      <PIDLoop1 type="Loop">
+        <PID type="Segment">
+          <!--Item Description Type-->
+          <PID01>F</PID01>
+          <!--Product/Process Characteristic Code-->
+          <PID02/>
+          <!--Agency Qualifier Code-->
+          <PID03/>
+          <!--Product Description Code-->
+          <PID04/>
+          <!--Description-->
+          <PID05>CAT  #7  GREY  DECO  OE  24#  9X12</PID05>
+        </PID>
+      </PIDLoop1>
+      <DTM type="Segment">
+        <!--Date/Time Qualifier-->
+        <DTM01>
+          <!--Delivery Requested-->002
+        </DTM01>
+        <!--Date-->
+        <DTM02>20190204</DTM02>
+      </DTM>
+    </PO1Loop1>
+    <CTTLoop1 type="Loop">
+      <CTT type="Segment">
+        <!--Number of Line Items-->
+        <CTT01>1</CTT01>
+      </CTT>
+    </CTTLoop1>
+  </TX-00403-850>
+</TransactionSet>

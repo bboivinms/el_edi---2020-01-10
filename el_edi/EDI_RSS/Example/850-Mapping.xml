@@ -1,0 +1,53 @@
+﻿<?xml version="1.0"?>
+<rsb:call op="xmlDOMSearch?xpath=/Interchange/FunctionalGroup/TransactionSet/TX-00403-850">
+  <root>
+    <Customer>
+      <Id>30037</Id>
+      <rsb:call op="xmlDOMSearch?xpath=N1Loop1\[N1/N101='ST'\]">
+        <STName>[xpath("./N1/N102")]</STName>
+        <STAddress1>[xpath("./N3/N301")]</STAddress1>
+        <STAddress2>[xpath("./N3/N302")]</STAddress2>
+        <STCity>[xpath("./N4/N401")]</STCity>
+        <STCountry>[xpath("./N4/N404")]</STCountry>
+        <STPostalCode>[xpath("./N4/N403")]</STPostalCode>
+        <STState>[xpath("./N4/N402")]</STState>
+      </rsb:call>
+      <rsb:call op="xmlDOMSearch?xpath=N1Loop1\[N1/N101='BY'\]">
+        <PER01>[xpath("./PER/PER01")]</PER01>
+        <PER02>[xpath("./PER/PER02")]</PER02>
+        <PER03>[xpath("./PER/PER03")]</PER03>
+        <PER04>[xpath("./PER/PER04")]</PER04>
+        <PER05>[xpath("./PER/PER05")]</PER05>
+        <PER06>[xpath("./PER/PER06")]</PER06>
+        <PER07>[xpath("./PER/PER07")]</PER07>
+        <PER08>[xpath("./PER/PER08")]</PER08>
+      </rsb:call>
+    </Customer>
+    <Order>
+      <Date>[xpath("DTM\[DTM01='004'\]/DTM02") | todate(yyyy-MM-dd, yyyyMMdd)]</Date>
+      <Number>[xpath("BEG/BEG03")]</Number>
+      <RequestedShipDate>[xpath("DTM\[DTM01='002'\]/DTM02") | todate(yyyy-MM-dd, yyyyMMdd)]</RequestedShipDate>
+      <CreatedBy>EDI-ETE</CreatedBy>
+      <Status>EDI-ETE</Status>
+      <UserCode>XEDI-ETE</UserCode>
+      <rsb:call op="xmlDOMSearch?xpath=N9Loop1/MTX">
+        <MSG>[xpath("MTX02")]</MSG>
+      </rsb:call>
+      <rsb:call op="xmlDOMSearch?xpath=PO1Loop1">
+        <OrderItem>
+          <ItemDescription>[xpath("PIDLoop1/PID/PID05")]</ItemDescription>
+          <ItemId>[xpath("PO1/PO109")]</ItemId>
+          <CustomerItemId>[xpath("PO1/PO107")]</CustomerItemId>
+          <ItemLineId>[xpath("PO1/PO101")]</ItemLineId>
+          <ItemQuantity>[xpath("PO1/PO102")]</ItemQuantity>
+          <ItemUnitOfMeasure>[xpath("PO1/PO103")]</ItemUnitOfMeasure>
+          <ItemRate>[xpath("PO1/PO104")]</ItemRate>
+          <ItemUnitOfPrice>[xpath("PO1/PO105")]</ItemUnitOfPrice>
+          <TimeModified>[now | now]</TimeModified>
+          <Status>EDI-ETE</Status>
+          <RequestedShipDate>[xpath("DTM\[DTM01='002'\]/DTM02") | todate(yyyy-MM-dd, yyyyMMdd)]</RequestedShipDate>
+        </OrderItem>
+      </rsb:call>
+    </Order>
+  </rsb:call>
+</root>
