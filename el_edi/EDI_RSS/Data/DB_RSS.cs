@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EDICommons;
 using static EDI_DB.Data.Base;
+using EDI_RSS.Helpers;
 
 namespace EDI_RSS
 {
@@ -34,6 +35,7 @@ namespace EDI_RSS
             if (Filename == "855P-ALL") { P_STEP_1("ALL", "855P"); return true; }
             if (Filename == "810P-ALL") { P_STEP_1("ALL", "810P"); return true; }
             if (Filename == "856P-ALL") { P_STEP_1("ALL", "856P"); return true; }
+            if (Filename == "850P-ALL") { P_STEP_1("ALL", "850P"); return true; }
             return false;
         }
 
@@ -50,7 +52,10 @@ namespace EDI_RSS
             if (gDataIDedi_rss["rss_request"].ToString() == "810P" &&
                 gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["810_port"].ToString()); new Program_810(); SetIDedi_RSS_done(); DB_Logger.LogData(Status); return true; }
 
-            
+            if (gDataIDedi_rss["rss_request"].ToString() == "850P" &&
+                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["850_port"].ToString()); new Program_850(); SetIDedi_RSS_done(); DB_Logger.LogData(Status); return true; }
+
+
             return false;
         }
 
@@ -59,6 +64,7 @@ namespace EDI_RSS
             if (TransactionCode == "855" && ErrorMessage == "") { P_STEP_3("edi_855"); return true; }
             if (TransactionCode == "810" && ErrorMessage == "") { P_STEP_3("edi_810"); return true; }
             if (TransactionCode == "856" && ErrorMessage == "") { P_STEP_3("edi_856"); return true; }
+            if (TransactionCode == "850" && ErrorMessage == "") { P_STEP_3("edi_850"); return true; }
             return false;
         }
 
@@ -88,7 +94,7 @@ namespace EDI_RSS
         {
             // DBLogger.LogData($"DB_RSS(): UpdateSent: Using table: {table} and filename: {filename}", Program_RSS.LogEventSource);
 
-            if (table != "edi_855" && table != "edi_810" && table != "edi_856")
+            if (table != "edi_855" && table != "edi_810" && table != "edi_856" && table != "edi_850")
             {
                 DB_Logger.LogData($"ERROR: DB_RSS(): UpdateSent: Abort: Table not found {table} (Filename: {Filename})", LogEventSource);
                 return;

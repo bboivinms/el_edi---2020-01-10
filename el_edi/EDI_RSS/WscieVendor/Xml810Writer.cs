@@ -28,7 +28,7 @@ namespace EDI_RSS.Helpers
 
             ClientID = Data["arinv_custid"].ToString();
 
-            OutputFileName = $"{ClientID}-{Data["arinv_ident"].ToString()}-{Base.ToAlphaNumeric(Data["arinv_po"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
+            OutputFileName = $"{ClientID}-810OUT-{Data["arinv_ident"].ToString()}-{Base.ToAlphaNumeric(Data["arinv_po"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
 
             XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
 
@@ -87,8 +87,8 @@ namespace EDI_RSS.Helpers
                 //WriteSegment("REF", "Segment", "VR", "TBD"); //TODO: get the EL supplier ID for the current customer
 
 
-                WriteN1Loop1_arclient(Data, EntityCode1.BY, EntityCode2.SellerCode);
-                WriteN1Loop1_ffaddr(Data, EntityCode1.ST, EntityCode2.SellerCode);
+                WriteN1Loop1_arclient(EntityCode1.BY, EntityCode2.SellerCode);
+                WriteN1Loop1_ffaddr(int.Parse(Data["arinv_ident"].ToString()), EntityCode1.ST, EntityCode2.SellerCode);
                 WriteN1Loop1_wscie(EntityCode1.VN, EntityCode2.SellerCode);
 
                 foreach (var DataDetail in RawDataDetails)

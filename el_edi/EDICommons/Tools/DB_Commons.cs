@@ -331,12 +331,12 @@ namespace EDI_DB.Data
             return results[0];
         }
 
-        public string GetPostalCode(string arinv_ident)
+        public string GetPostalCode(int arinv_ident)
         {
             List<IDataRecord> results;
             string postalCode;
             Params.Clear();
-            Params.Add("arinv_ident", arinv_ident);
+            Params.Add("arinv_ident", arinv_ident.ToString());
 
             results = HExecuteSQLQuery(@"
                 SELECT 
@@ -442,6 +442,31 @@ namespace EDI_DB.Data
                     cie_country AS wscie_country
                 FROM wscie 
                 WHERE cie_id = ?cie_id", Params);
+
+            if (results == null) { return null; }
+            if (results.Count == 0) { return null; }
+
+            return results[0];
+        }
+
+        public IDataRecord GetAddressApsupp(int idVendor)
+        {
+            List<IDataRecord> results;
+            Params.Clear();
+            Params.Add("idVendor", idVendor.ToString());
+
+            results = HExecuteSQLQuery(@"
+                SELECT 
+                    ident AS apsupp_ident,
+                    name AS apsupp_name,
+                    addr1 AS apsupp_addr1,
+                    addr2 AS apsupp_addr2,
+                    city AS apsupp_city,
+                    state apsupp_state,
+                    zip apsupp_zip,
+                    country AS apsupp_country
+                FROM apsupp 
+                WHERE ident = ?idVendor", Params);
 
             if (results == null) { return null; }
             if (results.Count == 0) { return null; }

@@ -80,11 +80,10 @@ namespace EDI_DB.Data
         }
 
         /// It write the N1Loop1 xml tag for the arclient
-        public void WriteN1Loop1_arclient(IDataRecord Data, string[] entityCode1, string[] entityCode2)
+        public void WriteN1Loop1_arclient(string[] entityCode1, string[] entityCode2)
         {
-            CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclient(int.Parse(Data["arinv_custid"].ToString())));
-
-            //write N1Loop1 xml tag for vendor
+            CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclient(arclient_ident));
+   
             WriteN1Loop1(entityCode1, entityCode2, data_record,
                 "iddel_addr",
                 data_record["iddel_addr"],
@@ -97,11 +96,11 @@ namespace EDI_DB.Data
             );
         }
 
-        public void WriteN1Loop1_ffaddr(IDataRecord Data, string[] entityCode1, string[] entityCode2)
+        public void WriteN1Loop1_ffaddr(int arinv_ident, string[] entityCode1, string[] entityCode2)
         {
-            string postalCode = DB_VIVA.GetPostalCode(Data["arinv_ident"].ToString());
+            string postalCode = DB_VIVA.GetPostalCode(arinv_ident);
 
-            CIDataRecord addressST_Data = new CIDataRecord(DB_VIVA.GetAddressST(int.Parse(Data["arinv_custid"].ToString()), postalCode));
+            CIDataRecord addressST_Data = new CIDataRecord(DB_VIVA.GetAddressST(arclient_ident, postalCode));
 
             //write N1Loop1 xml tag for shipto
             WriteN1Loop1(entityCode1, entityCode2, addressST_Data,
@@ -130,6 +129,23 @@ namespace EDI_DB.Data
                 "wscie_city",
                 "wscie_state",
                 "wscie_zip"
+            );
+        }
+
+        public void WriteN1Loop1_apsupp(int idVendor, string[] entityCode1, string[] entityCode2)
+        {
+            CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressApsupp(idVendor));
+
+            //write N1Loop1 xml tag for 
+            WriteN1Loop1(entityCode1, entityCode2, data_record,
+                "apsupp_ident",
+                data_record["apsupp_ident"],
+                "apsupp_name",
+                "apsupp_addr1",
+                "apsupp_addr2",
+                "apsupp_city",
+                "apsupp_state",
+                "apsupp_zip"
             );
         }
 
