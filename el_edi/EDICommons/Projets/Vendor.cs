@@ -29,7 +29,7 @@ namespace EDI_RSS
 
         virtual public string SetupRSS(string DB_Name = "rss_bus")
         {
-            return "";
+            return DB_RSS_Connection = GetDB_String(DB_Name);
         }
 
         virtual public string SetupViva(string DB_Name)
@@ -65,7 +65,6 @@ namespace EDI_RSS
             Status += "DB_WEB_Connection: " + DB_WEB_Connection + NL;
 
             DB_VIVA = new EDI_DB.Data.CDB_VIVA(DB_VIVA_Connection);
-
             DB_WEB = new EDI_DB.Data.CDB_WEB(DB_WEB_Connection);
             DB_Logger = new EDI_DB.Data.CDB_Logger(DB_WEB_Connection);
 

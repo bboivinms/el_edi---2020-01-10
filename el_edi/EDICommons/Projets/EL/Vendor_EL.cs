@@ -4,11 +4,6 @@ namespace EDI_RSS
 {
     public class Vendor_EL : Vendor
     {
-        override public string SetupRSS(string DB_Name = "rss_bus")
-        {
-            return DB_RSS_Connection = GetDB_String(DB_Name);
-        }
-
         override public string SetupViva(string DB_Name)
         {
             if(string.IsNullOrEmpty(DB_Name)) DB_Name = IIF_LIVE("viva_env", "vivadata4");
@@ -27,8 +22,5 @@ namespace EDI_RSS
 
             return DB_String("192.168.1.254", "viva_envl", "Xjg8LJFJeGEk9y9HRr!zKCEyrPeRCvUWm", DB_Name);
         }
-
-
-
     }
 }

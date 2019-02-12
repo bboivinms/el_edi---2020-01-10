@@ -44,7 +44,7 @@ namespace EDI_RSS
 
         public void ProcessVendor()
         {
-            vendor = new Vendor_EL();
+            vendor = new Vendor();
         }
 
         public void UpdateFilename(string tablaname, string filename, string edi_ident)
@@ -114,7 +114,7 @@ namespace EDI_RSS
             Params.Add("?rss_status", Status);
             Params.Add("?rss_error", Error);
 
-            DB_RSS.HExecuteSQLQuery(@"  UPDATE rss_bus.edi_rss SET 
+            DB_RSS.HExecuteSQLQuery(@" UPDATE rss_bus.edi_rss SET 
                                                     rss_done = 1, 
                                                     rss_status = ?rss_status, 
                                                     rss_error = ?rss_error      
