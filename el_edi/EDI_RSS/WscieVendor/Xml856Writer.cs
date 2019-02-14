@@ -13,6 +13,135 @@ using static EDI_DB.Data.Base;
 
 namespace EDI_RSS.Helpers
 {
+    public class Program_856 : EDI_RSS.Program_Base
+    {
+        public Program_856()
+        {
+            TransactionCode = "856";
+
+            LogEventSource = "EDI 856 Processor";
+
+            Xml856Writer xml = null;
+
+            List<IDataRecord> RawDataDetails;
+            string cobil_ident;
+            string edi_ident;
+
+            Status += "Program_856" + NL + "UseSystem: " + UseSystem + NL + "TheFilename: " + Filename + NL;
+
+            try
+            {
+                CreateNew();
+
+                List<IDataRecord> RawData = GetData();
+
+                foreach (IDataRecord Data in RawData)
+                {
+                    cobil_ident = Data["cobil_ident"].ToString();
+                    edi_ident = Data["edi_856_ident"].ToString();
+
+                    SetupClient(Convert.ToInt32(Data["cobil_clientid"]));
+
+                    Status += "GetDataDetails: " + cobil_ident + NL;
+
+                    RawDataDetails = GetDataDetails(cobil_ident);
+
+                    xml = new Xml856Writer(Data, RawDataDetails);
+
+                    xml.Write(this);
+
+                    UpdateFilename("edi_856", xml.OutputFileName, edi_ident);
+                }
+
+            }
+            catch (System.Exception e)
+            {
+                Error += "Error caught: " + e.Message;
+                LogWriter.WriteMessage(LogEventSource, $"Error caught: {e.Message}");
+            }
+            finally
+            {
+            }
+        }
+
+        public void CreateNew()
+        {
+            DB_VIVA.HExecuteSQLNonQuery(@" 
+                INSERT INTO edi_856 (cobil_ident) 
+                SELECT cobil.ident 
+                FROM cobil
+                    WHERE   cobil.clientid = 30037 AND 
+                            cobil.ident > 14300 AND 
+                            NOT EXISTS(SELECT 1 FROM edi_856 AS edi_856e WHERE edi_856e.cobil_ident = cobil.ident); 
+                ALTER TABLE edi_856 AUTO_INCREMENT = 1;");
+
+            //update pour mettre le ship date
+            DateTime dte_now = DateTime.Now;
+
+            Params.Clear();
+            Params.Add("?dte_now", dte_now.ToString());
+
+            DB_VIVA.HExecuteSQLQuery(@"UPDATE edi_856 SET Ship_date = ?dte_now WHERE cobil_ident = 14333;", Params);
+        }
+
+        public List<IDataRecord> GetData()
+        {
+            return DB_VIVA.HExecuteSQLQuery(@"
+                SELECT  
+                        cobil.ident AS cobil_ident, cobil.clientid AS cobil_clientid, cobil.clientpo AS cobil_clientpo, cobil.BIL_DTE AS cobil_bil_dte,
+                        edi_856.ident AS edi_856_ident, edi_856.filename AS edi_856_filename, edi_856.Ship_date AS edi_856_ship_date
+                FROM cobil 
+                INNER JOIN edi_856 ON edi_856.cobil_ident = cobil.ident
+                WHERE edi_856.Sent = false 
+                      AND
+                      cobil.ident = 14333
+                ");
+        }
+
+        public List<IDataRecord> GetDataDetails(string cobil_ident)
+        {
+            Params.Clear();
+            Params.Add("?cobil_ident", cobil_ident);
+
+            return DB_VIVA.HExecuteSQLQuery(
+                @"SELECT  
+                        ivprod.code AS ivprod_code, ivprod.DESC AS ivprod_desc,
+                        edi_856.ident AS edi_856_ident, 
+                        cobili.PO_NO AS cobili_po_no, cobili.QTY AS cobili_qty,
+                        cocom.CLIENTPO AS cocom_clientpo, cocom.ident AS cocom_ident  
+                FROM cobil 
+                INNER JOIN cobili ON cobil.ident = cobili.idcobil
+                INNER JOIN ivprod ON ivprod.ident = cobili.idprod
+                INNER JOIN edi_856 ON edi_856.cobil_ident = cobil.ident
+                INNER JOIN cocom ON cocom.ident = cobili.IDCOM
+                WHERE   edi_856.Sent = false 
+                        AND
+                        cobil.ident = ?cobil_ident
+                ORDER BY cobili.ident, cobili.line
+                ", Params);
+        }
+
+        public List<IDataRecord> GetItems(string cobil_ident, string cocom_ident)
+        {
+            Params.Clear();
+            Params.Add("?cobil_ident", cobil_ident);
+            Params.Add("?cocom_ident", cocom_ident);
+
+            return DB_VIVA.HExecuteSQLQuery(
+                @"SELECT cobil.DEL_NAME,
+                         cobili.PO_NO AS cobili_po_no, cobili.QTY AS cobili_qty,
+                         cocom.ident AS cocom_ident
+                  FROM cobil 
+                  INNER JOIN cobili ON cobil.ident = cobili.idcobil
+                  INNER JOIN cocom ON cocom.ident = cobili.IDCOM
+                  WHERE cobil.ident = cobil_ident 
+                        AND 
+                        cocom.ident = ?cocom_ident
+                  ORDER BY cobili.ident, cobili.line
+                ", Params);
+        }
+    }
+
     class Xml856Writer : DB_XmlWriter
     {
         private IDataRecord Data;
@@ -28,7 +157,7 @@ namespace EDI_RSS.Helpers
 
             ClientID = Data["cobil_clientid"].ToString();
 
-            OutputFileName = $"{ClientID}-{Data["cobil_ident"].ToString()}-{Base.ToAlphaNumeric(Data["cobil_clientpo"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
+            OutputFileName = $"{ClientID}-856OUT-{Data["cobil_ident"].ToString()}-{Base.ToAlphaNumeric(Data["cobil_clientpo"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
 
             XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
 
@@ -80,78 +209,24 @@ namespace EDI_RSS.Helpers
                 WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier: Fixed : Estimated Delivery", "017",
                                                "DTM02 : Date : cobil_bil_dte", string.Format("{0:yyyyMMdd}", cobil_bil_dte.AddDays(1)));
 
-                WriteHLLoop1();
+                WriteHLLoop1_Shipment(Data);
 
-                //BAK segement
-                // BIG07 BB Billback : CO Corrected / CR Credit Memo / DR Debit Memo / DU Duplicate / RE Rebill
-                // PR Product(or Service) Is the usual default but should be explicit to avoid wrong assumptions by the receiving party.
-                //WriteSegment("BIG", "Segment", "BIG01 : Invoice Date: arinv_invdte", string.Format("{0:yyyyMMdd}", Data["arinv_invdte"]),
-                //                               "BIG02 : Invoice Number: arinv_invno", Data["arinv_invno"].ToString(),
-                //                               "BIG03 : Fixed: Client Purchase Order Date", "",
-                //                               "BIG04 : Client Purchase Order Number: arinv_po", Data["arinv_po"].ToString(),
-                //                               "BIG05 : Fixed: Release Number", "",
-                //                               "BIG06 : Fixed: Change Order Sequence Number", "",
-                //                               "BIG07 : Fixed: Transaction Type Code: PR Product(or Service)", "PR");
+                //details
+                foreach (var DataDetail in RawDataDetails)
+                {
+                    int QtyShipped = Convert.ToInt32(DataDetail["cobili_qty"]);
 
-                //WriteSegment("CUR", "Segment", "CUR01 : Fixed: Entity Identifier Code: Vendor", "VN",
-                //                               "CUR02 : Fixed: Currency Code", "CAD");
+                    TotalNumberOfLineItem++;
+                    TotalNumberOfLineItemQty += QtyShipped;
 
-                ////REF segment
-                //WriteSegment("REF", "Segment", "REF01 : Reference Identification Qualifier : Fixed : Bill of Lading Number", "IK",
-                //                               "REF02 : Reference Identification : arinv_idbil", Data["arinv_idbil"].ToString());
+                    WriteHLLoop1_Order(DataDetail);
 
-                //REF segment
-                //WriteSegment("REF", "Segment", "VR", "TBD"); //TODO: get the EL supplier ID for the current customer
+                }
 
-
-                //WriteN1Loop1_arclient(Data, EntityCode1.BY);
+                WriteN1Loop1_arclient(EntityCode1.ST, EntityCode2.BuyerCode);
                 //WriteN1Loop1_ffaddr(Data, EntityCode1.ST);
                 //WriteN1Loop1_wscie(EntityCode1.VN);
 
-                //foreach (var DataDetail in RawDataDetails)
-                //{
-                //    int QtyInvoiced = Convert.ToInt32(DataDetail["arinvd_qty"]);
-
-                //    TotalNumberOfLineItem++;
-                //    TotalNumberOfLineItemQty += QtyInvoiced;
-
-                //    WriteIT1Loop1(DataDetail);
-                //    WritePIDLoop1(DataDetail);
-
-                //}
-
-                ////TDS segment
-                //WriteSegment("TDS", "Segment", "TDS01 : Total Invoice Amount : arinv_inv_mnt", Data["arinv_inv_mnt"].ToString());
-                ////"TDS02 : Total Amount Subject to Discount", "",
-                ////"TDS03 : Discounted Amount Due", "",
-                ////"TDS04 : Terms Discount Amount", ""
-
-                ////tps
-                //if (Convert.ToInt32(Data["arinv_inv_tx_gst"]) != 0 && Convert.ToInt32(Data["arinv_tpstaux"]) != 0)
-                //{
-                //    //TXI segment
-                //    WriteSegment("TXI", "Segment", "TXI01 : Tax Type Code : Fixed : State/Provincial Tax", "SP",
-                //                                   "TXI02 : Monetary Amount", Data["arinv_inv_tx_gst"].ToString(),
-                //                                   "TXI03 : Percent: Percentage expressed as a decimal", (Convert.ToDecimal(Data["arinv_tpstaux"]) / 100).ToString());
-                //}
-
-                ////tvq
-                //if (Convert.ToInt32(Data["arinv_inv_tx_pst"]) != 0 && Convert.ToInt32(Data["arinv_tvqtaux"]) != 0)
-                //{
-                //    //TXI segment
-                //    WriteSegment("TXI", "Segment", "TXI01 : Tax Type Code : Fixed : Federal Tax", "FD",
-                //                                   "TXI02 : Monetary Amount", Data["arinv_inv_tx_pst"].ToString(),
-                //                                   "TXI03 : Percent: Percentage expressed as a decimal", (Convert.ToDecimal(Data["arinv_tvqtaux"])/100).ToString());
-                //}
-
-                ////tvh
-                //if (Convert.ToInt32(Data["arinv_inv_tx_tvh"]) != 0 && Convert.ToInt32(Data["arinv_tvhtaux"]) != 0)
-                //{
-                //    //TXI segment
-                //    WriteSegment("TXI", "Segment", "TXI01 : Tax Type Code : Fixed : State Sales Tax", "ST",
-                //                                   "TXI02 : Monetary Amount", Data["arinv_inv_tx_tvh"].ToString(),
-                //                                   "TXI03 : Percent: Percentage expressed as a decimal", (Convert.ToDecimal(Data["arinv_tvhtaux"]) / 100).ToString());
-                //}
 
                 //CTT Loop
                 WriteSegmentLoop("CTTLoop1", "Loop", "CTT", "Segment",
@@ -167,14 +242,14 @@ namespace EDI_RSS.Helpers
 
         } // Write()
 
-        public void WriteHLLoop1()
+        public void WriteHLLoop1_Shipment(IDataRecord data)
         {
             writer.WriteStartElement("HLLoop1");
             writer.WriteAttributeString("type", "Loop");
             {
                 WriteSegment("HL", "Segment",
-                    "HL01 : Hierarchical ID Number", "1", //<--
-                    "HL02 : Hierarchical Parent ID Number", "", //<--
+                    "HL01 : Hierarchical ID Number", "1",
+                    "HL02 : Hierarchical Parent ID Number", "",
                     "HL03 : Hierarchical Level Code: Fixed : Shipment", "S",
                     "HL04 : Hierarchical Child Code: Fixed : Additional Subordinate HL Data Segment in This Hierarchical Structure", "1");
 
@@ -199,6 +274,61 @@ namespace EDI_RSS.Helpers
                   "REF02 : Reference Identification : ", ""); //<--
             }
             writer.WriteEndElement(); //HLLoop1
-        }
+        } // method WriteHLLoop1_Shipment()
+
+        public void WriteHLLoop1_Order(IDataRecord data)
+        {
+            writer.WriteStartElement("HLLoop1");
+            writer.WriteAttributeString("type", "Loop");
+            {
+                WriteSegment("HL", "Segment",
+                    "HL01 : Hierarchical ID Number", "2", 
+                    "HL02 : Hierarchical Parent ID Number", "1", 
+                    "HL03 : Hierarchical Level Code: Fixed : Order", "O",
+                    "HL04 : Hierarchical Child Code: Fixed : Additional Subordinate HL Data Segment in This Hierarchical Structure", "1");
+
+                WriteSegment("PRF", "Segment",
+                    "PRF01 : Purchase Order Number", "PO_1234_NUMBER",
+                    "PRF02 : Release Number", "",
+                    "PRF03 : Change Order Sequence Number", "",
+                    "PRF04 : Date", "20180910");
+
+                WriteSegment("REF", "Segment",
+                  "REF01 : Reference Identification Qualifier: Vendor Order Number", "VN",
+                  "REF02 : Reference Identification : ", "VN_1234_NUMBER"); //<--
+            }
+            writer.WriteEndElement(); //HLLoop1
+        } //method WriteHLLoop1_Order()
+
+        public void WriteHLLoop1_Item(IDataRecord data)
+        {
+            writer.WriteStartElement("HLLoop1");
+            writer.WriteAttributeString("type", "Loop");
+            {
+                WriteSegment("HL", "Segment",
+                    "HL01 : Hierarchical ID Number", "3", 
+                    "HL02 : Hierarchical Parent ID Number", "2",
+                    "HL03 : Hierarchical Level Code: Fixed : Item", "I",
+                    "HL04 : Hierarchical Child Code: Fixed :  No Subordinate HL Segment in This Hierarchical Structure.", "0");
+
+                WriteSegment("LIN", "Segment",
+                    "LIN01 : Assigned Identification", "10",
+                    "LIN02 : Product/Service ID Qualifier: Buyer's Part Number", "BP",
+                    "LIN03 : Product/Service ID", "BP_1234_NUMBER",
+                    "LIN04 : Product/Service ID Qualifier: Vendor's (Seller's) Part Number", "VP",
+                    "LIN05 : Product/Service ID", "VP_1234_NUMBER");
+
+                WriteSegment("SN1", "Segment",
+                    "SN101 : Assigned Identification", "10",
+                    "SN102 : Number of Units Shipped", "1100",
+                    "SN103 : Unit or Basis for Measurement Code: Each", "EA",
+                    "SN104 : Quantity Shipped to Date", "0",
+                    "SN105 : Quantity Ordered", "1100",
+                    "SN106 : Unit or Basis for Measurement Code: Each", "EA");
+            }
+            writer.WriteEndElement(); //HLLoop1
+        } //method WriteHLLoop1_Item()
+
     } //class Xml856Writer
+
 } //namespaces EDI_RSS.Helpers
