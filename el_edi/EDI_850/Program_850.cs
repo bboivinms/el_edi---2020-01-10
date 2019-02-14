@@ -47,7 +47,7 @@ namespace EDI_850
             XMLProcessor_850 proc = new XMLProcessor_850();
             proc.ProcessOrder();
 
-            DB_Logger.LogData(Status);
+            DB_RSS.LogData(Status);
         }
 
     }
