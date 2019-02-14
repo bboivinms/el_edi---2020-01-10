@@ -26,7 +26,7 @@ namespace EDI_RSS
             }
 
             // Nothing has been processed
-            DB_Logger.LogData($"ERROR: Main(): ProcessRSS() not processed: TransactionCode ({TransactionCode}) not recognized: UseSystem {UseSystem} TransactionCode {TransactionCode} PortId {PortId} Filename {Filename} ErrorMessage {ErrorMessage}", LogEventSource);
+            DB_RSS.LogData($"ERROR: Main(): ProcessRSS() not processed: TransactionCode ({TransactionCode}) not recognized: UseSystem {UseSystem} TransactionCode {TransactionCode} PortId {PortId} Filename {Filename} ErrorMessage {ErrorMessage}", LogEventSource);
 
         }
 
@@ -44,16 +44,16 @@ namespace EDI_RSS
             if (gDataIDedi_rss == null) return false;
 
             if (gDataIDedi_rss["rss_request"].ToString() == "855P" &&
-                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["855_port"].ToString()); new Program_855(); SetIDedi_RSS_done(); DB_Logger.LogData(Status); return true; }
+                gDataIDedi_rss["rss_client"].ToString() == "ALL") { new Program_855(); SetIDedi_RSS_done(); DB_RSS.LogData(Status); return true; }
 
             if (gDataIDedi_rss["rss_request"].ToString() == "856P" &&
-                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["856_port"].ToString()); new Program_856(); SetIDedi_RSS_done(); DB_Logger.LogData(Status); return true; }
+                gDataIDedi_rss["rss_client"].ToString() == "ALL") { new Program_856(); SetIDedi_RSS_done(); DB_RSS.LogData(Status); return true; }
 
             if (gDataIDedi_rss["rss_request"].ToString() == "810P" &&
-                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["810_port"].ToString()); new Program_810(); SetIDedi_RSS_done(); DB_Logger.LogData(Status); return true; }
+                gDataIDedi_rss["rss_client"].ToString() == "ALL") { new Program_810(); SetIDedi_RSS_done(); DB_RSS.LogData(Status); return true; }
 
             if (gDataIDedi_rss["rss_request"].ToString() == "850P" &&
-                gDataIDedi_rss["rss_client"].ToString() == "ALL") { Setup_RSS_send_path(gDataIDedi_rss["850_port"].ToString()); new Program_850(); SetIDedi_RSS_done(); DB_Logger.LogData(Status); return true; }
+                gDataIDedi_rss["rss_client"].ToString() == "ALL") { new Program_850(); SetIDedi_RSS_done(); DB_RSS.LogData(Status); return true; }
 
 
             return false;
@@ -68,44 +68,40 @@ namespace EDI_RSS
             return false;
         }
 
+        // Usually setup
         public void P_STEP_1(string rss_client, string rss_request)
         {
             Params.Clear();
             Params.Add("?rss_client", rss_client);
             Params.Add("?rss_request", rss_request);
+            Params.Add("?rss_datapath", PortId);
 
-            IDedi_rss = DB_VIVA.HExecuteSQLNonQuery(@"INSERT INTO rss_bus.edi_rss (rss_client, rss_request) VALUES (?rss_client, ?rss_request)", Params);
+            IDedi_rss = DB_VIVA.HExecuteSQLNonQuery(@"INSERT INTO rss_bus.edi_rss (rss_client, rss_request, rss_datapath) VALUES (?rss_client, ?rss_request, ?rss_datapath)", Params);
             if (IDedi_rss <= 0) return;
             EdiFilename = IDedi_rss.ToString() + $"-{rss_request}-{rss_client}.txt";
 
             DisPatch_IDedi_rss();
 
-            DB_Logger.LogData(Status);
+            DB_RSS.LogData(Status);
         }
         
         public void P_STEP_3(string Tablename)
         {
-            DB_Logger.LogData($"Main(): UseSystem {UseSystem} TransactionCode {TransactionCode} PortId {PortId} Filename {Filename} Tablename {Tablename} ErrorMessage {ErrorMessage}", LogEventSource);
-            DB_Logger.LogData(Status);
+            Status += $"Main(): UseSystem {UseSystem} TransactionCode {TransactionCode} PortId {PortId} Filename {Filename} Tablename {Tablename} ErrorMessage {ErrorMessage}";
             UpdateSent(Tablename, Filename);
         }
 
-        public void UpdateSent(string table, string Filename)
+        public void UpdateSent(string table, string pFilename)
         {
-            // DBLogger.LogData($"DB_RSS(): UpdateSent: Using table: {table} and filename: {filename}", Program_RSS.LogEventSource);
-
             if (table != "edi_855" && table != "edi_810" && table != "edi_856" && table != "edi_850")
             {
-                DB_Logger.LogData($"ERROR: DB_RSS(): UpdateSent: Abort: Table not found {table} (Filename: {Filename})", LogEventSource);
+                DB_RSS.LogData($"ERROR: DB_RSS(): UpdateSent: Abort: Table not found {table} (Filename: {pFilename})");
                 return;
             }
 
             Params.Clear();
-            Params.Add("?Filename", Filename);
+            Params.Add("?Filename", pFilename);
             DB_VIVA.HExecuteSQLQuery (@"UPDATE " + table + " SET sent = true WHERE LOCATE(Filename, ?Filename); ", Params);
-
-            DB_Logger.LogData($"UPDATE {table} SET sent = true WHERE LOCATE(Filename,{Filename});" + NL + "DB_VIVA.conn.ConnectionString: " + DB_VIVA.conn.ConnectionString + NL);
-
         }
     }
 

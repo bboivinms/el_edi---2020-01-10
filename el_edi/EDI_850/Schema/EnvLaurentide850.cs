@@ -447,13 +447,13 @@ namespace EDI_850.Schema
             //Find out if item comes in pallets. This is used to adjust the item price based on the qty ordered.
             MySqlCommand cmd = DB_VIVA.conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "SELECT qtyctns FROM ivprod WHERE ident = ?idprod";
+            cmd.CommandText = "SELECT FLOOR(IF(IFNULL(web_qtepal, 0) > 0, web_qtepal, qtyctns)) AS qtyctns FROM ivprod WHERE ident = ?idprod";
             cmd.Parameters.AddWithValue("?idprod", IdProd);
 
             object result = cmd.ExecuteScalar();
 
             if (result != DBNull.Value && result != null)
-                QtyPerPallet = (int?)result ?? 0;
+                QtyPerPallet = Convert.ToInt32(result);
             else
                 QtyPerPallet = 0;
 

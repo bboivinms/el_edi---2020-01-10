@@ -158,7 +158,7 @@ namespace EDI_RSS.Helpers
                 WriteSegment("IT1", "Segment",
                     "IT101 : Assigned Identification : Calc: arinvd_invline * 10", (Convert.ToInt32(TheDataDetails["arinvd_invline"]) * 10).ToString(),
                     "IT102 : Quantity Invoiced : arinvd_qty", Convert.ToInt32(TheDataDetails["arinvd_qty"]).ToString(), //convert 
-                    "IT103 : Unit or Basis for Measurement Code : Fixed : Each", "EA",
+                    "IT103 : Unit or Basis for Measurement Code : Fixed : Envelope", "EV",
                     "IT104 : Unit Price : arinvd_inv_mnt_unit", TheDataDetails["arinvd_inv_mnt_unit"].ToString(),
                     "IT105 : Basis of Unit Price Code : UnitMappings(unite): " + TheDataDetails["arinvd_unite"].ToString(), UnitMappings(TheDataDetails["arinvd_unite"].ToString()),
                     "IT106 : Product/Service ID Qualifier : Fixed: Buyer's Catalog Number", "CB",

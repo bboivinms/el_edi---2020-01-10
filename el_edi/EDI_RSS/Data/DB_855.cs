@@ -77,6 +77,7 @@ namespace EDI_RSS
             }
             finally
             {
+                DB_RSS.LogData(Status);
             }
         }
 

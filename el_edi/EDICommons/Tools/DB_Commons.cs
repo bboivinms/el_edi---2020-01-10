@@ -21,7 +21,11 @@ namespace EDI_DB.Data
         public static string TransactionCode = "";
         public static string PortId = "";
         public static string Filename = "";
+        public static string Filepath = "";
         public static string ErrorMessage = "";
+        public static string ProgramId = "";
+        public static string EdiPath = "";
+        public static string EdiProcess = "";
         // End
 
         public static Vendor vendor;
@@ -29,27 +33,51 @@ namespace EDI_DB.Data
         public static string RSS_send_path = "";
         public static string NL = "\r\n";
         public static string Status = "";
+        public static string Status_Queries = "";
         public static string Error = "";
 
         public static bool IsLocalTest = false;
 
-        public static CDB_Logger DB_Logger;
         public static CDB_RSS DB_RSS;
         public static CDB_VIVA DB_VIVA;
         public static CDB_WEB DB_WEB;
 
-        public static int arclient_ident;
+        public static string wscie = "";
+        public static string IDE = "";
+        public static string IDE_status = "";
+        public static string alias = "";
+        public static int arclient_ident = 0;
+        public static int edi_doc_number = 0;
         public static string arclient_short_name;
         public static long IDedi_rss = 0;
 
         public static IDataRecord gDataIDedi_rss;
-            
+        public static IDataRecord gDataIDedi_path;
+
         public static bool TimePassed(int hour, int minute)
         {
             if (hour < 0 || hour > 24) hour = 0;
             if (minute < 0 || minute > 60) minute = 0;
 
             return TimeSpan.Compare(DateTime.Now.TimeOfDay, DateTime.Parse($"2010/01/01 {hour}:{minute}:00.000").TimeOfDay) > 0;
+        }
+        
+        public static void SetRouting_out_path(string TheType)
+        {
+            string where = "error";
+            if (IDE.Substring(0, 1) == "L") { where = "data_live"; }
+            if (IDE.Substring(0, 1) == "T") { where = "data_test"; }
+
+            if(TheType == "routing_out" || TheType == "routing_in")
+            {
+                RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\routing\{wscie}{IDE}_routing\{wscie}{IDE}_{TheType}\Send";
+            }
+            else 
+            {
+                RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\envl\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\Send";
+            }
+
+
         }
 
         public static void SetupClient(int pArclient_ident)
@@ -60,18 +88,6 @@ namespace EDI_DB.Data
             if (arclient_ident == 30037) arclient_short_name = "ariva";
         }
 
-        public static void Setup_RSS_send_path(string sRSS_send_path)
-        {
-            RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{sRSS_send_path}\Send";
-            if (UseSystem == "local") { RSS_send_path = @"C:\TMP"; }
-        }
-
-        public static string IIF_LIVE(string IfLive, string IfTest)
-        {
-            if (UseSystem == "live") return IfLive;
-            return IfTest;
-        }
-
         public static string ToAlphaNumeric(string str)
         {
             char[] arr = str.Where(c => (char.IsLetterOrDigit(c) ||
@@ -79,6 +95,20 @@ namespace EDI_DB.Data
                              c == '-')).ToArray();
 
             return new string(arr);
+        }
+
+        public static bool IsNumeric(object Expression)
+        {
+            double retNum;
+
+            bool isNum = Double.TryParse(Convert.ToString(Expression), System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out retNum);
+            return isNum;
+        }
+
+        public static int GetInt(object Expression)
+        {
+            if (!IsNumeric(Expression)) return 0;
+            return Convert.ToInt32(Expression);
         }
 
         public static decimal GetDecimal(object value)
@@ -107,6 +137,43 @@ namespace EDI_DB.Data
             return TheDate;
         }
 
+
+        public static IDataRecord GetEdi_arclient()
+        {
+            if (IDE == "") return null;
+            if (edi_doc_number != 810 && edi_doc_number != 855 && edi_doc_number != 856 && edi_doc_number != 850) return null;
+            if (arclient_ident <= 0) return null;
+            if (wscie == "") return null;
+
+            List<IDataRecord> results;
+
+            Dictionary<string, string> Params = new Dictionary<string, string>();
+
+            Params.Clear();
+            Params.Add("?idclient", arclient_ident.ToString());
+            Params.Add("?wscie", wscie);
+
+            results = DB_RSS.HExecuteSQLQuery($@"
+                SELECT 
+                    alias,
+                    X{IDE}_{edi_doc_number} AS IDE_status,
+                    X{IDE}_path AS IDE_path,
+                    edi_path.*
+                    FROM edi_arclient
+				INNER JOIN
+					edi_path ON X{IDE}_path = edi_path
+                WHERE
+                    idclient = ?idclient AND
+                    wscie = ?wscie
+                ", Params);
+
+            if (results == null) { return null; }
+            if (results.Count == 0) { return null; }
+
+            IDataRecord result = results[0];
+
+            return result;
+        }
     }
 
     public class DB_Parent
@@ -149,13 +216,13 @@ namespace EDI_DB.Data
             }
             catch (Exception ex)
             {
-                DB_Logger.LogData("ERROR: " + ex.Message + NL + ex.ToString() + NL + "SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL);
+                DB_RSS.LogData("ERROR: " + ex.Message + NL + ex.ToString() + NL + "SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL);
             }
             finally
             {
-                Status += "HExecuteSQLNonQuery: SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL;
-                Status += "Connection: " + conn.ConnectionString + NL;
-                Status += "HExecuteSQLNonQuery END" + NL;
+                Status_Queries += "HExecuteSQLNonQuery: SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL;
+                Status_Queries += "Connection: " + conn.ConnectionString + NL;
+                Status_Queries += "HExecuteSQLNonQuery END" + NL;
             }
 
             // WIP
@@ -189,14 +256,14 @@ namespace EDI_DB.Data
             }
             catch (Exception ex)
             {
-                DB_Logger.LogData("ERROR: " + ex.Message + NL + ex.ToString() + NL + "SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL + "Connection: " + conn.ConnectionString + NL);
+                DB_RSS.LogData("ERROR: " + ex.Message + NL + ex.ToString() + NL + "SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL + "Connection: " + conn.ConnectionString + NL);
                 sdPCursor = null;
             }
             finally
             {
-                Status += "HExecuteSQLQuery: SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL;
-                Status += "Connection: " + conn.ConnectionString + NL;
-                Status += "HExecuteSQLQuery END" + NL;
+                Status_Queries += "HExecuteSQLQuery: SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL;
+                Status_Queries += "Connection: " + conn.ConnectionString + NL;
+                Status_Queries += "HExecuteSQLQuery END" + NL;
             }
 
             // WIP
@@ -216,9 +283,9 @@ namespace EDI_DB.Data
 
     }
 
-    public class CDB_Logger : DB_Parent
+    public class CDB_RSS : DB_Parent
     {
-        public CDB_Logger(string Connection)
+        public CDB_RSS(string Connection)
         {
             conn = new MySqlConnection(Connection);
             conn.Open();
@@ -228,10 +295,15 @@ namespace EDI_DB.Data
         {
             MySqlCommand cmd = CreateCommand();
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = @"INSERT INTO mysql_log (mysql_log, mysql_type) VALUES (?mysql_log, ?mysql_type); ";
+            cmd.CommandText = @"INSERT INTO mysql_log (mysql_log, mysql_type, mysql_programid, mysql_portid, mysql_clientid, mysql_datapath) VALUES (?mysql_log, ?mysql_type, ?mysql_programid, ?mysql_portid, ?mysql_clientid, ?mysql_datapath); ";
 
-            cmd.Parameters.AddWithValue("?mysql_log" , message);
+            cmd.Parameters.AddWithValue("?mysql_log", message);
             cmd.Parameters.AddWithValue("?mysql_type", mysql_type);
+            cmd.Parameters.AddWithValue("?mysql_programid", ProgramId);
+            cmd.Parameters.AddWithValue("?mysql_portid", PortId);
+            cmd.Parameters.AddWithValue("?mysql_clientid", arclient_ident.ToString());
+            cmd.Parameters.AddWithValue("?mysql_datapath", EdiPath);
+            cmd.Parameters.AddWithValue("?mysql_process", EdiProcess);
 
             try
             {
@@ -240,30 +312,6 @@ namespace EDI_DB.Data
             finally
             {
             }
-        }
-    }
-
-    public class CDB_RSS : DB_Parent
-    {
-        public CDB_RSS(string Connection)
-        {
-            conn = new MySqlConnection(Connection);
-            conn.Open();
-        }
-
-        public IDataRecord GetDBConnection()
-        {
-            List<IDataRecord> results;
-            Params.Clear();
-            Params.Add("PortId", PortId);
-
-            results = HExecuteSQLQuery(@"
-            SELECT * FROM edi_port WHERE edi_port.edi_port = ?PortId", Params);
-
-            if (results == null) { return null; }
-            if (results.Count == 0) { return null; }
-
-            return results[0];
         }
     }
 
