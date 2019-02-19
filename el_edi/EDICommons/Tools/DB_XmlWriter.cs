@@ -65,6 +65,12 @@ namespace EDI_DB.Data
             writer.WriteEndElement();
         }
 
+        public static class PerCode
+        {
+            public static string[] BD = { "BD", "Buyer Name or Department" };
+            public static string[] CN = { "CN", "General Contact" };
+        }
+
         public static class EntityCode1
         {
             public static string[] ST = { "ST", "Ship To" };
@@ -80,7 +86,7 @@ namespace EDI_DB.Data
         }
 
         /// It write the N1Loop1 xml tag for the arclient
-        public void WriteN1Loop1_arclient(string[] entityCode1, string[] entityCode2)
+        public void WriteN1Loop1_arclient(string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
         {
             CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclient(arclient_ident));
    
@@ -92,11 +98,12 @@ namespace EDI_DB.Data
                 "arclient_addr2",
                 "arclient_city",
                 "arclient_state",
-                "arclient_zip"
+                "arclient_zip",
+                pDB_PER
             );
         }
 
-        public void WriteN1Loop1_ffaddr(int arinv_ident, string[] entityCode1, string[] entityCode2)
+        public void WriteN1Loop1_ffaddr(int arinv_ident, string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
         {
             string postalCode = DB_VIVA.GetPostalCode(arinv_ident);
 
@@ -111,11 +118,12 @@ namespace EDI_DB.Data
                 "addr2",
                 "city",
                 "state",
-                "zip"
+                "zip",
+                pDB_PER
             );
         }
 
-        public void WriteN1Loop1_wscie(string[] entityCode1, string[] entityCode2)
+        public void WriteN1Loop1_wscie(string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
         {
             CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressWscie());
 
@@ -128,11 +136,12 @@ namespace EDI_DB.Data
                 "wscie_adr2",
                 "wscie_city",
                 "wscie_state",
-                "wscie_zip"
+                "wscie_zip",
+                pDB_PER
             );
         }
 
-        public void WriteN1Loop1_apsupp(int idVendor, string[] entityCode1, string[] entityCode2)
+        public void WriteN1Loop1_apsupp(int idVendor, string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
         {
             CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressApsupp(idVendor));
 
@@ -145,7 +154,8 @@ namespace EDI_DB.Data
                 "apsupp_addr2",
                 "apsupp_city",
                 "apsupp_state",
-                "apsupp_zip"
+                "apsupp_zip",
+                pDB_PER
             );
         }
 
@@ -160,7 +170,8 @@ namespace EDI_DB.Data
             string Data_addr2,
             string Data_city, 
             string Data_state,
-            string Data_zip
+            string Data_zip,
+            DB_PER pDB_PER = null
         )
         {
             writer.WriteStartElement("N1Loop1");
@@ -182,11 +193,52 @@ namespace EDI_DB.Data
                 }
 
             }
+            if (pDB_PER != null) pDB_PER.Write();
             writer.WriteEndElement(); //N1Loop1
         }
 
-        
-        
+        public class DB_PER
+        {
+            string[] PER01_Code;
+            string PER02;
+            string[] PER03;
+            string PER04;
+            string[] PER05;
+            string PER06;
+            string[] PER07;
+            string PER08;
+            DB_XmlWriter db_xmlwriter;
+
+            public DB_PER(DB_XmlWriter pdb_xmlwriter, string[] pPER01_Code, string pPER02_Name, string pPhone, string pEmail, string pFax)
+            {
+                db_xmlwriter = pdb_xmlwriter;
+                PER01_Code = pPER01_Code;
+                PER02 = pPER02_Name;
+                PER03 = new string[] { "TE", "Telephone" };
+                PER04 = pPhone;
+                PER05 = new string[] { "EM", "Electronic Mail" };
+                PER06 = pEmail;
+                PER07 = new string[] { "FX", "Facsimile" };
+                PER08 = pFax;
+            }
+
+            public void Write()
+            {
+                if ((PER04 + PER06 + PER08).Trim() == "") return;
+
+                db_xmlwriter.WriteSegment(
+                    "PER", "Segment",
+                    "PER01 : Contact Function Code : " + PER01_Code[1], PER01_Code[0],
+                    "PER02 : Name", PER02,
+                    "PER03 : Communication Number Qualifier : " + PER03[1], PER03[0],
+                    "PER04 : Communication Number", PER04,
+                    "PER05 : Communication Number Qualifier : " + PER05[1], PER05[0],
+                    "PER06 : Communication Number", PER06,
+                    "PER07 : Communication Number Qualifier : " + PER07[1], PER07[0],
+                    "PER08 : Communication Number", PER08
+                    );
+            }
+        }
 
         private string Comment(string pComment)
         {

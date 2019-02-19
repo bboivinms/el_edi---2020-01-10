@@ -75,10 +75,6 @@ namespace EDI_RSS
                 // Something unexpected went wrong.
                 LogWriter.WriteMessage(LogEventSource, $"Error caught: {e.Message}");
             }
-            finally
-            {
-                DB_RSS.LogData(Status);
-            }
         }
 
         public void CreateNew()
@@ -117,6 +113,9 @@ namespace EDI_RSS
                     LEFT JOIN cobil ON cobil.ident = cobili.idcobil
                     LEFT JOIN edi_855 ON cocom.ident = edi_855.IdCocom
                     WHERE LEFT(cocom.CR_BY, 4) = 'XEDI' AND edi_855.Status = 'N'
+                    AND (cobil.statut = 'W' OR cobil.statut = 'C' OR cobil.statut IS NULL)
+                    AND (SELECT IFNULL(SUM(cocomi.qty_ord), 0) FROM cocomi WHERE cocomi.idco = cocom.ident) <>
+					    (SELECT IFNULL(SUM(arinvd.qty), 0) FROM arinvd INNER JOIN arinv ON arinvd.ident = arinv.ident WHERE arinvd.idcom = cocom.ident AND arinv.status = 'P') 
                     GROUP BY cocom.ident
                     HAVING (NewValidator <> edi_855.Validator)) AS TmpQuery);
 
@@ -131,6 +130,9 @@ namespace EDI_RSS
                     LEFT JOIN cobil ON cobil.ident = cobili.idcobil
                     LEFT JOIN edi_855 on cocom.ident = edi_855.IdCocom
                     WHERE LEFT(cocom.CR_BY, 4) = 'XEDI' AND edi_855.Status = 'N'
+                    AND (cobil.statut = 'W' OR cobil.statut = 'C' OR cobil.statut IS NULL)
+                    AND (SELECT IFNULL(SUM(cocomi.qty_ord), 0) FROM cocomi WHERE cocomi.idco = cocom.ident) <>
+					    (SELECT IFNULL(SUM(arinvd.qty), 0) FROM arinvd INNER JOIN arinv ON arinvd.ident = arinv.ident WHERE arinvd.idcom = cocom.ident AND arinv.status = 'P') 
                     GROUP BY cocom.ident
                     HAVING (NewValidator <> edi_855.Validator)) AS TempQuery;
 
@@ -151,7 +153,13 @@ namespace EDI_RSS
                         edi_855.ident AS edi_855_ident, edi_855.filename AS edi_855_filename
                 FROM cocom 
                 INNER JOIN edi_855 ON edi_855.idcocom = cocom.ident
-                WHERE LEFT(cocom.CR_BY, 4) = 'XEDI' AND edi_855.Status = 'N' AND edi_855.Sent = false
+                LEFT JOIN cocomi ON cocomi.idco = cocom.ident
+                WHERE 
+                        LEFT(cocom.CR_BY, 4) = 'XEDI' 
+                        AND edi_855.Status = 'N' 
+                        AND edi_855.Sent = false
+                        AND (SELECT IFNULL(SUM(cocomi.qty_ord), 0) FROM cocomi WHERE cocomi.idco = cocom.ident) <>
+					        (SELECT IFNULL(SUM(arinvd.qty), 0) FROM arinvd INNER JOIN arinv ON arinvd.ident = arinv.ident WHERE arinvd.idcom = cocom.ident AND arinv.status = 'P') 
                 GROUP BY cocom.ident
                 ");
 
@@ -207,8 +215,13 @@ namespace EDI_RSS
                 LEFT JOIN cobili ON cobili.idcom = cocom.ident AND cobili.idprod = cocomi.IDPROD
                 LEFT JOIN cobil ON cobil.ident = cobili.IDCOBIL
                 LEFT JOIN ivprixdcli ON (ivprixdcli.idclient = cocom.clientid AND ivprixdcli.idprod = cocomi.idprod AND IFNULL(ivprixdcli.codecli, '') <> '')
-                WHERE LEFT(cocom.CR_BY, 4) = 'XEDI' AND edi_855.Status = 'N' AND edi_855.Sent = false
-                      AND cocom.ident = ?cocom_ident AND cocomi.line = ?cocomi_line
+                WHERE 
+                        LEFT(cocom.CR_BY, 4) = 'XEDI' 
+                    AND edi_855.Status = 'N' 
+                    AND edi_855.Sent = false
+                    AND (cobil.statut = 'W' OR cobil.statut = 'C')
+                    AND cocom.ident = ?cocom_ident 
+                    AND cocomi.line = ?cocomi_line
                 ", Params);
         }
     }

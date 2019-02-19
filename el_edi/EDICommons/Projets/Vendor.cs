@@ -48,28 +48,37 @@ namespace EDI_RSS
             return "";
         }
         
-        public void After_Setup()
+        public bool After_Setup(bool SetupRss)
         {
             string DB_VIVA_name = "";
             string DB_WEB_name = "";
-            IDataRecord IDataEdi_path;
 
-            /* IDataRecord RSS_edi_rss;
-            RSS_edi_rss = DB_RSS.GetDBConnection();
-            if (RSS_edi_rss != null) DB_VIVA_name = RSS_edi_rss["edi_db_viva"].ToString(); */
+            if (gIDataEdi_path == null)
+            {
+                DB_RSS.LogData("ERROR: Could not get routing information : " + NL + Status);
+                return false;
+            }
 
-            if (gDataIDedi_path != null) { IDataEdi_path = gDataIDedi_path; }
-            else if (gDataIDedi_rss != null) { IDataEdi_path = gDataIDedi_rss; }
-            else return;
-            // Missing path if port id = ETE etc. before processing information...
+            if (SetupRss)
+            {
+                gRss_request = gIDataEdi_path["rss_request"].ToString();
+                gRss_client = gIDataEdi_path["rss_client"].ToString();
+            }
+            else
+            {
+                EdiPath = gIDataEdi_path["IDE_path"].ToString().ToLower();
+            }
+            
+            DB_VIVA_name = gIDataEdi_path["edi_db_viva"].ToString();
+            DB_WEB_name = gIDataEdi_path["edi_db_web"].ToString();
 
-            DB_VIVA_name = IDataEdi_path["edi_db_viva"].ToString();
-            DB_WEB_name = IDataEdi_path["edi_db_web"].ToString();
+            wscie = gIDataEdi_path["edi_code"].ToString().Substring(0, 1);
+            IDE = gIDataEdi_path["edi_code"].ToString().Substring(1, 2);
 
-            if (IDataEdi_path["edi_code"].ToString().Substring(0, 1).ToUpper() == "E") vendor.SubVendor = new Vendor_EL();
-            if (IDataEdi_path["edi_code"].ToString().Substring(0, 1).ToUpper() == "M") vendor.SubVendor = new Vendor_MS();
+            if (gIDataEdi_path["edi_code"].ToString().Substring(0, 1).ToUpper() == "E") vendor.SubVendor = new Vendor_EL();
+            if (gIDataEdi_path["edi_code"].ToString().Substring(0, 1).ToUpper() == "M") vendor.SubVendor = new Vendor_MS();
 
-            EdiPath = IDataEdi_path["edi_path"].ToString();
+            EdiPath = gIDataEdi_path["edi_path"].ToString();
             
             vendor.SetupViva(DB_VIVA_name);
             vendor.SetupWeb(DB_WEB_name);
@@ -79,6 +88,8 @@ namespace EDI_RSS
 
             DB_VIVA = new EDI_DB.Data.CDB_VIVA(DB_VIVA_Connection);
             DB_WEB = new EDI_DB.Data.CDB_WEB(DB_WEB_Connection);
+
+            return true;
 
         }
     }

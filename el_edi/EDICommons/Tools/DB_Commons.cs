@@ -6,8 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EDI_DB.Data;
-using static EDI_DB.Data.Base;
 using EDI_RSS;
+using static EDI_DB.Data.Base;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -51,8 +51,12 @@ namespace EDI_DB.Data
         public static string arclient_short_name;
         public static long IDedi_rss = 0;
 
-        public static IDataRecord gDataIDedi_rss;
-        public static IDataRecord gDataIDedi_path;
+        public static string gRss_request;
+        public static string gRss_client;
+
+        // public static IDataRecord gDataIDedi_rss;
+        // public static IDataRecord gDataIDedi_path;
+        public static IDataRecord gIDataEdi_path;
 
         public static bool TimePassed(int hour, int minute)
         {
@@ -68,7 +72,11 @@ namespace EDI_DB.Data
             if (IDE.Substring(0, 1) == "L") { where = "data_live"; }
             if (IDE.Substring(0, 1) == "T") { where = "data_test"; }
 
-            if(TheType == "routing_out" || TheType == "routing_in")
+            if (IDE.Substring(1, 1) == "L")
+            {
+                RSS_send_path = $@"C:\TMP";
+            }
+            else if (TheType == "routing_out" || TheType == "routing_in")
             {
                 RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\routing\{wscie}{IDE}_routing\{wscie}{IDE}_{TheType}\Send";
             }
@@ -76,8 +84,6 @@ namespace EDI_DB.Data
             {
                 RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\envl\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\Send";
             }
-
-
         }
 
         public static void SetupClient(int pArclient_ident)
@@ -138,12 +144,18 @@ namespace EDI_DB.Data
         }
 
 
-        public static IDataRecord GetEdi_arclient()
+        public static IDataRecord GetEdi_partner(string table)
         {
             if (IDE == "") return null;
             if (edi_doc_number != 810 && edi_doc_number != 855 && edi_doc_number != 856 && edi_doc_number != 850) return null;
             if (arclient_ident <= 0) return null;
             if (wscie == "") return null;
+            if (table != "edi_arclient" && table != "edi_apsupp") return null;
+
+            string ID = "";
+            string inner_log = "";
+            if (table == "edi_arclient") { ID = "idclient"; }
+            if (table == "edi_apsupp") { ID = "idvendor"; }
 
             List<IDataRecord> results;
 
@@ -159,13 +171,45 @@ namespace EDI_DB.Data
                     X{IDE}_{edi_doc_number} AS IDE_status,
                     X{IDE}_path AS IDE_path,
                     edi_path.*
-                    FROM edi_arclient
+                    FROM {table}
 				INNER JOIN
 					edi_path ON X{IDE}_path = edi_path
                 WHERE
-                    idclient = ?idclient AND
+                    {ID} = ?idclient AND
                     wscie = ?wscie
                 ", Params);
+
+            if (results == null) { return null; }
+            if (results.Count == 0) { return null; }
+
+            IDataRecord result = results[0];
+
+            inner_log += "Wscie: " + wscie + NL;
+            inner_log += "IDE: " + IDE + NL;
+            inner_log += "Filename to be parsed: " + Filename + NL;
+            inner_log += "arclient_ident: " + arclient_ident.ToString() + NL;
+            inner_log += "edi_doc_number: " + edi_doc_number.ToString() + NL;
+
+            alias = result["alias"].ToString();
+
+            DB_RSS.LogData(inner_log);
+
+            Status += inner_log;
+
+            return result;
+        }
+
+
+        public static IDataRecord GetIDedi_path(string edi_path)
+        {
+            List<IDataRecord> results;
+
+            Dictionary<string, string> Params = new Dictionary<string, string>();
+
+            Params.Clear();
+            Params.Add("?edi_path", edi_path);
+
+            results = DB_RSS.HExecuteSQLQuery(@"SELECT * FROM edi_path WHERE UPPER(edi_path) = UPPER(?edi_path)", Params);
 
             if (results == null) { return null; }
             if (results.Count == 0) { return null; }

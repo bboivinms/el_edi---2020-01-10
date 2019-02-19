@@ -28,7 +28,7 @@ namespace EDI_RSS.Helpers
 
             ClientID = Data["arinv_custid"].ToString();
 
-            OutputFileName = $"{ClientID}-810OUT-{Data["arinv_ident"].ToString()}-{Base.ToAlphaNumeric(Data["arinv_po"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
+            OutputFileName = $"{ClientID.PadLeft(5, '0')}-810-OUT-{Data["arinv_ident"].ToString()}-{Base.ToAlphaNumeric(Data["arinv_po"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
 
             XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
 

@@ -1,9 +1,16 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using EDICommons;
+using EDI_RSS;
+using System.IO;
 using static EDI_DB.Data.Base;
+using EDI_RSS.Helpers;
+using EDICommons.Tools;
 
 namespace EDI_RSS
 {
@@ -15,13 +22,8 @@ namespace EDI_RSS
         {
             try
             {
-                program_rss = new Program_RSS();
-                program_rss.Setup(args);
-
-                if (!IsProcessArgs) return;
-
-                program_rss.ProcessRSS();
-
+                program_rss = new Program_RSS(args);
+                program_rss.Routing(args);
             }
             catch (Exception ex)
             {
@@ -42,9 +44,7 @@ namespace EDI_RSS
         public bool ProcessArgs(string[] args)
         {
             bool ParamsOK = args.Length >= 5;
-
-            ProcessVendor();
-
+            
             UseSystem = ParamsOK ? args[0].ToLower() : "Unknown";
 
             program_rss.Test();
@@ -62,12 +62,7 @@ namespace EDI_RSS
             }
             return ParamsOK;
         }
-
-        public void ProcessVendor()
-        {
-            vendor = new Vendor();
-        }
-
+        
         public void UpdateFilename(string tablaname, string filename, string edi_ident)
         {
             Params.Clear();
@@ -80,12 +75,12 @@ namespace EDI_RSS
 
     }
 
-    public partial class Program_RSS
+    public partial class Program_RSS : Program_Base
     {
         public static string EdiFilename = "";
 
 
-        public Program_RSS()
+        public Program_RSS(string[] args)
         {
         }
 
@@ -94,120 +89,191 @@ namespace EDI_RSS
 
         public string PortId_code;
 
-        public void Setup(string[] args)
+        public bool Routing(string[] args)
         {
             LogEventSource = "EDI RSS Processor";
             ProgramId = (DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds.ToString();
 
-            if (!(IsProcessArgs = ProcessArgs(args))) DB_RSS.LogData(ErrorMessage, LogEventSource);
-
+            vendor = new Vendor();
             DB_RSS = new EDI_DB.Data.CDB_RSS(vendor.SetupRSS("rss_bus"));
 
+            if (!(IsProcessArgs = ProcessArgs(args))) DB_RSS.LogData(ErrorMessage, LogEventSource);
+            
+            //** FIRST ROUTING **//
+            if (PortId.Substring(1, 1) == ":"){ return P_STEP_1(); }
+
+            //** SECOND ROUTING **//
+            if (PortId == "ET_fox_to_rss"){ return P_STEP_2(); }
+
+            //** LAST ROUTING **//
+            PortId_code = PortId.Substring(0, 3).ToUpper();
+            if (PortId == PortId_code + "_routing_out" || PortId.Substring(PortId.Length - 3) == "AS2") { return RoutingOut(); }
+            if (PortId == PortId_code + "_routing_in") { return RoutingIn(); }
+
+            return false;
+        }
+
+        public bool P_STEP_1()
+        {
+            // 254: System Scheduler : This runs the code to insert into edi_rss the path and document to be processed
+            //      The port ID will always be a path and second character is a colon (:)
+            // "Live" "edi_rss" "D:\Vivael\data" "855P-ALL" "[ErrorMessage]"
+            // "Test" "edi_rss" "E:\TEST_VIVA_ENV\CLIENT_ARIVA_DATA" "855P-ALL" "[ErrorMessage]"
+            gIDataEdi_path = GetIDedi_path(PortId.ToString());
+            if (!vendor.After_Setup(false)) return false;
+            
+            if (gRss_client != "ALL") return false;
+            if (gRss_request != "810P" && gRss_request != "850P" && gRss_request != "855P" && gRss_request != "856P") return false;
+
+            Params.Clear();
+            Params.Add("?rss_client", gRss_client);
+            Params.Add("?rss_request", gRss_request);
+            Params.Add("?rss_datapath", PortId);
+
+            IDedi_rss = DB_VIVA.HExecuteSQLNonQuery(@"INSERT INTO rss_bus.edi_rss (rss_client, rss_request, rss_datapath) VALUES (?rss_client, ?rss_request, ?rss_datapath)", Params);
+            if (IDedi_rss <= 0) return false;
+            EdiFilename = IDedi_rss.ToString() + $"-{gRss_request}-{gRss_client}.txt";
+
+            DisPatch_IDedi_rss();
+            
+            return true;
+        }
+        
+        public bool P_STEP_2()
+        {
+            // PortID: ET_fox_to_rss
+            // "Test" "edi_rss" "[PortId]" "[Filename]" ""
+            // Filename should contain a valid IDedi_rss
+            // Foxpro: Form_cobil: Get_Bil() Creates file with IDedi_rss that it inserted in DB
+
+            // get IDedi_rss from FileName, ID stops at first non numeric character, so extra comments can be used;
+            IDedi_rss = GetFirstInt(Filename);
+            gIDataEdi_path = GetIdedi_rss();
+
+            if (!vendor.After_Setup(true)) return false;
+
+            if (gRss_request == "855P" && gRss_client == "ALL") { new Program_855(); return ProcessStep2_After(); }
+            if (gRss_request == "856P" && gRss_client == "ALL") { new Program_856(); return ProcessStep2_After(); }
+            if (gRss_request == "810P" && gRss_client == "ALL") { new Program_810(); return ProcessStep2_After(); }
+            if (gRss_request == "850P" && gRss_client == "ALL") { new Program_850(); return ProcessStep2_After(); }
+
+            return false;
+        }
+
+        public bool ProcessStep2_After()
+        {
+            SetIDedi_RSS_done();
+            return true;
+        }
+
+        public bool RoutingIn()
+        {
+            return false;
+        }
+
+        public bool RoutingOut()
+        {
             // If using a PortId, it should pertain to one client or supplier only
             // You will need to check the client + portid + if routing has been configured for the document type
             // Need to get type of document to see if its a arclient or apsupp
-            PortId_code = PortId.Substring(0, 3).ToUpper();
-            if (Array.IndexOf(PortIds, PortId_code) >= 0)
+            
+            if (Array.IndexOf(PortIds, PortId_code) < 0)
             {
-                wscie = PortId_code.Substring(0, 1);
-                IDE = PortId_code.Substring(1, 2);
-
-                if (PortId == PortId_code + "_routing_out" || PortId.Substring(PortId.Length-3) == "AS2")
-                {
-                    // Only on outgoing files that we have control overfilenames
-                    // Going to have to check port if its routing in or routing out
-
-                    arclient_ident = GetInt(Filename.Substring(0, 5));
-                    edi_doc_number = GetInt(Filename.Substring(6, 3));
- 
-                    EdiProcess = "Routing Out or AS2";
-
-                    Status += "PortId: " + PortId_code + NL;
-                    Status += "PortId_code: " + PortId_code + NL;
-                    Status += "Wscie: " + wscie + NL;
-                    Status += "IDE: " + IDE + NL;
-                    Status += "Filename to be parsed: " + Filename + NL;
-                    Status += "arclient_ident: " + arclient_ident.ToString() + NL; 
-                    Status += "edi_doc_number: " + edi_doc_number.ToString() + NL;
-
-                    if (arclient_ident <= 0 || edi_doc_number <= 0)
-                    {
-                        Status += "Parse error" + NL;
-                        DB_RSS.LogData("ERROR: File not properly formatted: " + NL + Status);
-                        return;
-                    }
-                    
-                    if (edi_doc_number == 810 || edi_doc_number == 855 || edi_doc_number == 856) // we are sending information out to a buyer (arclient)
-                    {
-                        Status += "Sending information out to a buyer (arclient)" + NL;
-                        gDataIDedi_path = GetEdi_arclient();
-                        if(gDataIDedi_path != null)
-                        {
-                            alias = gDataIDedi_path["alias"].ToString();
-                            IDE_status = gDataIDedi_path["IDE_status"].ToString().ToLower();
-                            EdiPath = gDataIDedi_path["IDE_path"].ToString().ToLower();
-                        }
-
-                        if(IDE_status == "send" || IDE_status == "create")
-                        {
-                            string FileContents = "Empty";
-                            
-                            SetRouting_out_path("routing_out");
-                            // Open the stream and read it back.
-
-                            DB_RSS.LogData("Filepath : " + Filepath + NL);
-
-                            using (StreamReader sr = File.OpenText(Filepath)){ FileContents = sr.ReadToEnd(); }
-
-                            if (PortId == PortId_code + "_routing_out" && IDE_status == "send")
-                            {
-                                DB_RSS.LogData($"Sending: file to port {wscie}{IDE}_{alias}_AS2 " + NL + "FileName: " + Filename + NL + FileContents);
-                                SetRouting_out_path("AS2");
-                                File.Copy(Filepath, Path.Combine(RSS_send_path, Filename));
-
-                            }
-                            else
-                            {
-                                vendor.After_Setup();
-                                Status += "ErrorMessage: " + ErrorMessage + NL;
-                                if (ErrorMessage == "")
-                                {
-                                    UpdateSent("edi_855", Filename);
-                                }
-                                else
-                                {
-                                    DB_RSS.LogData($"ErrorMessage: " + ErrorMessage + NL);
-                                }
-                            }
-
-                        }
-                    }
-
-                    if (edi_doc_number == 850) // we are sending information out to a vendor (apsupp)
-                    {
-                        Status += "Sending information out to a vendor (apsupp)" + NL;
-                    }
-
-                    if(gDataIDedi_path == null)
-                    {
-                        DB_RSS.LogData("ERROR: Could not get routing information : " + NL + Status);
-                    }
-                }
-                else
-                {
-                    DB_RSS.LogData("ERROR: Port not configured: " + NL + Status);
-                }
-            }
-            else
-            {
-                // General call to edi_rss
-                PortId_code = "";
-                SetIDedi_rss();
+                return vendor.After_Setup(false);
             }
 
-            vendor.After_Setup();
+            wscie = PortId_code.Substring(0, 1);
+            IDE = PortId_code.Substring(1, 2);
+
+            // Only on outgoing files that we have control overfilenames
+            // Going to have to check port if its routing in or routing out
+
+            arclient_ident = GetInt(Filename.Substring(0, 5));
+            edi_doc_number = GetInt(Filename.Substring(6, 3));
+
+            EdiProcess = "Routing Out or AS2";
+
+            Status += "PortId: " + PortId_code + NL;
+            Status += "PortId_code: " + PortId_code + NL;
+            Status += "Wscie: " + wscie + NL;
+            Status += "IDE: " + IDE + NL;
+            Status += "Filename to be parsed: " + Filename + NL;
+            Status += "arclient_ident: " + arclient_ident.ToString() + NL;
+            Status += "edi_doc_number: " + edi_doc_number.ToString() + NL;
+
+            if (arclient_ident <= 0 || (edi_doc_number != 810 && edi_doc_number != 855 && edi_doc_number != 856 && edi_doc_number != 850))
+            {
+                Status += "Parse error" + NL;
+                DB_RSS.LogData("ERROR: File not properly formatted: " + NL + Status);
+                return false;
+            }
+
+            if (edi_doc_number == 810 || edi_doc_number == 855 || edi_doc_number == 856)
+            {
+                Status += "Sending information out to a buyer (arclient)" + NL;
+                gIDataEdi_path = GetEdi_partner("edi_arclient");
+            }
+
+            if (edi_doc_number == 850)
+            {
+                Status += "Sending information out to a vendor (apsupp)" + NL;
+                gIDataEdi_path = GetEdi_partner("edi_apsupp");
+            }
+
+            if (!vendor.After_Setup(false))
+            {
+                return false;
+            }
+
+            alias = gIDataEdi_path["alias"].ToString();
+            IDE_status = gIDataEdi_path["IDE_status"].ToString().ToLower();
+
+            if (IDE_status == "send" || IDE_status == "create")
+            {
+                string FileContents = "Empty";
+
+                DB_RSS.LogData("Filepath : " + Filepath + NL);
+
+                using (StreamReader sr = File.OpenText(Filepath)) { FileContents = sr.ReadToEnd(); }
+
+                if (PortId == PortId_code + "_routing_out" && IDE_status == "send")
+                {
+                    DB_RSS.LogData($"Sending: file to port {wscie}{IDE}_{alias}_AS2 " + NL + "FileName: " + Filename + NL + FileContents);
+                    SetRouting_out_path("AS2");
+                    File.Copy(Filepath, Path.Combine(RSS_send_path, Filename));
+
+                }
+                else if (PortId.Substring(PortId.Length - 3) == "AS2")
+                {
+                    Status += "ErrorMessage: " + ErrorMessage + NL;
+                    if (ErrorMessage == "")
+                    {
+                        UpdateSent("edi_" + edi_doc_number, Filename);
+                    }
+                    else
+                    {
+                        DB_RSS.LogData($"ErrorMessage: " + ErrorMessage + NL);
+                    }
+                }
+            }
+
+            return true;
+
         }
-        
+
+        public void UpdateSent(string table, string pFilename)
+        {
+            if (table != "edi_855" && table != "edi_810" && table != "edi_856" && table != "edi_850")
+            {
+                DB_RSS.LogData($"ERROR: DB_RSS(): UpdateSent: Abort: Table not found {table} (Filename: {pFilename})");
+                return;
+            }
+
+            Params.Clear();
+            Params.Add("?Filename", pFilename);
+            DB_VIVA.HExecuteSQLQuery(@"UPDATE " + table + " SET sent = true WHERE LOCATE(Filename, ?Filename); ", Params);
+        }
+
         public void DisPatch_IDedi_rss()
         {
             if (EdiFilename != "")
@@ -240,23 +306,6 @@ namespace EDI_RSS
             return result;
         }
 
-        public IDataRecord GetIDedi_path(string edi_path)
-        {
-            List<IDataRecord> results;
-
-            Params.Clear();
-            Params.Add("?edi_path", edi_path);
-
-            results = DB_RSS.HExecuteSQLQuery(@"SELECT * FROM edi_path WHERE edi_path = ?edi_path", Params);
-
-            if (results == null) { return null; }
-            if (results.Count == 0) { return null; }
-
-            IDataRecord result = results[0];
-
-            return result;
-        }
-
         public void SetIDedi_RSS_done()
         {
             Params.Add("?rss_status", Status);
@@ -267,26 +316,6 @@ namespace EDI_RSS
                                                     rss_status = ?rss_status, 
                                                     rss_error = ?rss_error      
                                             WHERE IDedi_rss = ?IDedi_rss", Params);
-        }
-
-        public void SetIDedi_rss()
-        {
-            // get IDedi_rss from FileName, ID stops at first non numeric character, so extra comments can be used;
-            // get rss_request + other info in table for dispatching
-            // do a MySQL query based on the ID in FileName
-            IDedi_rss = GetFirstInt(Filename);
-            gDataIDedi_path = GetIDedi_path(PortId.ToString());
-            if (gDataIDedi_path == null)
-            {
-                gDataIDedi_rss = GetIdedi_rss();
-                wscie = gDataIDedi_rss["edi_code"].ToString().Substring(0, 1);
-                IDE = gDataIDedi_rss["edi_code"].ToString().Substring(1, 2);
-            }
-            else
-            {
-                wscie = gDataIDedi_path["edi_code"].ToString().Substring(0, 1);
-                IDE = gDataIDedi_path["edi_code"].ToString().Substring(1, 2);
-            }
         }
         
         public void SetParams(string TheUseSystem, string TheTransactionCode, string ThePortId, string TheFilename, string TheErrorMessage)
