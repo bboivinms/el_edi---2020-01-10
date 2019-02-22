@@ -21,7 +21,6 @@ namespace EDI_RSS.Helpers
         
         public Xml855Writer(IDataRecord TheDataCocom, List<IDataRecord> TheDataCocomi)
         {
-            string inner_log = "";
 
             DataCocom = TheDataCocom;
             CDataCocom = new CIDataRecord(DataCocom);
@@ -29,27 +28,15 @@ namespace EDI_RSS.Helpers
 
             ClientID = DataCocom["cocom_clientid"].ToString();
 
-            OutputFileName = $"{ClientID}-855-{DataCocom["cocom_ident"].ToString()}-{Base.ToAlphaNumeric(DataCocom["cocom_clientpo"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
+            OutputFileName = $"{ClientID.PadLeft(5, '0')}-855-OUT-{DataCocom["cocom_ident"].ToString()}-{Base.ToAlphaNumeric(DataCocom["cocom_clientpo"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
 
             edi_doc_number = 855;
             arclient_ident = GetInt(ClientID);
 
-            gDataIDedi_path = GetEdi_arclient();
+            gIDataEdi_path = GetEdi_partner("edi_arclient");
 
-            if (gDataIDedi_path != null)
+            if (gIDataEdi_path != null)
             {
-                inner_log += "Wscie: " + wscie + NL;
-                inner_log += "IDE: " + IDE + NL;
-                inner_log += "Filename to be parsed: " + Filename + NL;
-                inner_log += "arclient_ident: " + arclient_ident.ToString() + NL;
-                inner_log += "edi_doc_number: " + edi_doc_number.ToString() + NL;
-
-                alias = gDataIDedi_path["alias"].ToString();
-
-                DB_RSS.LogData(inner_log);
-
-                Status += inner_log;
-
                 SetRouting_out_path("xml_x12");
 
                 XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");

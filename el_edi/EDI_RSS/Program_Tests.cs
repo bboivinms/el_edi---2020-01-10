@@ -28,10 +28,10 @@ namespace EDI_RSS
         //                      // Test  // dispatches the file in (\\192.168.1.252\edi_test) and is processed by RSSBus
         // Filename             // 000P-ALL to process all
 
-        public void Test_855_STEP_1() { SetParams("Local", "edi_rss", "NONE", "855P-ALL", ""); }
-        public void Test_810_STEP_1() { SetParams("Local", "edi_rss", "NONE", "810P-ALL", ""); }
-        public void Test_856_STEP_1() { SetParams("Local", "edi_rss", "NONE", "856P-ALL", ""); }
-        public void Test_850_STEP_1() { SetParams("Local", "edi_rss", "NONE", "850P-ALL", ""); }
+        public void Test_855_STEP_1() { SetParams("Local", "edi_rss", @"C:\VIVAEL\DATA", "855P-ALL", ""); }
+        public void Test_810_STEP_1() { SetParams("Local", "edi_rss", @"C:\VIVAEL\DATA", "810P-ALL", ""); }
+        public void Test_856_STEP_1() { SetParams("Local", "edi_rss", @"C:\VIVAEL\DATA", "856P-ALL", ""); }
+        public void Test_850_STEP_1() { SetParams("Local", "edi_rss", @"C:\VIVAEL\DATA", "850P-ALL", ""); }
 
         // Activates Program_000 and stores corresponding 000 XML files in RSS_send_path (C:\TMP for Local)
         // CreateNew()          // Creates new records
@@ -43,17 +43,17 @@ namespace EDI_RSS
         // Parameters
         // Filename             // Starts with the corresponding IDedi_rss WHERE rss_done = 0
 
-        public void Test_855_STEP_2() { SetParams("Local", "edi_rss", "NONE", "13-855P-ALL.txt", ""); }
-        public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "NONE", "3-810P-ALL.txt", ""); }
-        public void Test_856_STEP_2() { SetParams("Local", "edi_rss", "NONE", "5-856P-ALL.txt", ""); }
-        public void Test_850_STEP_2() { SetParams("Local", "edi_rss", "NONE", "2-850P-ALL.txt", ""); }
+        public void Test_855_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "110-855P-ALL.txt", ""); }
+        public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "3-810P-ALL.txt", ""); }
+        public void Test_856_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "5-856P-ALL.txt", ""); }
+        public void Test_850_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "6-850P-ALL.txt", ""); }
 
         // Processes The filename to be set as sent that was processed in 000-STEP-2
         // edi_000.Sent = true WHERE Filename = { Filename }
 
         // Parameters
         // Filename             // Changes every time STEP-2 is processed, references a edi_000.Filename
-        public void Test_855_STEP_3() { SetParams("Local", "855", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
+        public void Test_855_STEP_3() { SetParams("Local", "855", "ETI_routing_out", "30037-855-12135-4501000073-1544798977.26278", ""); }
         public void Test_810_STEP_3() { SetParams("Local", "810", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
         public void Test_856_STEP_3() { SetParams("Local", "856", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
         public void Test_850_STEP_3() { SetParams("Local", "850", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }

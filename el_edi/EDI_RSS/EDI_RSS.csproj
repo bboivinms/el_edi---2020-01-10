@@ -72,7 +72,6 @@
   <ItemGroup>
     <Compile Include="Data\DB_810.cs" />
     <Compile Include="Data\DB_855.cs" />
-    <Compile Include="Data\DB_RSS.cs" />
     <Compile Include="WscieBuyer\Xml850Writer.cs" />
     <Compile Include="WscieVendor\Xml856Writer.cs" />
     <Compile Include="WscieVendor\Xml810Writer.cs" />

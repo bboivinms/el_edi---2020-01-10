@@ -31,7 +31,7 @@ namespace EDI_RSS.Helpers
 
             try
             {
-                CreateNew();
+                // CreateNew();
 
                 List<IDataRecord> RawData = GetData();
 
@@ -82,14 +82,20 @@ namespace EDI_RSS.Helpers
                 SELECT  
                         popo.ident AS popo_ident, popo.idvendor AS popo_idvendor, popo.pono AS popo_pono, 
                         popo.desc AS popo_desc, popo.po_dte AS popo_po_dte, popo.requ_dte AS popo_requ_dte,
+                        popo.contact as popo_contact, popo.contactfax AS popo_contactfax, popo.contactemail AS popo_contactemail,
+                        popo.del_name AS popo_del_name, popo.prt_note AS popo_prt_note,
                         apsupp.TERMS_DAYS AS apsupp_terms_days, apsupp.DISCOUNT_DAYS AS apsupp_discount_days, apsupp.DISCOUNT_RATE AS apsupp_discount_rate,
-                        edi_850.ident AS edi_850_ident, edi_850.filename AS edi_850_filename
+                        edi_850.ident AS edi_850_ident, edi_850.filename AS edi_850_filename,
+                        wsuser.name AS wsuser_name, 
+                        IF(IFNULL(wsuser.email, '') = '', wscie.email, wsuser.email) AS wsuser_email, 
+                        IF(IFNULL(wsuser.tel, '') = '', wscie.cie_tel, wsuser.tel) AS wsuser_tel,
+                        wscie.cie_name AS wscie_cie_name, wscie.cie_fax AS wscie_cie_fax, wscie.cie_tel AS wscie_cie_tel, wscie.email AS wscie_email
                 FROM popo 
                 INNER JOIN apsupp ON popo.IDVENDOR = apsupp.ident
                 INNER JOIN edi_850 ON edi_850.popo_ident = popo.ident
-                WHERE edi_850.Sent = false 
-                      AND
-                      popo.ident = 101
+                LEFT JOIN wsuser ON popo.cr_by = wsuser.code
+                INNER JOIN wscie ON wscie.cie_id = 1
+                WHERE edi_850.Sent = false
                 ");
         }
 
@@ -101,13 +107,27 @@ namespace EDI_RSS.Helpers
             return DB_VIVA.HExecuteSQLQuery(
                 @"SELECT  
                         popoi.line AS popoi_line, popoi.qty_ord AS popoi_qty_ord, popoi.COST AS popoi_cost, 
-                        popoi.date_rcv AS popoi_date_rcv, popoi.unite AS popoi_unite, popoi.desc AS popoi_desc,
-                        ivprod.code AS ivprod_code,
-                        edi_850.ident AS edi_850_ident
+                        popoi.date_rcv AS popoi_date_rcv, popoi.unite AS popoi_unite, IF(IFNULL(popoi.desc, '') = '', ivprod.desc, popoi.desc) AS popoi_desc,
+                        ivprod.ident AS ivprod_ident, ivprod.code AS ivprod_code, ivprod.desc AS ivprod_desc,
+                        edi_850.ident AS edi_850_ident,
+                        IFNULL((SELECT 
+                            SUBSTRING_INDEX( GROUP_CONCAT(CAST(ref_fourn AS CHAR) ORDER BY ident DESC), ',', 1 ) AS ref_fourn
+                            FROM ivprix WHERE idvendor = popo.idvendor AND ref_fourn <> '' 
+                            AND LENGTH(ref_fourn) < 12
+                            AND LENGTH(ref_fourn) >= 6
+                            AND ivprix.idproduit = popoi.idprod
+                            GROUP BY idproduit LIMIT 1), '') AS ivprix_ref_fourn,
+                        ivxcoprod.item_id_print AS ivxcoprod_item_id_print
                 FROM popo 
                 INNER JOIN popoi ON popo.ident = popoi.idpo
                 INNER JOIN ivprod ON ivprod.ident = popoi.idprod
                 INNER JOIN edi_850 ON edi_850.popo_ident = popo.ident
+                LEFT JOIN ivxcoprod ON ivxcoprod.idprod = (
+									SELECT idprod FROM ivxcoprod
+									WHERE ivxcoprod.idprod = popoi.idprod
+									ORDER BY ident_ai
+									LIMIT 1
+								)
                 WHERE   edi_850.Sent = false 
                         AND
                         popo.ident = ?popo_ident
@@ -131,13 +151,23 @@ namespace EDI_RSS.Helpers
 
             ClientID = Data["popo_idvendor"].ToString();
 
-            OutputFileName = $"{ClientID}-850OUT-{Data["popo_ident"].ToString()}-{Base.ToAlphaNumeric(Data["popo_pono"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
+            OutputFileName = $"{ClientID.PadLeft(5, '0')}-850-OUT-{Data["popo_ident"].ToString()}-{Base.ToAlphaNumeric(Data["popo_pono"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
 
-            XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
+            edi_doc_number = 850;
+            arclient_ident = GetInt(ClientID);
 
-            Status += "Xml850Writer " + NL;
-            Status += "OutputFileName: " + OutputFileName + NL;
-            Status += "XmlFilePath: " + XmlFilePath + NL;
+            gIDataEdi_path = GetEdi_partner("edi_apsupp");
+
+            if (gIDataEdi_path != null)
+            {
+                SetRouting_out_path("xml_x12");
+
+                XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
+
+                Status += "Xml850Writer " + NL;
+                Status += "OutputFileName: " + OutputFileName + NL;
+                Status += "XmlFilePath: " + XmlFilePath + NL;
+            }
         }
 
         public void Write(Program_850 mysql)
@@ -171,7 +201,7 @@ namespace EDI_RSS.Helpers
                 //BEG segment
                 WriteSegment("BEG", "Segment", "BEG01 : Transaction Set Purpose Code: Fixed: Original", "00",
                                                "BEG02 : Purchase Order Type Code: Fixed: Stand-alone Order", "SA",
-                                               "BEG03 : Purchase Order Number : popo_pono", Data["popo_pono"].ToString(),
+                                              $"BEG03 : Purchase Order Number : popo_pono (popo_ident={Data["popo_ident"].ToString()})", Data["popo_pono"].ToString(),
                                                "BEG04 : Release Number", "",
                                                "BEG05 : Date : popo_po_dte", string.Format("{0:yyyyMMdd}", Data["popo_po_dte"]));
 
@@ -208,10 +238,18 @@ namespace EDI_RSS.Helpers
                                                "DTM02 : Date : popo_requ_dte", string.Format("{0:yyyyMMdd}", Data["popo_requ_dte"]),
                                                "DTM03 : Time", "");
 
-                WriteN1Loop1_wscie(EntityCode1.BY, EntityCode2.BuyerCode);
-                WriteN1Loop1_apsupp(ClientId, EntityCode1.VN, EntityCode2.SellerCode);
-                //WriteN1Loop1_wscie(EntityCode1.ST, EntityCode2.BuyerCode);
+                WriteN9Loop1_MSG("popo_prt_note", Data["popo_prt_note"].ToString());
 
+                DB_PER pDB_PER = null;
+                pDB_PER = new DB_PER(this, PerCode.BD, Data["wsuser_name"].ToString(), Data["wsuser_tel"].ToString(), Data["wsuser_email"].ToString(), Data["wscie_cie_fax"].ToString());
+                WriteN1Loop1_wscie(EntityCode1.BY, EntityCode2.BuyerCode, pDB_PER);
+
+                pDB_PER = new DB_PER(this, PerCode.CN, Data["popo_contact"].ToString(), "", Data["popo_contactemail"].ToString(), Data["popo_contactfax"].ToString());
+                WriteN1Loop1_apsupp(ClientId, EntityCode1.VN, EntityCode2.SellerCode, pDB_PER);
+
+                pDB_PER = new DB_PER(this, PerCode.CN, Data["wscie_cie_name"].ToString(), Data["wscie_cie_tel"].ToString(), Data["wscie_email"].ToString(), Data["wscie_cie_fax"].ToString());
+                WriteN1Loop1_arclient_name(Data["popo_del_name"].ToString(), EntityCode1.ST, EntityCode2.BuyerCode, pDB_PER);
+                
                 //PO1Loop1 avec PIDLoop1
                 foreach (var DataDetail in RawDataDetails)
                 {
@@ -252,13 +290,14 @@ namespace EDI_RSS.Helpers
                 WriteSegment("PO1", "Segment",
                        "PO101 : Assigned Identification : popoi_line * 10", (Convert.ToInt32(TheDataDetails["popoi_line"].ToString()) * 10).ToString(),
                        "PO102 : Quantity Ordered : popoi_qty_ord", TheDataDetails["popoi_qty_ord"].ToString(),
-                       "PO103 : Unit or Basis for Measurement Code : Fixed : Envelope", "EV",
+                       "PO103 : Unit or Basis for Measurement Code : Fixed : Each", "EA",
                        "PO104 : Unit Price: popoi_cost", Convert.ToDecimal(TheDataDetails["popoi_cost"]).ToString("#.##"),
-                       "PO105 : Basis of Unit Price Code: Fixed : Price per Unit of Measure", "UM",
+                       "PO105 : Basis of Unit Price Code: UnitMappings(popoi_unite): " + TheDataDetails["popoi_unite"].ToString()
+                                                        , UnitMappings(TheDataDetails["popoi_unite"].ToString()),
                        "PO106 : Product/Service ID Qualifier: Fixed : Buyer's Part Number", "BP",
-                       "PO107 : Product/Service ID : ivprod_code", TheDataDetails["ivprod_code"].ToString(),
+                      $"PO107 : Product/Service ID : ivprod_code (ivprod_ident={TheDataDetails["ivprod_ident"].ToString()})", TheDataDetails["ivprod_code"].ToString(),
                        "PO108 : Product/Service ID Qualifier: Fixed : Vendor's (Seller's) Part Number", "VP",
-                       "PO109 : Product/Service ID", ""); 
+                       "PO109 : Product/Service ID: ivprix_ref_fourn", TheDataDetails["ivprix_ref_fourn"].ToString()); 
 
                 writer.WriteStartElement("PIDLoop1");
                 writer.WriteAttributeString("type", "Loop");
@@ -268,13 +307,25 @@ namespace EDI_RSS.Helpers
                         "PID02 : Product/Process Characteristic Code:", "",
                         "PID03 : Agency Qualifier Code:", "",
                         "PID04 : Product Description Code:", "",
-                        "PID05 : Description : popoi_desc", TheDataDetails["popoi_desc"].ToString());
+                        "PID05 : Description : popoi_desc [IF NULL: ivprod_desc]", TheDataDetails["popoi_desc"].ToString());
                 }
                 writer.WriteEndElement(); //PIDLoop1
 
+                if (TheDataDetails["ivxcoprod_item_id_print"].ToString() != "")
+                {
+                    writer.WriteStartElement("SACLoop1");
+                    writer.WriteAttributeString("type", "Loop");
+                    {
+                        WriteSegment("MAN", "Segment",
+                            "MAN01 : Marks and Numbers Qualifier : Fixed : Line Item Only", "L",
+                            "MAN02 : Marks and Numbers : ivxcoprod_item_id_print", TheDataDetails["ivxcoprod_item_id_print"].ToString());
+                    }
+                    writer.WriteEndElement(); //SACLoop1
+                }
+
                 //DTM segment
                 WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier : Fixed : Delivery Requested", "002",
-                                               "DTM02 : Date : popoi_date_rcv", string.Format("{0:yyyyMMdd}", TheDataDetails["popoi_date_rcv"]),
+                                               "DTM02 : Date : popo_requ_dte", string.Format("{0:yyyyMMdd}", Data["popo_requ_dte"]),
                                                "DTM03 : Time", "");
             }
             writer.WriteEndElement(); //PO1Loop1

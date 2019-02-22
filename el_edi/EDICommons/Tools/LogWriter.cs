@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static EDI_DB.Data.Base;
 
 namespace EDICommons.Tools
 {
@@ -13,14 +14,16 @@ namespace EDICommons.Tools
         {
             //Write to application log
             //string EventSource = "EDI 850 Processor";
-            string Log = "Application";
+            // string Log = "Application";
 
             try
             {
+                DB_RSS.LogData(Message);
+                /*
                 if (!EventLog.SourceExists(EventSource))
                     EventLog.CreateEventSource(EventSource, Log);
 
-                EventLog.WriteEntry(EventSource, Message, EventLogEntryType.Error, 911);
+                EventLog.WriteEntry(EventSource, Message, EventLogEntryType.Error, 911); */
             }
             catch(Exception)
             {
