@@ -103,6 +103,25 @@ namespace EDI_DB.Data
             );
         }
 
+        public void WriteN1Loop1_arclient_name(string arclient_name, string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
+        {
+            CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclientName(arclient_name));
+
+            if (data_record == null) return;
+
+            WriteN1Loop1(entityCode1, entityCode2, data_record,
+                "iddel_addr",
+                data_record["iddel_addr"],
+                "arclient_name",
+                "arclient_addr1",
+                "arclient_addr2",
+                "arclient_city",
+                "arclient_state",
+                "arclient_zip",
+                pDB_PER
+            );
+        }
+
         public void WriteN1Loop1_ffaddr(int arinv_ident, string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
         {
             string postalCode = DB_VIVA.GetPostalCode(arinv_ident);
@@ -157,6 +176,19 @@ namespace EDI_DB.Data
                 "apsupp_zip",
                 pDB_PER
             );
+        }
+
+        public void WriteN9Loop1_MSG(string Comment_MSG, string Segment_MSG)
+        {
+            writer.WriteStartElement("N9Loop1");
+            writer.WriteAttributeString("type", "Loop");
+            {
+                WriteSegment("N9", "Segment", "N901 : Reference Identification Qualifier: Mutually Defined", "ZZ",
+                                              "N902 : Reference Identification: Fixed", "TEXT");
+
+                WriteSegment("MSG", "Segment", "MSG01 : Free-Form Message Text: " + Comment_MSG, Segment_MSG);
+            }
+            writer.WriteEndElement(); //N9Loop1
         }
 
         public void WriteN1Loop1(
