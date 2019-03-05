@@ -144,7 +144,7 @@ namespace EDI_RSS.Helpers
          */
         static string RemoveDiacritics(string text)
         {
-            
+
             var normalizedString = text.Normalize(NormalizationForm.FormD);
             var stringBuilder = new StringBuilder();
 
@@ -166,7 +166,7 @@ namespace EDI_RSS.Helpers
         private IDataRecord Data;
         private CIDataRecord CData;
         private List<IDataRecord> RawDataDetails;
-        
+
         public Xml850Writer(IDataRecord TheData, List<IDataRecord> TheDataDetails)
         {
             Data = TheData;
@@ -199,7 +199,7 @@ namespace EDI_RSS.Helpers
         {
             Random rand = new Random(Guid.NewGuid().GetHashCode());
             string TransactionControlNumber = rand.Next(0, 101).ToString("0000");
-            
+
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = "\t";
@@ -209,11 +209,11 @@ namespace EDI_RSS.Helpers
             Decimal TotalNumberOfLineItem = 0;
             Decimal TotalNumberOfLineItemQty = 0;
 
-            using (var sw = new StringWriter()) 
+            using (var sw = new StringWriter())
             {
                 using (writer = XmlWriter.Create(sw, settings)) //Create a xml in a string
                 {
-                
+
                     writer.WriteStartElement("TransactionSet");
                     writer.WriteStartElement("TX-00401-850");
                     writer.WriteAttributeString("type", "TransactionSet");
@@ -276,7 +276,7 @@ namespace EDI_RSS.Helpers
 
                     pDB_PER = new DB_PER(this, PerCode.CN, Data["wscie_cie_name"].ToString(), Data["wscie_cie_tel"].ToString(), Data["wscie_email"].ToString(), Data["wscie_cie_fax"].ToString());
                     WriteN1Loop1_arclient_name(Data["popo_del_name"].ToString(), EntityCode1.ST, EntityCode2.BuyerCode, pDB_PER);
-                
+
                     //PO1Loop1 avec PIDLoop1
                     foreach (var DataDetail in RawDataDetails)
                     {
@@ -299,7 +299,7 @@ namespace EDI_RSS.Helpers
 
                     writer.WriteEndElement(); //TransactionSet
 
-             
+
                 } // Using XMLWriter
                 return sw.ToString();
             }
@@ -325,7 +325,7 @@ namespace EDI_RSS.Helpers
                        "PO106 : Product/Service ID Qualifier: Fixed : Buyer's Part Number", "BP",
                       $"PO107 : Product/Service ID : ivprod_code (ivprod_ident={TheDataDetails["ivprod_ident"].ToString()})", TheDataDetails["ivprod_code"].ToString(),
                        "PO108 : Product/Service ID Qualifier: Fixed : Vendor's (Seller's) Part Number", "VP",
-                       "PO109 : Product/Service ID: ivprix_ref_fourn", TheDataDetails["ivprix_ref_fourn"].ToString()); 
+                       "PO109 : Product/Service ID: ivprix_ref_fourn", TheDataDetails["ivprix_ref_fourn"].ToString());
 
                 writer.WriteStartElement("PIDLoop1");
                 writer.WriteAttributeString("type", "Loop");
@@ -339,22 +339,22 @@ namespace EDI_RSS.Helpers
                 }
                 writer.WriteEndElement(); //PIDLoop1
 
-                if (TheDataDetails["ivxcoprod_item_id_print"].ToString() != "")
+                writer.WriteStartElement("SACLoop1");
+                writer.WriteAttributeString("type", "Loop");
                 {
-                    writer.WriteStartElement("SACLoop1");
-                    writer.WriteAttributeString("type", "Loop");
+                    //DTM segment
+                    WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier : Fixed : Delivery Requested", "002",
+                                                   "DTM02 : Date : popo_requ_dte", string.Format("{0:yyyyMMdd}", Data["popo_requ_dte"]),
+                                                   "DTM03 : Time", "");
+
+                    if (TheDataDetails["ivxcoprod_item_id_print"].ToString() != "")
                     {
                         WriteSegment("MAN", "Segment",
                             "MAN01 : Marks and Numbers Qualifier : Fixed : Line Item Only", "L",
                             "MAN02 : Marks and Numbers : ivxcoprod_item_id_print", TheDataDetails["ivxcoprod_item_id_print"].ToString());
                     }
-                    writer.WriteEndElement(); //SACLoop1
                 }
-
-                //DTM segment
-                WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier : Fixed : Delivery Requested", "002",
-                                               "DTM02 : Date : popo_requ_dte", string.Format("{0:yyyyMMdd}", Data["popo_requ_dte"]),
-                                               "DTM03 : Time", "");
+                writer.WriteEndElement(); //SACLoop1
             }
             writer.WriteEndElement(); //PO1Loop1
         }
