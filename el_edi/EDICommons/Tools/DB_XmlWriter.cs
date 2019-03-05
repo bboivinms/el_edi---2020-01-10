@@ -215,11 +215,21 @@ namespace EDI_DB.Data
                                               "N104 : " + Comment_pId_addr, pId_addr);
                 if (data_record[Data_addr1] != "")
                 {
+                    string state;
+                    if (data_record[Data_state].ToLower() == "qué" || data_record[Data_state].ToLower() == "que")
+                    {
+                        state = "QC";
+                    }
+                    else
+                    {
+                        state = data_record[Data_state];
+                    }
+
                     WriteSegment("N3", "Segment", "N301 : " + Data_addr1, data_record[Data_addr1],
                                                   "N302 : " + Data_addr2, data_record[Data_addr2]);
 
                     WriteSegment("N4", "Segment", "N401 : " + Data_city, data_record[Data_city],
-                                                  "N402 : " + Data_state, data_record[Data_state],
+                                                  "N402 : " + Data_state, state,
                                                   "N403 : " + Data_zip, data_record[Data_zip],
                                                   "N404 : Fixed : Canada", "CA");
                 }
@@ -233,12 +243,7 @@ namespace EDI_DB.Data
         {
             string[] PER01_Code;
             string PER02;
-            string[] PER03;
-            string PER04;
-            string[] PER05;
-            string PER06;
-            string[] PER07;
-            string PER08;
+            List<string[]> PER = new List<string[]>();
             DB_XmlWriter db_xmlwriter;
 
             public DB_PER(DB_XmlWriter pdb_xmlwriter, string[] pPER01_Code, string pPER02_Name, string pPhone, string pEmail, string pFax)
@@ -246,28 +251,37 @@ namespace EDI_DB.Data
                 db_xmlwriter = pdb_xmlwriter;
                 PER01_Code = pPER01_Code;
                 PER02 = pPER02_Name;
-                PER03 = new string[] { "TE", "Telephone" };
-                PER04 = pPhone;
-                PER05 = new string[] { "EM", "Electronic Mail" };
-                PER06 = pEmail;
-                PER07 = new string[] { "FX", "Facsimile" };
-                PER08 = pFax;
+
+                if(pPhone != "")
+                    PER.Add(new string[] { "TE", "Telephone", pPhone });
+
+                if (pEmail != "")
+                    PER.Add(new string[] { "EM", "Electronic Mail", pEmail });
+
+                if (pFax != "")
+                    PER.Add(new string[] { "FX", "Facsimile", pFax });
+
+                if (PER.Count == 1)
+                    PER.Add(new string[] { "x0x", "", "x0x" });
+
+                if (PER.Count == 2)
+                    PER.Add(new string[] { "x0x", "", "x0x" });
             }
 
             public void Write()
             {
-                if ((PER04 + PER06 + PER08).Trim() == "") return;
+                if (PER.Count == 0) return;
 
                 db_xmlwriter.WriteSegment(
                     "PER", "Segment",
                     "PER01 : Contact Function Code : " + PER01_Code[1], PER01_Code[0],
                     "PER02 : Name", PER02,
-                    "PER03 : Communication Number Qualifier : " + PER03[1], PER03[0],
-                    "PER04 : Communication Number", PER04,
-                    "PER05 : Communication Number Qualifier : " + PER05[1], PER05[0],
-                    "PER06 : Communication Number", PER06,
-                    "PER07 : Communication Number Qualifier : " + PER07[1], PER07[0],
-                    "PER08 : Communication Number", PER08
+                    "PER03 : Communication Number Qualifier : " + PER[0][1], PER[0][0],
+                    "PER04 : Communication Number", PER[0][2],
+                    "PER05 : Communication Number Qualifier : " + PER[1][1], PER[1][0],
+                    "PER06 : Communication Number", PER[1][2],
+                    "PER07 : Communication Number Qualifier : " + PER[2][1], PER[2][0],
+                    "PER08 : Communication Number", PER[2][2]
                     );
             }
         }

@@ -100,7 +100,7 @@ namespace EDI_RSS.Helpers
                 // WriteSegment("DTM", "Segment", "002", string.Format("{0:yyyyMMdd}", RawDataPO.ElementAt(0)["cocomi_req_date"])); //Requested shipping date
 
                 WriteN1Loop1(EntityCode1.ST, EntityCode2.SellerCode, CDataCocom,
-                    "iddel_addr", iddel_addr,
+                    "iddel_addr", "2000", //iddel_addr
                     "cocom_del_name",
                     "cocom_daddr1",
                     "cocom_daddr2",

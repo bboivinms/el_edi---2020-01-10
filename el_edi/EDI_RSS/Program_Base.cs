@@ -11,6 +11,7 @@ using System.IO;
 using static EDI_DB.Data.Base;
 using EDI_RSS.Helpers;
 using EDICommons.Tools;
+using System.Xml;
 
 namespace EDI_RSS
 {
@@ -168,7 +169,59 @@ namespace EDI_RSS
 
         public bool RoutingIn()
         {
-            return false;
+            // Load the document and set the root element.  
+            XmlDocument doc = new XmlDocument();
+            doc.Load("C:\\TMP_IN\\2018-11-01-09-40-18-734931_732400109_010940731.xml");
+            XmlNode root = doc.DocumentElement;
+            // Add the namespace for see the nodes of the xml file
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+            nsmgr.AddNamespace("ic", "http://www.rssbus.com");
+
+
+            arclient_idedi = root.SelectSingleNode("//ic:ISA06", nsmgr).InnerText;
+            edi_doc_number = int.Parse(root.SelectSingleNode("//ic:ST01", nsmgr).InnerText);
+
+            if (Array.IndexOf(PortIds, PortId_code) < 0)
+            {
+                return vendor.After_Setup(false);
+            }
+
+            wscie = PortId_code.Substring(0, 1);
+            IDE = PortId_code.Substring(1, 2);
+
+            if (arclient_idedi == "" || (edi_doc_number != 810 && edi_doc_number != 855 && edi_doc_number != 856 && edi_doc_number != 850))
+            {
+                Status += "Parse error" + NL;
+                DB_RSS.LogData("ERROR: File not properly formatted: " + NL + Status);
+                return false;
+            }
+
+            if (edi_doc_number == 810 || edi_doc_number == 855 || edi_doc_number == 856)
+            {
+                Status += "Sending information out to a vendor (apsupp)" + NL;
+                gIDataEdi_path = GetEdi_partner("edi_apsupp");
+            }
+
+            if (edi_doc_number == 850)
+            {
+                Status += "Sending information out to a buyer (arclient)" + NL;
+                gIDataEdi_path = GetEdi_partner("edi_arclient");
+            }
+
+            if (!vendor.After_Setup(false))
+            {
+                return false;
+            }
+
+            alias = gIDataEdi_path["alias"].ToString();
+            IDE_status = gIDataEdi_path["IDE_status"].ToString().ToLower();
+
+            if (IDE_status == "send" || IDE_status == "create")
+            {
+               
+            }
+
+            return true;
         }
 
         public bool RoutingOut()
@@ -258,7 +311,6 @@ namespace EDI_RSS
             }
 
             return true;
-
         }
 
         public void UpdateSent(string table, string pFilename)

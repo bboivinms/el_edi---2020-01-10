@@ -10,6 +10,7 @@ using System.IO;
 using EDICommons.Tools;
 using EDI_DB.Data;
 using static EDI_DB.Data.Base;
+using System.Globalization;
 
 namespace EDI_RSS.Helpers
 {
@@ -48,7 +49,8 @@ namespace EDI_RSS.Helpers
 
                     xml = new Xml850Writer(Data, RawDataDetails);
 
-                    xml.Write(this);
+                    //xml.Write(this);
+                    File.WriteAllText(xml.XmlFilePath, RemoveDiacritics(xml.Write(this)));
 
                     UpdateFilename("edi_850", xml.OutputFileName, edi_ident);
                 }
@@ -134,6 +136,29 @@ namespace EDI_RSS.Helpers
                 ORDER BY popoi.idpo, popoi.line
                 ", Params);
         }
+
+        /*
+         * Replace all diacritics of a string with their alternatives.
+         * Params string text the text we want to remove diacritics.
+         * return String who contain no diacritics.
+         */
+        static string RemoveDiacritics(string text)
+        {
+            
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
     }
 
     class Xml850Writer : DB_XmlWriter
@@ -170,7 +195,7 @@ namespace EDI_RSS.Helpers
             }
         }
 
-        public void Write(Program_850 mysql)
+        public string Write(Program_850 mysql)
         {
             Random rand = new Random(Guid.NewGuid().GetHashCode());
             string TransactionControlNumber = rand.Next(0, 101).ToString("0000");
@@ -184,97 +209,100 @@ namespace EDI_RSS.Helpers
             Decimal TotalNumberOfLineItem = 0;
             Decimal TotalNumberOfLineItemQty = 0;
 
-            using (writer = XmlWriter.Create(XmlFilePath, settings))
+            using (var sw = new StringWriter()) 
             {
-
-                writer.WriteStartElement("TransactionSet");
-                writer.WriteStartElement("TX-00401-850");
-                writer.WriteAttributeString("type", "TransactionSet");
-
-                writer.WriteStartElement("Meta");
+                using (writer = XmlWriter.Create(sw, settings)) //Create a xml in a string
                 {
-                    writer.WriteElementString("STO1", "", "850"); // Transaction Set Identifier Code: 850 - Purchase Order
-                    writer.WriteElementString("STO2", "", TransactionControlNumber); // Transaction Set Control Number
-                }
-                writer.WriteEndElement(); //Meta
-
-                //BEG segment
-                WriteSegment("BEG", "Segment", "BEG01 : Transaction Set Purpose Code: Fixed: Original", "00",
-                                               "BEG02 : Purchase Order Type Code: Fixed: Stand-alone Order", "SA",
-                                              $"BEG03 : Purchase Order Number : popo_pono (popo_ident={Data["popo_ident"].ToString()})", Data["popo_pono"].ToString(),
-                                               "BEG04 : Release Number", "",
-                                               "BEG05 : Date : popo_po_dte", string.Format("{0:yyyyMMdd}", Data["popo_po_dte"]));
-
-                //CUR segment
-                WriteSegment("CUR", "Segment", "CUR01 : Entity Identifier Code: Fixed: Buying Party", "BY",
-                                               "CUR02 : Currency Code: Fixed: Canadian Dollar", "CAD");
-
-                //REF segment
-                WriteSegment("REF", "Segment", "REF01 : Reference Identification Qualifier : Fixed : Purchase Order Number", "PO",
-                                               "REF02 : Reference Identification : popo_pono", Data["popo_pono"].ToString());
-
-                //FOB segment
-                WriteSegment("FOB", "Segment", "FOB01 : Shipment Method of Payment: Fixed: Paid by Seller", "PS",
-                                               "FOB02 : Location Qualifier: Fixed: Mutually Defined", "ZZ",
-                                               "FOB03 : Description : popo_desc", Data["popo_desc"].ToString(),
-                                               "FOB04 : Transportation Terms Qualifier Code: Fixed: Incoterms", "01",
-                                               "FOB05 : Transportation Terms Code: Fixed: Free on Board", "FOB");
-                //ITD segment
-                WriteSegment("ITD", "Segment", "ITD01 : Terms Type Code", "",
-                                               "ITD02 : Terms Basis Date Code: Fixed: Invoice Date", "3",
-                                               "ITD03 : Terms Discount Percent: apsupp_discount_rate", Convert.ToInt32(Data["apsupp_discount_rate"]).ToString(),
-                                               "ITD04 : Terms Discount Due Date", "",
-                                               "ITD05 : Terms Discount Days Due: apsupp_discount_days", Data["apsupp_discount_days"].ToString(),
-                                               "ITD06 : Terms Net Due Date", "",
-                                               "ITD07 : Terms Net Days: apsupp_terms_days", Data["apsupp_terms_days"].ToString());
-
-                //DTM segment
-                WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier : Fixed : Purchase Order", "004",
-                                               "DTM02 : Date : popo_po_dte", string.Format("{0:yyyyMMdd}", Data["popo_po_dte"]),
-                                               "DTM03 : Time", "");
-
-                //DTM segment
-                WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier : Fixed : Delivery Requested", "002",
-                                               "DTM02 : Date : popo_requ_dte", string.Format("{0:yyyyMMdd}", Data["popo_requ_dte"]),
-                                               "DTM03 : Time", "");
-
-                WriteN9Loop1_MSG("popo_prt_note", Data["popo_prt_note"].ToString());
-
-                DB_PER pDB_PER = null;
-                pDB_PER = new DB_PER(this, PerCode.BD, Data["wsuser_name"].ToString(), Data["wsuser_tel"].ToString(), Data["wsuser_email"].ToString(), Data["wscie_cie_fax"].ToString());
-                WriteN1Loop1_wscie(EntityCode1.BY, EntityCode2.BuyerCode, pDB_PER);
-
-                pDB_PER = new DB_PER(this, PerCode.CN, Data["popo_contact"].ToString(), "", Data["popo_contactemail"].ToString(), Data["popo_contactfax"].ToString());
-                WriteN1Loop1_apsupp(ClientId, EntityCode1.VN, EntityCode2.SellerCode, pDB_PER);
-
-                pDB_PER = new DB_PER(this, PerCode.CN, Data["wscie_cie_name"].ToString(), Data["wscie_cie_tel"].ToString(), Data["wscie_email"].ToString(), Data["wscie_cie_fax"].ToString());
-                WriteN1Loop1_arclient_name(Data["popo_del_name"].ToString(), EntityCode1.ST, EntityCode2.BuyerCode, pDB_PER);
                 
-                //PO1Loop1 avec PIDLoop1
-                foreach (var DataDetail in RawDataDetails)
-                {
-                    int QtyOrdered = Convert.ToInt32(DataDetail["popoi_qty_ord"]);
+                    writer.WriteStartElement("TransactionSet");
+                    writer.WriteStartElement("TX-00401-850");
+                    writer.WriteAttributeString("type", "TransactionSet");
 
-                    TotalNumberOfLineItem++;
-                    TotalNumberOfLineItemQty += QtyOrdered;
+                    writer.WriteStartElement("Meta");
+                    {
+                        writer.WriteElementString("STO1", "", "850"); // Transaction Set Identifier Code: 850 - Purchase Order
+                        writer.WriteElementString("STO2", "", TransactionControlNumber); // Transaction Set Control Number
+                    }
+                    writer.WriteEndElement(); //Meta
 
-                    WritePO1Loop1(DataDetail);
+                    //BEG segment
+                    WriteSegment("BEG", "Segment", "BEG01 : Transaction Set Purpose Code: Fixed: Original", "00",
+                                                   "BEG02 : Purchase Order Type Code: Fixed: Stand-alone Order", "SA",
+                                                  $"BEG03 : Purchase Order Number : popo_pono (popo_ident={Data["popo_ident"].ToString()})", Data["popo_pono"].ToString(),
+                                                   "BEG04 : Release Number", "",
+                                                   "BEG05 : Date : popo_po_dte", string.Format("{0:yyyyMMdd}", Data["popo_po_dte"]));
 
-                }
+                    //CUR segment
+                    WriteSegment("CUR", "Segment", "CUR01 : Entity Identifier Code: Fixed: Buying Party", "BY",
+                                                   "CUR02 : Currency Code: Fixed: Canadian Dollar", "CAD");
+
+                    //REF segment
+                    WriteSegment("REF", "Segment", "REF01 : Reference Identification Qualifier : Fixed : Purchase Order Number", "PO",
+                                                   "REF02 : Reference Identification : popo_pono", Data["popo_pono"].ToString());
+
+                    //FOB segment
+                    WriteSegment("FOB", "Segment", "FOB01 : Shipment Method of Payment: Fixed: Paid by Seller", "PS",
+                                                   "FOB02 : Location Qualifier: Fixed: Mutually Defined", "ZZ",
+                                                   "FOB03 : Description : popo_desc", Data["popo_desc"].ToString(),
+                                                   "FOB04 : Transportation Terms Qualifier Code: Fixed: Incoterms", "01",
+                                                   "FOB05 : Transportation Terms Code: Fixed: Free on Board", "FOB");
+                    //ITD segment
+                    WriteSegment("ITD", "Segment", "ITD01 : Terms Type Code", "",
+                                                   "ITD02 : Terms Basis Date Code: Fixed: Invoice Date", "3",
+                                                   "ITD03 : Terms Discount Percent: apsupp_discount_rate", Convert.ToInt32(Data["apsupp_discount_rate"]).ToString(),
+                                                   "ITD04 : Terms Discount Due Date", "",
+                                                   "ITD05 : Terms Discount Days Due: apsupp_discount_days", Data["apsupp_discount_days"].ToString(),
+                                                   "ITD06 : Terms Net Due Date", "",
+                                                   "ITD07 : Terms Net Days: apsupp_terms_days", Data["apsupp_terms_days"].ToString());
+
+                    //DTM segment
+                    WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier : Fixed : Purchase Order", "004",
+                                                   "DTM02 : Date : popo_po_dte", string.Format("{0:yyyyMMdd}", Data["popo_po_dte"]),
+                                                   "DTM03 : Time", "");
+
+                    //DTM segment
+                    WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier : Fixed : Delivery Requested", "002",
+                                                   "DTM02 : Date : popo_requ_dte", string.Format("{0:yyyyMMdd}", Data["popo_requ_dte"]),
+                                                   "DTM03 : Time", "");
+
+                    WriteN9Loop1_MSG("popo_prt_note", Data["popo_prt_note"].ToString());
+
+                    DB_PER pDB_PER = null;
+                    pDB_PER = new DB_PER(this, PerCode.BD, Data["wsuser_name"].ToString(), Data["wsuser_tel"].ToString(), Data["wsuser_email"].ToString(), Data["wscie_cie_fax"].ToString());
+                    WriteN1Loop1_wscie(EntityCode1.BY, EntityCode2.BuyerCode, pDB_PER);
+
+                    pDB_PER = new DB_PER(this, PerCode.CN, Data["popo_contact"].ToString(), "", Data["popo_contactemail"].ToString(), Data["popo_contactfax"].ToString());
+                    WriteN1Loop1_apsupp(ClientId, EntityCode1.VN, EntityCode2.SellerCode, pDB_PER);
+
+                    pDB_PER = new DB_PER(this, PerCode.CN, Data["wscie_cie_name"].ToString(), Data["wscie_cie_tel"].ToString(), Data["wscie_email"].ToString(), Data["wscie_cie_fax"].ToString());
+                    WriteN1Loop1_arclient_name(Data["popo_del_name"].ToString(), EntityCode1.ST, EntityCode2.BuyerCode, pDB_PER);
+                
+                    //PO1Loop1 avec PIDLoop1
+                    foreach (var DataDetail in RawDataDetails)
+                    {
+                        int QtyOrdered = Convert.ToInt32(DataDetail["popoi_qty_ord"]);
+
+                        TotalNumberOfLineItem++;
+                        TotalNumberOfLineItemQty += QtyOrdered;
+
+                        WritePO1Loop1(DataDetail);
+
+                    }
 
 
-                //CTT Loop
-                WriteSegmentLoop("CTTLoop1", "Loop", "CTT", "Segment",
-                    "Calc: TotalNumberOfLineItem", TotalNumberOfLineItem.ToString(),
-                    "Calc: TotalNumberOfLineItemQty", TotalNumberOfLineItemQty.ToString());
+                    //CTT Loop
+                    WriteSegmentLoop("CTTLoop1", "Loop", "CTT", "Segment",
+                        "Calc: TotalNumberOfLineItem", TotalNumberOfLineItem.ToString(),
+                        "Calc: TotalNumberOfLineItemQty", TotalNumberOfLineItemQty.ToString());
 
-                writer.WriteEndElement(); //TX-00401-850
+                    writer.WriteEndElement(); //TX-00401-850
 
-                writer.WriteEndElement(); //TransactionSet
+                    writer.WriteEndElement(); //TransactionSet
 
-
-            } // Using XMLWriter
-
+             
+                } // Using XMLWriter
+                return sw.ToString();
+            }
         } // Write()
 
         /**

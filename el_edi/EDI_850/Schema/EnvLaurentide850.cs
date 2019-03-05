@@ -144,6 +144,23 @@ namespace EDI_850.Schema
                 ST_IDDEL_ADDR = Convert.ToInt32(DataAddress["iddel_addr"].ToString());
                 STAddress = DataAddress["address"].ToString();
                 STName = DataAddress["name"].ToString();
+
+                DB_VIVA.Params.Clear();
+                DB_VIVA.Params.Add("?arclient_ident", arclient_ident.ToString());
+                DB_VIVA.Params.Add("?STPostalCode", STPostalCode.ToString());
+                DB_VIVA.Params.Add("?ST_IDDEL_ADDR", ST_IDDEL_ADDR.ToString());
+                DB_VIVA.Params.Add("?STN104", STN104.ToString());
+               
+
+                if (DataAddress["edi_faddr_iddel_addr_91"].ToString() == "")
+                {
+                    DB_VIVA.HExecuteSQLQuery("INSERT INTO `rss_bus`.`edi_faddr` (`idpartner`, `type`, `code_postal`, `iddel_addr_91`, `iddel_addr_92`) VALUES ( ?arclient_ident, 'B', ?STPostalCode, ?ST_IDDEL_ADDR, ?STN104)", DB_VIVA.Params);
+                }
+                else if (DataAddress["edi_faddr_iddel_addr_92"].ToString() != STN104)
+                {
+                        //erreur if diffferent
+                        Messages.Add(new Message { Text = $"Erreur de l'adresse du client, Voir l'administrateur.", Severity = Severity.Warning, Scope = Scope.Internal });
+                }
             }
             else
             {

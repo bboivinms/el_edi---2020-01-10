@@ -282,6 +282,10 @@ namespace EDI_850.Schema
 
         private string _sTState;
 
+        private string _sTN103;
+
+        private string _sTN104;
+
         private string _pER01;
         
         private string _pER02;
@@ -394,6 +398,30 @@ namespace EDI_850.Schema
             set
             {
                 this._sTState = value;
+            }
+        }
+
+        public string STN103
+        {
+            get
+            {
+                return this._sTN103;
+            }
+            set
+            {
+                this._sTN103 = value;
+            }
+        }
+
+        public string STN104
+        {
+            get
+            {
+                return this._sTN104;
+            }
+            set
+            {
+                this._sTN104 = value;
             }
         }
 

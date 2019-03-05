@@ -47,6 +47,7 @@ namespace EDI_DB.Data
         public static string IDE_status = "";
         public static string alias = "";
         public static int arclient_ident = 0;
+        public static string arclient_idedi = "";
         public static int edi_doc_number = 0;
         public static string arclient_short_name;
         public static long IDedi_rss = 0;
@@ -82,7 +83,16 @@ namespace EDI_DB.Data
             }
             else 
             {
-                RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\envl\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\Send";
+                //RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\envl\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\Send";
+
+                if(wscie == "E")
+                {
+                    RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\envl\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\Send";
+                }
+                else if(wscie == "M")
+                {
+                    RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\ms\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\Send";
+                }  
             }
         }
 
@@ -148,7 +158,7 @@ namespace EDI_DB.Data
         {
             if (IDE == "") return null;
             if (edi_doc_number != 810 && edi_doc_number != 855 && edi_doc_number != 856 && edi_doc_number != 850) return null;
-            if (arclient_ident <= 0) return null;
+            if (arclient_ident <= 0 && arclient_idedi == "") return null;
             if (wscie == "") return null;
             if (table != "edi_arclient" && table != "edi_apsupp") return null;
 
@@ -163,10 +173,12 @@ namespace EDI_DB.Data
 
             Params.Clear();
             Params.Add("?idclient", arclient_ident.ToString());
+            Params.Add("?arclient_idedi", arclient_idedi);
             Params.Add("?wscie", wscie);
 
             results = DB_RSS.HExecuteSQLQuery($@"
                 SELECT 
+                    {ID} AS id,
                     alias,
                     X{IDE}_{edi_doc_number} AS IDE_status,
                     X{IDE}_path AS IDE_path,
@@ -175,7 +187,7 @@ namespace EDI_DB.Data
 				INNER JOIN
 					edi_path ON X{IDE}_path = edi_path
                 WHERE
-                    {ID} = ?idclient AND
+                    ({ID} = ?idclient OR idedi = ?arclient_idedi) AND 
                     wscie = ?wscie
                 ", Params);
 
@@ -191,6 +203,7 @@ namespace EDI_DB.Data
             inner_log += "edi_doc_number: " + edi_doc_number.ToString() + NL;
 
             alias = result["alias"].ToString();
+            arclient_ident = Convert.ToInt32(result["id"]);
 
             DB_RSS.LogData(inner_log);
 
@@ -470,20 +483,22 @@ namespace EDI_DB.Data
         }
 
         //Find a postal code in a text with endline
-        public string FindPostalCode(string input)
+        public static string FindPostalCode(string input)
         {
             string[] lines = input.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            string pattern = @"[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9] *$";
+            string pattern = @"([A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9] *)((?:[a-zA-Zé]* *))*$";
+            RegexOptions options = RegexOptions.IgnoreCase;
 
-            foreach (string line in lines)
+            foreach (string line in lines)//cherche chaque ligne dans le texte pour trouver un code postal
             {
-                
-                if (Regex.IsMatch(line, pattern))
+
+                if (Regex.IsMatch(line, pattern, options))//pour un ligne vérifie si il y a un code postal
                 {
-                    return line;
+                    Match m = Regex.Match(line, pattern, options);
+                    return m.Groups[1].Value; //retourne le code postal seulement
                 }
             }
-            return "";
+            return ""; //sinon retourne rien
         }
 
         public IDataRecord GetAddressST(int arclient_ident, string pZip)
@@ -492,17 +507,36 @@ namespace EDI_DB.Data
 
             MySqlCommand cmd = conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = @"SELECT * FROM (
-                                (SELECT CONCAT('4', CAST(ident AS CHAR)) AS iddel_addr, 2 AS myorder, ident, name, CONCAT(name, ' ', addr1, ' ', city) AS address,
-					                    addr1, addr2, city, state, zip, country
-					                FROM arclient WHERE ident=?arclient_ident)
-	                                UNION ALL 
-	                            (SELECT CONCAT('1', CAST(ident AS CHAR)) AS iddel_addr, 1 AS myorder, cliid as ident, name, CONCAT(name, ' ', addr1, ' ', city) AS address,
-					                    addr1, addr2, city, state, zip, country
-					                FROM ffaddr   WHERE cliid=?arclient_ident)) AS ffaddr_union
+            //cmd.CommandText = @"SELECT * FROM (
+            //                    (SELECT CONCAT('4', CAST(ident AS CHAR)) AS iddel_addr, 2 AS myorder, ident, name, CONCAT(name, ' ', addr1, ' ', city) AS address,
+            //             addr1, addr2, city, state, zip, country
+            //         FROM arclient WHERE ident=?arclient_ident)
+            //                     UNION ALL 
+            //                 (SELECT CONCAT('1', CAST(ident AS CHAR)) AS iddel_addr, 1 AS myorder, cliid as ident, name, CONCAT(name, ' ', addr1, ' ', city) AS address,
+            //             addr1, addr2, city, state, zip, country
+            //         FROM ffaddr   WHERE cliid=?arclient_ident)) AS ffaddr_union
+            //                    WHERE REPLACE(zip, ' ', '') = ?pZip
+            //                    ORDER BY myorder
+            //                    ";
+
+            //À tester
+            cmd.CommandText = @" SELECT * FROM (
+                                (SELECT CONCAT('4', CAST(arclient.ident AS CHAR)) AS iddel_addr, 2 AS myorder, arclient.ident, name, CONCAT(name, ' ', addr1, ' ', city) AS address,
+                                        addr1, addr2, city, state, zip, country, edi_faddr.iddel_addr_91 AS edi_faddr_iddel_addr_91, edi_faddr.iddel_addr_92 AS edi_faddr_iddel_addr_92
+                                    FROM arclient
+                                    LEFT JOIN rss_bus.edi_faddr ON edi_faddr.type = 'B' AND edi_faddr.idpartner = ?arclient_ident  AND REPLACE(edi_faddr.code_postal, ' ', '') = ?pZip
+                                WHERE arclient.ident = ?arclient_ident)
+
+                                UNION ALL
+                                (SELECT CONCAT('1', CAST(ffaddr.ident AS CHAR)) AS iddel_addr, 1 AS myorder, cliid as ident, name, CONCAT(name, ' ', addr1, ' ', city) AS address,
+                                        addr1, addr2, city, state, zip, country, edi_faddr.iddel_addr_91 AS edi_faddr_iddel_addr_91, edi_faddr.iddel_addr_92 AS edi_faddr_iddel_addr_92
+                                    FROM ffaddr
+                                    LEFT JOIN rss_bus.edi_faddr ON edi_faddr.type = 'B' AND edi_faddr.idpartner = ?arclient_ident  AND REPLACE(edi_faddr.code_postal, ' ', '') = ?pZip
+                                WHERE cliid = ?arclient_ident)) AS ffaddr_union
                                 WHERE REPLACE(zip, ' ', '') = ?pZip
-                                ORDER BY myorder
-                                ";
+
+                                ORDER BY myorder";
+
 
             /* // references to arcliass is currently not used
 	                    UNION ALL 
