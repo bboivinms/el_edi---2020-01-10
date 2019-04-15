@@ -14,7 +14,7 @@ namespace EDI_RSS
     {
         public void Test()
         {
-            if (UseSystem == "local") { IsLocalTest = true; Test_850_STEP_2(); }
+            if (UseSystem == "local") { IsLocalTest = true; Test_STEP_IN(); }
         }
 
         // Called by auto timer on 254 machine using parameters
@@ -46,17 +46,18 @@ namespace EDI_RSS
         public void Test_855_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "110-855P-ALL.txt", ""); }
         public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "3-810P-ALL.txt", ""); }
         public void Test_856_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "5-856P-ALL.txt", ""); }
-        public void Test_850_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "6-850P-ALL.txt", ""); }
+        public void Test_850_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "531-850P-ALL.txt", ""); }
 
         // Processes The filename to be set as sent that was processed in 000-STEP-2
         // edi_000.Sent = true WHERE Filename = { Filename }
 
         // Parameters
         // Filename             // Changes every time STEP-2 is processed, references a edi_000.Filename
+        public void Test_STEP_IN() { SetParams("Local", "", "MTL_routing_in", "xxxx30037-855-12135-4501000073-1544798977.26278", ""); }
         public void Test_855_STEP_3() { SetParams("Local", "855", "ETI_routing_out", "30037-855-12135-4501000073-1544798977.26278", ""); }
         public void Test_810_STEP_3() { SetParams("Local", "810", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
         public void Test_856_STEP_3() { SetParams("Local", "856", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
-        public void Test_850_STEP_3() { SetParams("Local", "850", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
+        public void Test_850_STEP_3() { SetParams("Local", "850", "MTL_routing_out", "00056-850-12135-4501000073-1544798977.26278", ""); }
 
     }
 }

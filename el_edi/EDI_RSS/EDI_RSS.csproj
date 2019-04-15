@@ -79,6 +79,9 @@
     <Compile Include="Program_Base.cs" />
     <Compile Include="Program_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XMLProcessor_855.cs" />
+    <Compile Include="XMLProcessor_856.cs" />
+    <Compile Include="XMLProcessor_810.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -88,6 +91,10 @@
     <ProjectReference Include="..\EDICommons\EDICommons.csproj">
       <Project>{891dcfb2-0d8c-4e2d-9f2f-24d15460ebef}</Project>
       <Name>EDICommons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EDI_850\EDI_850.csproj">
+      <Project>{E458CB57-45E3-44E7-B90E-22695CEC5A5C}</Project>
+      <Name>EDI_850</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

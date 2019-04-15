@@ -92,7 +92,7 @@ namespace EDI_DB.Data
    
             WriteN1Loop1(entityCode1, entityCode2, data_record,
                 "iddel_addr",
-                data_record["iddel_addr"],
+                "2000",
                 "arclient_name",
                 "arclient_addr1",
                 "arclient_addr2",
@@ -131,7 +131,7 @@ namespace EDI_DB.Data
             //write N1Loop1 xml tag for shipto
             WriteN1Loop1(entityCode1, entityCode2, addressST_Data,
                 "iddel_addr",
-                addressST_Data["iddel_addr"],
+                "2000",
                 "name",
                 "addr1",
                 "addr2",

@@ -14,9 +14,9 @@ using System.Globalization;
 
 namespace EDI_RSS.Helpers
 {
-    public class Program_850 : EDI_RSS.Program_Base
+    public class Program_850_OUT : EDI_RSS.Program_Base
     {
-        public Program_850()
+        public Program_850_OUT()
         {
             TransactionCode = "850";
 
@@ -66,17 +66,17 @@ namespace EDI_RSS.Helpers
             }
         }
 
-        public void CreateNew()
-        {
-            DB_VIVA.HExecuteSQLNonQuery(@"
-                INSERT INTO edi_850 (popo_ident) 
-                SELECT ident 
-                FROM popo
-                    WHERE status = 'R' AND IDVENDOR = 2004 AND 
-                          ident = 101 AND 
-                          NOT EXISTS(SELECT 1 FROM edi_850 AS edi_850e WHERE edi_850e.popo_ident = popo.ident); 
-                ALTER TABLE edi_850 AUTO_INCREMENT = 1;");
-        }
+        //public void CreateNew()
+        //{
+        //    DB_VIVA.HExecuteSQLNonQuery(@"
+        //        INSERT INTO edi_850 (popo_ident) 
+        //        SELECT ident 
+        //        FROM popo
+        //            WHERE status = 'R' AND IDVENDOR = 2004 AND 
+        //                  ident = 101 AND 
+        //                  NOT EXISTS(SELECT 1 FROM edi_850 AS edi_850e WHERE edi_850e.popo_ident = popo.ident); 
+        //        ALTER TABLE edi_850 AUTO_INCREMENT = 1;");
+        //}
 
         public List<IDataRecord> GetData()
         {
@@ -103,11 +103,24 @@ namespace EDI_RSS.Helpers
 
         public List<IDataRecord> GetDataDetails(string popo_ident)
         {
+            
+
+            string id_ivxcoprod = "";
+
+            if(wscie == "E")
+            {
+                id_ivxcoprod = "ident";
+            }
+            else if(wscie == "M")
+            {
+                id_ivxcoprod = "ident_ai";
+            }
+
             Params.Clear();
             Params.Add("?popo_ident", popo_ident);
 
-            return DB_VIVA.HExecuteSQLQuery(
-                @"SELECT  
+            return DB_VIVA.HExecuteSQLQuery($@"
+                 SELECT  
                         popoi.line AS popoi_line, popoi.qty_ord AS popoi_qty_ord, popoi.COST AS popoi_cost, 
                         popoi.date_rcv AS popoi_date_rcv, popoi.unite AS popoi_unite, IF(IFNULL(popoi.desc, '') = '', ivprod.desc, popoi.desc) AS popoi_desc,
                         ivprod.ident AS ivprod_ident, ivprod.code AS ivprod_code, ivprod.desc AS ivprod_desc,
@@ -127,7 +140,7 @@ namespace EDI_RSS.Helpers
                 LEFT JOIN ivxcoprod ON ivxcoprod.idprod = (
 									SELECT idprod FROM ivxcoprod
 									WHERE ivxcoprod.idprod = popoi.idprod
-									ORDER BY ident_ai
+									ORDER BY {id_ivxcoprod}
 									LIMIT 1
 								)
                 WHERE   edi_850.Sent = false 
@@ -195,7 +208,7 @@ namespace EDI_RSS.Helpers
             }
         }
 
-        public string Write(Program_850 mysql)
+        public string Write(Program_850_OUT mysql)
         {
             Random rand = new Random(Guid.NewGuid().GetHashCode());
             string TransactionControlNumber = rand.Next(0, 101).ToString("0000");

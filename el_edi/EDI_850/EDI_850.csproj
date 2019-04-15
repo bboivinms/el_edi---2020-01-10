@@ -71,6 +71,7 @@
     <Compile Include="Schema\EnvLaurentide850.cs">
     </Compile>
     <Compile Include="Schema\EnvLaurentide850.Designer.cs" />
+    <Compile Include="XMLProcessor_850_New.cs" />
     <Compile Include="XMLProcessor_850.cs" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -78,7 +79,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Schema\EnvLaurentide850.xml" />
+    <Content Include="Schema\EnvLaurentide850.xml">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.en.resx">

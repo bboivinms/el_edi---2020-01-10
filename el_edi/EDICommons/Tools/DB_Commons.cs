@@ -187,7 +187,7 @@ namespace EDI_DB.Data
 				INNER JOIN
 					edi_path ON X{IDE}_path = edi_path
                 WHERE
-                    ({ID} = ?idclient OR idedi = ?arclient_idedi) AND 
+                    ({ID} = ?idclient OR {table}.idedi = ?arclient_idedi) AND 
                     wscie = ?wscie
                 ", Params);
 

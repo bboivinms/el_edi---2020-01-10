@@ -60,8 +60,8 @@ namespace EDI_RSS.Helpers
 
                 writer.WriteStartElement("Meta");
                 {
-                    writer.WriteElementString("STO1", "", "810"); // Transaction Set Identifier Code: 855 - Purchase Order Acknowledgment
-                    writer.WriteElementString("STO2", "", TransactionControlNumber); // Transaction Set Control Number
+                    writer.WriteElementString("ST01", "", "810"); // Transaction Set Identifier Code: 855 - Purchase Order Acknowledgment
+                    writer.WriteElementString("ST02", "", TransactionControlNumber); // Transaction Set Control Number
                 }
                 writer.WriteEndElement(); //Meta
 
@@ -91,6 +91,15 @@ namespace EDI_RSS.Helpers
                 WriteN1Loop1_ffaddr(int.Parse(Data["arinv_ident"].ToString()), EntityCode1.ST, EntityCode2.SellerCode);
                 WriteN1Loop1_wscie(EntityCode1.VN, EntityCode2.SellerCode);
 
+                //ITD segment
+                WriteSegment("ITD", "Segment", "ITD01 : Terms Type Code", "",
+                                               "ITD02 : Terms Basis Date Code: Fixed: Invoice Date", "3",
+                                               "ITD03 : Terms Discount Percent: arclient_discount_rate", Convert.ToInt32(Data["arclient_discount_rate"]).ToString(), 
+                                               "ITD04 : Terms Discount Due Date", "",
+                                               "ITD05 : Terms Discount Days Due: arclient_discount_days", Data["arclient_discount_days"].ToString(),
+                                               "ITD06 : Terms Net Due Date", "",
+                                               "ITD07 : Terms Net Days: arclient_terms_days", Data["arclient_terms_days"].ToString());
+
                 foreach (var DataDetail in RawDataDetails)
                 {
                     int QtyInvoiced = Convert.ToInt32(DataDetail["arinvd_qty"]);
@@ -99,7 +108,7 @@ namespace EDI_RSS.Helpers
                     TotalNumberOfLineItemQty += QtyInvoiced;
 
                     WriteIT1Loop1(DataDetail);
-                    WritePIDLoop1(DataDetail);
+                    
 
                 }
 
@@ -136,6 +145,11 @@ namespace EDI_RSS.Helpers
                                                    "TXI03 : Percent: Percentage expressed as a decimal", (Convert.ToDecimal(Data["arinv_tvhtaux"]) / 100).ToString());
                 }
 
+                int totalTaxAmount = Convert.ToInt32(Data["arinv_inv_tx_pst"].ToString()) + Convert.ToInt32(Data["arinv_inv_tx_tvh"].ToString());
+                //AMT segment
+                WriteSegment("AMT", "Segment", "AMT01 : Amount Qualifier Code : Fixed : Tax", "T",
+                                               "AMT02 : Monetary Amount", totalTaxAmount.ToString());
+
                 //CTT Loop
                 WriteSegmentLoop("CTTLoop1", "Loop", "CTT", "Segment",
                     "Calc: TotalNumberOfLineItem", TotalNumberOfLineItem.ToString(),
@@ -166,6 +180,16 @@ namespace EDI_RSS.Helpers
                     "IT108 : Product/Service ID Qualifier : Fixed: Vendor's (Seller's) Part Number", "VP",
                     "IT109 : Product/Service ID : ivprod_code", TheDataDetails["ivprod_code"].ToString());
 
+                decimal MonetaryAmount = (Convert.ToInt32(TheDataDetails["arinvd_qty"]) / 1000) * Convert.ToDecimal(TheDataDetails["arinvd_inv_mnt_unit"]);
+                //PAM Loop
+                WriteSegment("PAM", "Segment", "PAM01 : Quantity Qualifier : Fixed : Discrete Quantity", "01",
+                                               "PAM02 : Quantity", (Convert.ToInt32(TheDataDetails["arinvd_qty"])/1000).ToString(),
+                                               "PAM03-01 : Unit or Basis for Measurement Code : Fixed : per thousand", "TP",
+                                               "PAM03-02 : Multiplier", TheDataDetails["arinvd_inv_mnt_unit"].ToString(),
+                                               "PAM04 : Amount Qualifier Code : Fixed : Line Item Total", "1",
+                                               "PAM05 : Monetary Amount", MonetaryAmount.ToString());
+
+                WritePIDLoop1(TheDataDetails);
             }
             writer.WriteEndElement(); //IT1Loop1
         }

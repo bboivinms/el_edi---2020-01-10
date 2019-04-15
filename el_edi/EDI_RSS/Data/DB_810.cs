@@ -78,16 +78,18 @@ namespace EDI_RSS
         {
             return DB_VIVA.HExecuteSQLQuery(@"
                 SELECT  
-                        arinv.ident AS arinv_ident, arinv.invno AS arinv_invno, arinv.invdte AS arinv_invdte, arinv.custid AS arinv_custid,
-                        arinv.po AS arinv_po, arinv.idbil AS arinv_idbil, arinv.inv_mnt AS arinv_inv_mnt, arinv.INV_TX_GST AS arinv_inv_tx_gst,
-                        arinv.INV_TX_PST AS arinv_inv_tx_pst, arinv.TPSTAUX AS arinv_tpstaux, arinv.TVQTAUX AS arinv_tvqtaux,
-                        arinv.TVHTAUX AS arinv_tvhtaux, arinv.INV_TX_TVH AS arinv_inv_tx_tvh,
-                        edi_810.ident AS edi_810_ident, edi_810.filename AS edi_810_filename
+                    arinv.ident AS arinv_ident, arinv.invno AS arinv_invno, arinv.invdte AS arinv_invdte, arinv.custid AS arinv_custid,
+                    arinv.po AS arinv_po, arinv.idbil AS arinv_idbil, arinv.inv_mnt AS arinv_inv_mnt, arinv.INV_TX_GST AS arinv_inv_tx_gst,
+                    arinv.INV_TX_PST AS arinv_inv_tx_pst, arinv.TPSTAUX AS arinv_tpstaux, arinv.TVQTAUX AS arinv_tvqtaux,
+                    arinv.TVHTAUX AS arinv_tvhtaux, arinv.INV_TX_TVH AS arinv_inv_tx_tvh,
+					arclient.DISCOUNT_RATE AS arclient_discount_rate, arclient.DISCOUNT_DAYS AS arclient_discount_days, arclient.TERMS_DAYS AS arclient_terms_days,
+                    edi_810.ident AS edi_810_ident, edi_810.filename AS edi_810_filename
                 FROM arinv 
+                INNER JOIN arclient ON arclient.ident = arinv.CUSTID
                 INNER JOIN edi_810 ON edi_810.arinv_ident = arinv.ident
                 WHERE edi_810.Sent = false 
                       AND
-                      arinv_ident = 14353
+                      arinv_ident = 14353;
                 ");
         }
 

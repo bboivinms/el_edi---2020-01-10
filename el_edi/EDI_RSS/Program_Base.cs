@@ -12,6 +12,7 @@ using static EDI_DB.Data.Base;
 using EDI_RSS.Helpers;
 using EDICommons.Tools;
 using System.Xml;
+using EDI_850;
 
 namespace EDI_RSS
 {
@@ -90,6 +91,8 @@ namespace EDI_RSS
 
         public string PortId_code;
 
+        private XmlNamespaceManager nsmgr;
+
         public bool Routing(string[] args)
         {
             LogEventSource = "EDI RSS Processor";
@@ -156,7 +159,7 @@ namespace EDI_RSS
             if (gRss_request == "855P" && gRss_client == "ALL") { new Program_855(); return ProcessStep2_After(); }
             if (gRss_request == "856P" && gRss_client == "ALL") { new Program_856(); return ProcessStep2_After(); }
             if (gRss_request == "810P" && gRss_client == "ALL") { new Program_810(); return ProcessStep2_After(); }
-            if (gRss_request == "850P" && gRss_client == "ALL") { new Program_850(); return ProcessStep2_After(); }
+            if (gRss_request == "850P" && gRss_client == "ALL") { new Program_850_OUT(); return ProcessStep2_After(); }
 
             return false;
         }
@@ -169,15 +172,17 @@ namespace EDI_RSS
 
         public bool RoutingIn()
         {
+            string path = "C:\\TMP_IN\\Westrock-MultiServices_ASN_000000008.xml";
             // Load the document and set the root element.  
             XmlDocument doc = new XmlDocument();
-            doc.Load("C:\\TMP_IN\\2018-11-01-09-40-18-734931_732400109_010940731.xml");
+            doc.Load(path);
             XmlNode root = doc.DocumentElement;
+
             // Add the namespace for see the nodes of the xml file
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+            nsmgr = new XmlNamespaceManager(doc.NameTable);
             nsmgr.AddNamespace("ic", "http://www.rssbus.com");
 
-
+            string Isa15 = root.SelectSingleNode("//ic:ISA15", nsmgr).InnerText;
             arclient_idedi = root.SelectSingleNode("//ic:ISA06", nsmgr).InnerText;
             edi_doc_number = int.Parse(root.SelectSingleNode("//ic:ST01", nsmgr).InnerText);
 
@@ -218,8 +223,170 @@ namespace EDI_RSS
 
             if (IDE_status == "send" || IDE_status == "create")
             {
-               
-            }
+                if (edi_doc_number == 850)
+                {
+                    XmlWriterSettings settings = new XmlWriterSettings();
+                    settings.Indent = true;
+                    settings.IndentChars = "\t";
+                    settings.OmitXmlDeclaration = true;
+
+                    var sw = new StringWriter();
+                    using (var xw = XmlWriter.Create(sw, settings))
+                    {
+                        xw.WriteStartElement("root");
+                        {
+                            xw.WriteStartElement("Customer");
+                            {
+                                xw.WriteElementString("Id", "", arclient_ident.ToString());
+                                int n = 1;
+
+                                XmlNode N1Loop1 = Get_Node(root, "//N1Loop1[N1/N101 = 'ST']");
+                                if (N1Loop1 != null)
+                                {
+                                    xw.WriteElementString("STName", "", IIF_NULL(N1Loop1, ".//N102"));
+
+                                    if (Get_Node(N1Loop1, ".//N3") != null)
+                                    {
+                                        //N3
+                                        foreach (XmlNode i in Get_Node(N1Loop1, ".//N3").ChildNodes)
+                                        {
+                                            if (i.NodeType != XmlNodeType.Comment)
+                                            {
+                                                xw.WriteElementString("STAddress" + n, "", i.InnerText);
+                                                n++;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Error! : N3 is missing");
+                                    }
+
+                                    if (Get_Node(N1Loop1, ".//N4") != null)
+                                    {
+                                        //N4
+                                        string[] strWords = { "STCity", "STCountry", "STPostalCode", "STState" };
+                                        n = 0;
+                                        foreach (XmlNode i in Get_Node(N1Loop1, ".//N4").ChildNodes)
+                                        {
+                                            if (i.NodeType != XmlNodeType.Comment)
+                                            {
+                                                xw.WriteElementString(strWords[n], "", i.InnerText);
+                                                n++;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Error : N4 is missing");
+                                    }
+                                    xw.WriteElementString("STN103", "", IIF_NULL(N1Loop1, ".//N103"));
+                                    xw.WriteElementString("STN104", "", IIF_NULL(N1Loop1, ".//N104"));
+                                }
+                                else
+                                {
+                                    xw.WriteElementString("Error", "", "Error : ST is missing");
+                                }
+
+                                N1Loop1 = Get_Node(root, "//N1Loop1[N1/N101 = 'BY']");
+                                if (N1Loop1 != null)
+                                {
+                                    if (Get_Node(N1Loop1, ".//PER") != null)
+                                    {
+                                        //PER
+                                        for (int i = 1; i < 9; i++)
+                                        {
+                                            xw.WriteElementString("PER0" + i, "", IIF_NULL(N1Loop1, ".//PER/PER0" + i));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Error : PER is missing");
+                                    }
+                                }
+                                else
+                                {
+                                    xw.WriteElementString("Error", "", "Error : BY is missing");
+                                }
+
+                            }
+                            xw.WriteEndElement(); //Customers
+
+                            xw.WriteStartElement("Order");
+                            {
+                                //DTM01 = 004
+                                xw.WriteElementString("Date", StringToDate(IIF_NULL(root, "//DTM[DTM01 = '004']/DTM02")));
+
+                                //Number
+                                xw.WriteElementString("Number", IIF_NULL(root, "//BEG/BEG03"));
+
+                                //DTM01 = 002
+                                xw.WriteElementString("RequestedShipDate", StringToDate(IIF_NULL(root, "//DTM[DTM01 = '002']/DTM02")));
+
+                                //harcode
+                                xw.WriteElementString("CreatedBy", "EDI-" + wscie + IDE);
+                                xw.WriteElementString("Status", "EDI-" + wscie + IDE);
+                                xw.WriteElementString("UserCode", "XEDI-" + wscie + IDE);
+
+                                ////MSG
+                                //xw.WriteElementString("MSG", IIF_NULL(root, "//N9Loop1/MTX/MSG"));
+
+                                //items
+                                int nb = 1;
+                                XmlNode PO1Loop1;
+                                while ((PO1Loop1 = Get_Node(root, "//PO1Loop1[" + nb + "]", false)) != null)
+                                {
+                                    xw.WriteStartElement("OrderItem");
+                                    {
+                                        xw.WriteElementString("ItemDescription", IIF_NULL(PO1Loop1, ".//PIDLoop1/PID/PID05"));
+                                        xw.WriteElementString("ItemId", IIF_NULL(PO1Loop1, ".//PO1/PO109"));
+                                        xw.WriteElementString("CustomerItemId", IIF_NULL(PO1Loop1, ".//PO1/PO107"));
+                                        xw.WriteElementString("ItemLineId", IIF_NULL(PO1Loop1, ".//PO1/PO101"));
+                                        xw.WriteElementString("ItemQuantity", IIF_NULL(PO1Loop1, ".//PO1/PO102"));
+                                        xw.WriteElementString("ItemUnitOfMeasure", IIF_NULL(PO1Loop1, ".//PO1/PO103"));
+                                        xw.WriteElementString("ItemRate", IIF_NULL(PO1Loop1, ".//PO1/PO104"));
+                                        xw.WriteElementString("ItemUnitOfPrice", IIF_NULL(PO1Loop1, ".//PO1/PO105"));
+                                        xw.WriteElementString("TimeModified", DateTime.Now.ToString().Replace(" ", "T"));
+                                        xw.WriteElementString("Status", "EDI-" + wscie + IDE);
+                                        xw.WriteElementString("RequestedShipDate", StringToDate(IIF_NULL(PO1Loop1, ".//DTM[DTM01 = '002']/DTM02")));
+                                        nb++;
+                                    }
+                                    xw.WriteEndElement(); //OrderItem 
+                                }
+                            }
+                            xw.WriteEndElement(); //Order
+                        }
+                        xw.WriteEndElement(); //root
+                    } //xmlwriter
+
+                    string text;
+                    text = "\n";
+                    text += File.ReadAllText(path, Encoding.UTF8);
+                    sw.WriteLine(text);
+
+                    XMLProcessor_850_New proc = new XMLProcessor_850_New();
+                    proc.ProcessOrder(sw.ToString());
+                }
+
+                if (edi_doc_number == 810)
+                {
+                    XMLProcessor_810 proc810 = new XMLProcessor_810(nsmgr);
+                    proc810.ProcessOrder(root, path);
+                }
+
+                if (edi_doc_number == 855)
+                {
+                    XMLProcessor_855 proc855 = new XMLProcessor_855(nsmgr, doc);
+                    proc855.ProcessOrder(root, path);
+                }
+
+                if (edi_doc_number == 856)
+                {
+                    XMLProcessor_856 proc856 = new XMLProcessor_856(nsmgr, doc);
+                    proc856.ProcessOrder(root, path);
+                }
+
+            } //if send or create
 
             return true;
         }
@@ -392,5 +559,44 @@ namespace EDI_RSS
             return int.Parse(retVal);
         }
 
+        /**
+         * return a xml node with the namespace in the xpath
+         */
+        public XmlNode Get_Node(XmlNode node, string xpath, bool isBrackets = true)
+        {
+            xpath = xpath.Replace("/", "/ic:");
+            xpath = xpath.Replace("/ic:/ic:", "//ic:");
+            if (isBrackets)
+                xpath = xpath.Replace("[", "[ic:");
+
+            return node.SelectSingleNode(xpath, nsmgr);
+        }
+
+        /**
+         * return the value of a xml node if is not null
+         */
+        public string IIF_NULL(XmlNode node, string xpath, string nullValue = "")
+        {
+            if (Get_Node(node, xpath) == null)
+            {
+                return nullValue;
+            }
+
+            return Get_Node(node, xpath).InnerText;
+        }
+
+        /**
+         * return a string date in the format : yyyy-MM-dd
+         */
+        public string StringToDate(string date)
+        {
+            string year = date.Substring(0, 4);
+            string month = date.Substring(4, 2);
+            string day = date.Substring(6, 2);
+
+            string outputDate = year + "-" + month + "-" + day;
+
+            return outputDate;
+        }
     }
 }
