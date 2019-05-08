@@ -124,8 +124,11 @@ namespace EDI_RSS
             // "Live" "edi_rss" "D:\Vivael\data" "855P-ALL" "[ErrorMessage]"
             // "Test" "edi_rss" "E:\TEST_VIVA_ENV\CLIENT_ARIVA_DATA" "855P-ALL" "[ErrorMessage]"
             gIDataEdi_path = GetIDedi_path(PortId.ToString());
-            if (!vendor.After_Setup(false)) return false;
-            
+            if (!vendor.Edi_path_after_Setup()) return false;
+
+            gRss_request = Filename.Substring(0, 4); //855P 
+            gRss_client =  Filename.Substring(5, 3); //ALL
+
             if (gRss_client != "ALL") return false;
             if (gRss_request != "810P" && gRss_request != "850P" && gRss_request != "855P" && gRss_request != "856P") return false;
 
@@ -447,6 +450,7 @@ namespace EDI_RSS
 
             alias = gIDataEdi_path["alias"].ToString();
             IDE_status = gIDataEdi_path["IDE_status"].ToString().ToLower();
+            Edi_protocol = gIDataEdi_path["Edi_protocol"].ToString();
 
             if (IDE_status == "send" || IDE_status == "create")
             {
@@ -458,11 +462,17 @@ namespace EDI_RSS
 
                 if (PortId == PortId_code + "_routing_out" && IDE_status == "send")
                 {
-                    DB_RSS.LogData($"Sending: file to port {wscie}{IDE}_{alias}_AS2 " + NL + "FileName: " + Filename + NL + FileContents);
-                    SetRouting_out_path("AS2");
+                    DB_RSS.LogData($"Sending: file to port {wscie}{IDE}_{alias}_{Edi_protocol}" + NL + "FileName: " + Filename + NL + FileContents);
+                    SetRouting_out_path(Edi_protocol);
                     File.Copy(Filepath, Path.Combine(RSS_send_path, Filename));
 
+                    if(Edi_protocol == "SFTP")
+                    {
+                        File.Copy(Filepath, Path.Combine(RSS_send_path.Replace(@"\Send", @"\Sent"), Filename));
+                        UpdateSent("edi_" + edi_doc_number, Filename);
+                    }
                 }
+
                 else if (PortId.Substring(PortId.Length - 3) == "AS2")
                 {
                     Status += "ErrorMessage: " + ErrorMessage + NL;

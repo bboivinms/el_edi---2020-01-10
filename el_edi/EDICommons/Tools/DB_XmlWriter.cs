@@ -10,6 +10,8 @@ using System.IO;
 using EDI_DB.Data;
 using static EDI_DB.Data.Base;
 using System.Diagnostics;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace EDI_DB.Data
 {
@@ -47,10 +49,12 @@ namespace EDI_DB.Data
                 string Comment6 = "", string Seg6 = "x0x",
                 string Comment7 = "", string Seg7 = "x0x",
                 string Comment8 = "", string Seg8 = "x0x",
-                string Comment9 = "", string Seg9 = "x0x")
+                string Comment9 = "", string Seg9 = "x0x",
+                string Comment10 = "", string Seg10 = "x0x",
+                string Comment11 = "", string Seg11 = "x0x")
         {
             writer.WriteStartElement(Segment);
-            if(SegmentType != "") writer.WriteAttributeString("type", SegmentType);
+            if (SegmentType != "") writer.WriteAttributeString("type", SegmentType);
             {
                 if (Seg1 != "x0x") { if (Comment1 != "") Comment(Comment1); writer.WriteElementString($"{Segment}01", Seg1); }
                 if (Seg2 != "x0x") { if (Comment2 != "") Comment(Comment2); writer.WriteElementString($"{Segment}02", Seg2); }
@@ -61,6 +65,8 @@ namespace EDI_DB.Data
                 if (Seg7 != "x0x") { if (Comment7 != "") Comment(Comment7); writer.WriteElementString($"{Segment}07", Seg7); }
                 if (Seg8 != "x0x") { if (Comment8 != "") Comment(Comment8); writer.WriteElementString($"{Segment}08", Seg8); }
                 if (Seg9 != "x0x") { if (Comment9 != "") Comment(Comment9); writer.WriteElementString($"{Segment}09", Seg9); }
+                if (Seg10 != "x0x") { if (Comment10 != "") Comment(Comment10); writer.WriteElementString($"{Segment}10", Seg10); }
+                if (Seg11 != "x0x") { if (Comment11 != "") Comment(Comment11); writer.WriteElementString($"{Segment}11", Seg11); }
             }
             writer.WriteEndElement();
         }
@@ -82,14 +88,14 @@ namespace EDI_DB.Data
         public static class EntityCode2
         {
             public static string[] SellerCode = { "91", "Assigned by Seller or Seller's Agent" };
-            public static string[] BuyerCode =  { "92", "Assigned by Buyer or Buyer's Agent" };
+            public static string[] BuyerCode = { "92", "Assigned by Buyer or Buyer's Agent" };
         }
 
         /// It write the N1Loop1 xml tag for the arclient
         public void WriteN1Loop1_arclient(string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
         {
             CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclient(arclient_ident));
-   
+
             WriteN1Loop1(entityCode1, entityCode2, data_record,
                 "iddel_addr",
                 "2000",
@@ -107,7 +113,7 @@ namespace EDI_DB.Data
         {
             CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclientName(arclient_name));
 
-            if (data_record == null) return;
+            if (data_record.data_record == null) return;
 
             WriteN1Loop1(entityCode1, entityCode2, data_record,
                 "iddel_addr",
@@ -178,15 +184,73 @@ namespace EDI_DB.Data
             );
         }
 
-        public void WriteN9Loop1_MSG(string Comment_MSG, string Segment_MSG)
+        public void WriteN9Loop_Technique(IDataRecord Data, IDataRecord RawDataDetails)
+        {
+
+            string xml = Data["edi_850_Xml_technique"].ToString();
+
+            XDocument xmlDoc = XDocument.Parse(xml);
+
+            XElement node;
+            if ((node = xmlDoc.XPathSelectElement("//item[idprod = " + RawDataDetails["ivprod_ident"] + "]")) != null)
+            {
+                XElement code_pal;
+                if((code_pal = node.XPathSelectElement(".//code_pal")) != null)
+                {
+                    string base64ImageRepresentation = "";
+
+                    string figFilename = @"C:\EDI_INFO" + @"\fig\" + code_pal.Value.TrimEnd('\n') + ".jpg";
+                    if (File.Exists(figFilename))
+                    {
+                        byte[] imageArray = System.IO.File.ReadAllBytes(figFilename);
+                        base64ImageRepresentation = Convert.ToBase64String(imageArray);
+
+                        WriteN9Loop1("imageTextRepresentation", "data:image/jpg;base64," + base64ImageRepresentation, "CODE_PAL_IMAGE");
+
+                        if (wscie == "E")
+                            WriteN9Loop1("url", @"client.envl.ca/images/edi-fig/" + code_pal.Value.TrimEnd('\n') + ".jpg", "CODE_PAL_URL");
+                        else if (wscie == "M")
+                            WriteN9Loop1("url", @"clients.multi-services.org/images/edi-fig/" + code_pal.Value.TrimEnd('\n') + ".jpg", "CODE_PAL_URL");
+                    }
+                    else
+                    {
+                        Error += "Error : Le fichier : " + figFilename + " est introuvable dans le serveur 252."  + NL;
+                    }
+  
+                    if (node.XPathSelectElement(".//longueur").Value != "0" && node.XPathSelectElement(".//largeur").Value != "0" && node.XPathSelectElement(".//hauteur").Value != "0")
+                    {
+                        WriteN9Loop1("dimension", "Dimension max. ballots incluant palette."+ NL
+                        + NL + "Long.: " + node.XPathSelectElement(".//longueur").Value
+                        + NL + "Larg.: " + node.XPathSelectElement(".//largeur").Value
+                        + NL + "Haut.: " + node.XPathSelectElement(".//hauteur").Value, "CODE_PAL_DIMENSION");
+                    }
+                }
+
+                XElement MSG1 = node.XPathSelectElement(".//MSG1");
+
+                if (MSG1 != null)
+                    WriteN9Loop1("note technique", MSG1.Value.TrimEnd('\n') + NL, "TECH_SPECS");
+            }
+        }
+
+        public void WriteN9Loop1(string Comment_MSG, string Segment_MSG, string Ref_N902 = "TEXT")
         {
             writer.WriteStartElement("N9Loop1");
             writer.WriteAttributeString("type", "Loop");
             {
                 WriteSegment("N9", "Segment", "N901 : Reference Identification Qualifier: Mutually Defined", "ZZ",
-                                              "N902 : Reference Identification: Fixed", "TEXT");
+                                              "N902 : Reference Identification: Fixed", Ref_N902);
 
-                WriteSegment("MSG", "Segment", "MSG01 : Free-Form Message Text: " + Comment_MSG, Segment_MSG);
+                if(gIDataEdi_path["Edi_version"].ToString() == "00401")
+                {
+                    WriteSegment("MSG", "Segment", "MSG01 : Free-Form Message Text: " + Comment_MSG, Segment_MSG);
+                }
+                else if(gIDataEdi_path["Edi_version"].ToString() == "00403")
+                {
+                    WriteSegment("MTX", "Segment", "MTX01 : Note Reference Code: Mutually Defined", "ZZZ",
+                                                   "MTX02 : Message Text: " + Comment_MSG, Segment_MSG);
+                }
+                
             }
             writer.WriteEndElement(); //N9Loop1
         }

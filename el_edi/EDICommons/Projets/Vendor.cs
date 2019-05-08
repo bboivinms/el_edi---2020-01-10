@@ -92,5 +92,40 @@ namespace EDI_RSS
             return true;
 
         }
+
+        public bool Edi_path_after_Setup()
+        {
+            string DB_VIVA_name = "";
+            string DB_WEB_name = "";
+
+            if (gIDataEdi_path == null)
+            {
+                DB_RSS.LogData("ERROR: Could not get routing information : " + NL + Status);
+                return false;
+            }
+
+            DB_VIVA_name = gIDataEdi_path["edi_db_viva"].ToString();
+            DB_WEB_name = gIDataEdi_path["edi_db_web"].ToString();
+
+            wscie = gIDataEdi_path["edi_code"].ToString().Substring(0, 1);
+            IDE = gIDataEdi_path["edi_code"].ToString().Substring(1, 2);
+
+            if (gIDataEdi_path["edi_code"].ToString().Substring(0, 1).ToUpper() == "E") vendor.SubVendor = new Vendor_EL();
+            if (gIDataEdi_path["edi_code"].ToString().Substring(0, 1).ToUpper() == "M") vendor.SubVendor = new Vendor_MS();
+
+            EdiPath = gIDataEdi_path["edi_path"].ToString();
+
+            vendor.SetupViva(DB_VIVA_name);
+            vendor.SetupWeb(DB_WEB_name);
+
+            Status += "DB_VIVA_Connection: " + DB_VIVA_Connection + NL;
+            Status += "DB_WEB_Connection: " + DB_WEB_Connection + NL;
+
+            DB_VIVA = new EDI_DB.Data.CDB_VIVA(DB_VIVA_Connection);
+            DB_WEB = new EDI_DB.Data.CDB_WEB(DB_WEB_Connection);
+
+            return true;
+
+        }
     }
 }

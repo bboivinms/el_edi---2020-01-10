@@ -45,6 +45,7 @@ namespace EDI_DB.Data
         public static string wscie = "";
         public static string IDE = "";
         public static string IDE_status = "";
+        public static string Edi_protocol = ""; 
         public static string alias = "";
         public static int arclient_ident = 0;
         public static string arclient_idedi = "";
@@ -180,6 +181,9 @@ namespace EDI_DB.Data
                 SELECT 
                     {ID} AS id,
                     alias,
+                    Has_accent,
+                    Edi_version,
+                    Edi_protocol,
                     X{IDE}_{edi_doc_number} AS IDE_status,
                     X{IDE}_path AS IDE_path,
                     edi_path.*
@@ -440,7 +444,7 @@ namespace EDI_DB.Data
         {
             List<IDataRecord> results;
             Params.Clear();
-            Params.Add("arclient_name", arclient_name.ToString());
+            Params.Add("arclient_name", arclient_name.ToString().Replace('-', ' ').Replace(".", ""));
 
             results = HExecuteSQLQuery(@"
                 SELECT 
@@ -468,10 +472,10 @@ namespace EDI_DB.Data
             Params.Clear();
             Params.Add("arinv_ident", arinv_ident.ToString());
 
-            results = HExecuteSQLQuery(@"
+            results = DB_VIVA.HExecuteSQLQuery(@"
                 SELECT 
                    VLIVREA 
-                FROM vivadata4.arinv
+                FROM arinv
                 WHERE IDENT = ?arinv_ident", Params);
 
             postalCode = FindPostalCode(results[0]["VLIVREA"].ToString());

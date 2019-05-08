@@ -13,6 +13,113 @@ using static EDI_DB.Data.Base;
 
 namespace EDI_RSS.Helpers
 {
+    public class Program_810 : EDI_RSS.Program_Base
+    {
+        public Program_810()
+        {
+            TransactionCode = "810";
+
+            LogEventSource = "EDI 810 Processor";
+
+            Xml810Writer xml = null;
+
+            List<IDataRecord> RawDataDetails;
+            string arinv_ident;
+            string edi_ident;
+
+            Status += "Program_810" + NL + "UseSystem: " + UseSystem + NL + "TheFilename: " + Filename + NL + "RSS_send_path: " + RSS_send_path + NL;
+
+            try
+            {
+                List<IDataRecord> RawData = GetData();
+
+                foreach (IDataRecord Data in RawData)
+                {
+                    arinv_ident = Data["arinv_ident"].ToString();
+                    edi_ident = Data["edi_810_ident"].ToString();
+
+                    SetupClient(Convert.ToInt32(Data["arinv_custid"]));
+
+                    Status += "GetDataDetails: " + arinv_ident + NL;
+
+                    RawDataDetails = GetDataDetails(arinv_ident);
+
+                    xml = new Xml810Writer(Data, RawDataDetails);
+
+                    xml.Write(this);
+
+                    UpdateFilename("edi_810", xml.OutputFileName, edi_ident);
+                }
+
+            }
+            catch (System.Exception e)
+            {
+                Error += "Error caught: " + e.ToString();
+                LogWriter.WriteMessage(LogEventSource, $"Error caught: {e.Message}");
+            }
+            finally
+            {
+            }
+        }
+
+        //public void CreateNew()
+        //{
+        //    DB_VIVA.HExecuteSQLNonQuery(@" 
+        //        INSERT INTO edi_810 (arinv_ident) 
+        //        SELECT ident 
+        //        FROM arinv
+        //            WHERE   status = 'P' AND custid = 30037 AND 
+        //                    ident > 14350 AND 
+        //                    NOT EXISTS(SELECT 1 FROM edi_810 AS edi_810e WHERE edi_810e.arinv_ident = arinv.ident); 
+        //        ALTER TABLE edi_810 AUTO_INCREMENT = 1;");
+        //}
+
+        public List<IDataRecord> GetData()
+        {
+            return DB_VIVA.HExecuteSQLQuery(@"
+                SELECT  
+                    arinv.ident AS arinv_ident, arinv.invno AS arinv_invno, arinv.invdte AS arinv_invdte, arinv.custid AS arinv_custid,
+                    arinv.po AS arinv_po, arinv.idbil AS arinv_idbil, arinv.inv_mnt AS arinv_inv_mnt, arinv.INV_TX_GST AS arinv_inv_tx_gst,
+                    arinv.INV_TX_PST AS arinv_inv_tx_pst, arinv.TPSTAUX AS arinv_tpstaux, arinv.TVQTAUX AS arinv_tvqtaux,
+                    arinv.TVHTAUX AS arinv_tvhtaux, arinv.INV_TX_TVH AS arinv_inv_tx_tvh,
+					arclient.DISCOUNT_RATE AS arclient_discount_rate, arclient.DISCOUNT_DAYS AS arclient_discount_days, arclient.TERMS_DAYS AS arclient_terms_days,
+                    edi_810.ident AS edi_810_ident, edi_810.filename AS edi_810_filename
+                FROM arinv 
+                INNER JOIN arclient ON arclient.ident = arinv.CUSTID
+                INNER JOIN edi_810 ON edi_810.arinv_ident = arinv.ident
+                WHERE edi_810.Sent = false;
+                ");
+        }
+
+        public List<IDataRecord> GetDataDetails(string arinv_ident)
+        {
+            Params.Clear();
+            Params.Add("?arinv_ident", arinv_ident);
+
+            return DB_VIVA.HExecuteSQLQuery(
+                @"SELECT  
+                        arinvd.invline AS arinvd_invline, arinvd.qty AS arinvd_qty, arinvd.inv_mnt_unit AS arinvd_inv_mnt_unit,
+                        arinvd.unite AS arinvd_unite, arinvd.descr AS arinvd_descr, arinvd.idbil AS arinvd_idbil, arinvd.NOFSC AS arinvd_nofsc,
+                        ivprod.code AS ivprod_code, ivprod.DESC AS ivprod_desc,
+                        edi_810.ident AS edi_810_ident,
+                        ivprixdcli.codecli AS ivprixdcli_codecli,
+                        cobili.PO_NO AS cobili_po_no,
+                        cocom.CLIENTPO AS cocom_clientpo, cocom.ident AS cocom_ident  
+                FROM arinv 
+                INNER JOIN arinvd ON arinv.ident = arinvd.ident
+                INNER JOIN ivprod ON ivprod.ident = arinvd.idprod
+                INNER JOIN edi_810 ON edi_810.arinv_ident = arinv.ident
+                LEFT JOIN ivprixdcli ON (ivprixdcli.idclient = arinv.custid AND ivprixdcli.idprod = arinvd.idprod AND IFNULL(ivprixdcli.codecli, '') <> '')
+                INNER JOIN cobili ON cobili.IDCOBIL= arinv.IDBIL AND cobili.LINE = arinvd.BIL_LINE
+                INNER JOIN cocom ON cocom.ident = cobili.IDCOM
+                WHERE   edi_810.Sent = false 
+                        AND
+                        arinv.ident = ?arinv_ident
+                ORDER BY arinvd.ident, arinvd.invline
+                ", Params);
+        }
+    }
+
     class Xml810Writer : DB_XmlWriter
     {
         private IDataRecord Data;
@@ -30,11 +137,21 @@ namespace EDI_RSS.Helpers
 
             OutputFileName = $"{ClientID.PadLeft(5, '0')}-810-OUT-{Data["arinv_ident"].ToString()}-{Base.ToAlphaNumeric(Data["arinv_po"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
 
-            XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
+            edi_doc_number = 850;
+            arclient_ident = GetInt(ClientID);
 
-            Status += "Xml810Writer " + NL;
-            Status += "OutputFileName: " + OutputFileName + NL;
-            Status += "XmlFilePath: " + XmlFilePath + NL;
+            gIDataEdi_path = GetEdi_partner("edi_arclient");
+
+            if (gIDataEdi_path != null)
+            {
+                SetRouting_out_path("xml_x12");
+
+                XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
+
+                Status += "Xml850Writer " + NL;
+                Status += "OutputFileName: " + OutputFileName + NL;
+                Status += "XmlFilePath: " + XmlFilePath + NL;
+            }
         }
 
         public void Write(Program_810 mysql)
@@ -145,7 +262,7 @@ namespace EDI_RSS.Helpers
                                                    "TXI03 : Percent: Percentage expressed as a decimal", (Convert.ToDecimal(Data["arinv_tvhtaux"]) / 100).ToString());
                 }
 
-                int totalTaxAmount = Convert.ToInt32(Data["arinv_inv_tx_pst"].ToString()) + Convert.ToInt32(Data["arinv_inv_tx_tvh"].ToString());
+                decimal totalTaxAmount = Convert.ToDecimal(Data["arinv_inv_tx_pst"]) + Convert.ToDecimal(Data["arinv_inv_tx_tvh"]);
                 //AMT segment
                 WriteSegment("AMT", "Segment", "AMT01 : Amount Qualifier Code : Fixed : Tax", "T",
                                                "AMT02 : Monetary Amount", totalTaxAmount.ToString());
@@ -180,14 +297,14 @@ namespace EDI_RSS.Helpers
                     "IT108 : Product/Service ID Qualifier : Fixed: Vendor's (Seller's) Part Number", "VP",
                     "IT109 : Product/Service ID : ivprod_code", TheDataDetails["ivprod_code"].ToString());
 
-                decimal MonetaryAmount = (Convert.ToInt32(TheDataDetails["arinvd_qty"]) / 1000) * Convert.ToDecimal(TheDataDetails["arinvd_inv_mnt_unit"]);
+                decimal MonetaryAmount = (Convert.ToDecimal(TheDataDetails["arinvd_qty"]) / 1000) * Convert.ToDecimal(TheDataDetails["arinvd_inv_mnt_unit"]);
                 //PAM Loop
                 WriteSegment("PAM", "Segment", "PAM01 : Quantity Qualifier : Fixed : Discrete Quantity", "01",
-                                               "PAM02 : Quantity", (Convert.ToInt32(TheDataDetails["arinvd_qty"])/1000).ToString(),
+                                               "PAM02 : Quantity : Calc: arinvd_qty / 1000", Math.Round((Convert.ToDecimal(TheDataDetails["arinvd_qty"]) / 1000), 3).ToString(),
                                                "PAM03-01 : Unit or Basis for Measurement Code : Fixed : per thousand", "TP",
-                                               "PAM03-02 : Multiplier", TheDataDetails["arinvd_inv_mnt_unit"].ToString(),
+                                               "PAM03-02 : Multiplier : arinvd_inv_mnt_unit", Math.Round(Convert.ToDecimal(TheDataDetails["arinvd_inv_mnt_unit"]), 3).ToString(),
                                                "PAM04 : Amount Qualifier Code : Fixed : Line Item Total", "1",
-                                               "PAM05 : Monetary Amount", MonetaryAmount.ToString());
+                                               "PAM05 : Monetary Amount : MonetaryAmount", Math.Round(MonetaryAmount, 2).ToString());
 
                 WritePIDLoop1(TheDataDetails);
             }
@@ -196,6 +313,11 @@ namespace EDI_RSS.Helpers
 
         public void WritePIDLoop1(IDataRecord TheDataDetails)
         {
+            string nofsc = TheDataDetails["arinvd_nofsc"].ToString();
+            if(nofsc != "")
+            {
+                nofsc = NL + nofsc;
+            }
 
             writer.WriteStartElement("PIDLoop1");
             writer.WriteAttributeString("type", "Loop");
@@ -205,7 +327,7 @@ namespace EDI_RSS.Helpers
                     "PID02 : Product/Process Characteristic Code : Fixed", "",
                     "PID03 : Agency Qualifier Code: Fixed", "",
                     "PID04 : Product Description Code: Fixed", "",
-                    "PID05 : Description : ivprod_desc", TheDataDetails["ivprod_desc"].ToString());
+                    "PID05 : Description : ivprod_desc", TheDataDetails["ivprod_desc"].ToString() + nofsc);
 
                 WriteSegment("REF", "Segment",
                    "REF01 : Reference Identification Qualifier : Delivery Reference", "KK",

@@ -353,10 +353,10 @@ namespace EDI_RSS.Helpers
                 WriteSegment("SN1", "Segment",
                     "SN101 : Assigned Identification calc: cobili_line * 10", (Convert.ToInt32(data["cobili_line"].ToString()) * 10).ToString(),
                     "SN102 : Number of Units Shipped: cobili_qty", data["cobili_qty"].ToString(),
-                    "SN103 : Unit or Basis for Measurement Code: Each", "EA",
+                    "SN103 : Unit or Basis for Measurement Code: Enveloppe", "EV",
                     "SN104 : Quantity Shipped to Date : calc: qtyShippedDate", qtyShippedDate.ToString(),
                     "SN105 : Quantity Ordered: cobili_qty", data["cobili_qty"].ToString(),
-                    "SN106 : Unit or Basis for Measurement Code: Each", "EA");
+                    "SN106 : Unit or Basis for Measurement Code: Enveloppe", "EV");
             }
             writer.WriteEndElement(); //HLLoop1
         } //method WriteHLLoop1_Item()

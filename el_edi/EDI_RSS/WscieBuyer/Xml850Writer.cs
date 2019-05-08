@@ -32,8 +32,6 @@ namespace EDI_RSS.Helpers
 
             try
             {
-                // CreateNew();
-
                 List<IDataRecord> RawData = GetData();
 
                 foreach (IDataRecord Data in RawData)
@@ -49,8 +47,17 @@ namespace EDI_RSS.Helpers
 
                     xml = new Xml850Writer(Data, RawDataDetails);
 
-                    //xml.Write(this);
-                    File.WriteAllText(xml.XmlFilePath, RemoveDiacritics(xml.Write(this)));
+                    string strXml = xml.Write(this);
+
+                    if (gIDataEdi_path["Has_accent"].ToString() == "0")
+                    {
+                        strXml = RemoveDiacritics(xml.Write(this));
+                    }
+
+                    strXml = ReplaceTildeAndPipe(strXml);
+                    strXml = ReplaceTelephoneNumber(strXml);
+
+                    File.WriteAllText(xml.XmlFilePath, strXml.Replace("&amp;", "&").Replace("& ", "&  "));
 
                     UpdateFilename("edi_850", xml.OutputFileName, edi_ident);
                 }
@@ -58,8 +65,8 @@ namespace EDI_RSS.Helpers
             }
             catch (System.Exception e)
             {
-                Error += "Error caught: " + e.Message;
-                LogWriter.WriteMessage(LogEventSource, $"Error caught: {e.Message}");
+                Error += "Error caught: " + e.ToString();
+                LogWriter.WriteMessage(LogEventSource, $"Error caught: {e.ToString()}");
             }
             finally
             {
@@ -85,9 +92,9 @@ namespace EDI_RSS.Helpers
                         popo.ident AS popo_ident, popo.idvendor AS popo_idvendor, popo.pono AS popo_pono, 
                         popo.desc AS popo_desc, popo.po_dte AS popo_po_dte, popo.requ_dte AS popo_requ_dte,
                         popo.contact as popo_contact, popo.contactfax AS popo_contactfax, popo.contactemail AS popo_contactemail,
-                        popo.del_name AS popo_del_name, popo.prt_note AS popo_prt_note,
+                        popo.del_name AS popo_del_name, popo.prt_note AS popo_prt_note, popo.ref_fourn AS popo_ref_fourn,
                         apsupp.TERMS_DAYS AS apsupp_terms_days, apsupp.DISCOUNT_DAYS AS apsupp_discount_days, apsupp.DISCOUNT_RATE AS apsupp_discount_rate,
-                        edi_850.ident AS edi_850_ident, edi_850.filename AS edi_850_filename,
+                        edi_850.ident AS edi_850_ident, edi_850.filename AS edi_850_filename, edi_850.Xml_technique AS edi_850_Xml_technique,
                         wsuser.name AS wsuser_name, 
                         IF(IFNULL(wsuser.email, '') = '', wscie.email, wsuser.email) AS wsuser_email, 
                         IF(IFNULL(wsuser.tel, '') = '', wscie.cie_tel, wsuser.tel) AS wsuser_tel,
@@ -172,6 +179,20 @@ namespace EDI_RSS.Helpers
 
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
+
+        static string ReplaceTildeAndPipe(string XmlText)
+        {
+            string result = XmlText.Replace("~", "-");
+            result = result.Replace("|", ":");
+            result = result.Replace("*", "°");
+            return result;
+        }
+
+        static string ReplaceTelephoneNumber(string XmlText)
+        {
+            string result = XmlText.Replace("843-2385", "843-9645");
+            return result;
+        }
     }
 
     class Xml850Writer : DB_XmlWriter
@@ -228,13 +249,13 @@ namespace EDI_RSS.Helpers
                 {
 
                     writer.WriteStartElement("TransactionSet");
-                    writer.WriteStartElement("TX-00401-850");
+                    writer.WriteStartElement("TX-"+ gIDataEdi_path["Edi_version"].ToString() +"-850"); //00401 || 00403
                     writer.WriteAttributeString("type", "TransactionSet");
 
                     writer.WriteStartElement("Meta");
                     {
-                        writer.WriteElementString("STO1", "", "850"); // Transaction Set Identifier Code: 850 - Purchase Order
-                        writer.WriteElementString("STO2", "", TransactionControlNumber); // Transaction Set Control Number
+                        writer.WriteElementString("ST01", "", "850"); // Transaction Set Identifier Code: 850 - Purchase Order
+                        writer.WriteElementString("ST02", "", TransactionControlNumber); // Transaction Set Control Number
                     }
                     writer.WriteEndElement(); //Meta
 
@@ -253,21 +274,34 @@ namespace EDI_RSS.Helpers
                     WriteSegment("REF", "Segment", "REF01 : Reference Identification Qualifier : Fixed : Purchase Order Number", "PO",
                                                    "REF02 : Reference Identification : popo_pono", Data["popo_pono"].ToString());
 
+                    string[] methodPayment ;
+                    if(Data["popo_del_name"].ToString() == "PICK UP")
+                    {
+                        methodPayment = new string[]{"BP", "Paid by Buyer" };
+                    }
+                    else
+                    {
+                        methodPayment = new string[]{ "PP", "Prepaid (by Seller)" };
+                    }
+
                     //FOB segment
-                    WriteSegment("FOB", "Segment", "FOB01 : Shipment Method of Payment: Fixed: Paid by Seller", "PS",
+                    WriteSegment("FOB", "Segment", "FOB01 : Shipment Method of Payment: methodPayment: " + methodPayment[1], methodPayment[0],
                                                    "FOB02 : Location Qualifier: Fixed: Mutually Defined", "ZZ",
                                                    "FOB03 : Description : popo_desc", Data["popo_desc"].ToString(),
                                                    "FOB04 : Transportation Terms Qualifier Code: Fixed: Incoterms", "01",
                                                    "FOB05 : Transportation Terms Code: Fixed: Free on Board", "FOB");
-                    //ITD segment
-                    WriteSegment("ITD", "Segment", "ITD01 : Terms Type Code", "",
-                                                   "ITD02 : Terms Basis Date Code: Fixed: Invoice Date", "3",
-                                                   "ITD03 : Terms Discount Percent: apsupp_discount_rate", Convert.ToInt32(Data["apsupp_discount_rate"]).ToString(),
-                                                   "ITD04 : Terms Discount Due Date", "",
-                                                   "ITD05 : Terms Discount Days Due: apsupp_discount_days", Data["apsupp_discount_days"].ToString(),
-                                                   "ITD06 : Terms Net Due Date", "",
-                                                   "ITD07 : Terms Net Days: apsupp_terms_days", Data["apsupp_terms_days"].ToString());
-
+                    if(ClientID != "2004")
+                    {
+                        //ITD segment
+                        WriteSegment("ITD", "Segment", "ITD01 : Terms Type Code", "",
+                                                       "ITD02 : Terms Basis Date Code: Fixed: Invoice Date", "3",
+                                                       "ITD03 : Terms Discount Percent: apsupp_discount_rate", Convert.ToInt32(Data["apsupp_discount_rate"]).ToString(),
+                                                       "ITD04 : Terms Discount Due Date", "",
+                                                       "ITD05 : Terms Discount Days Due: apsupp_discount_days", Data["apsupp_discount_days"].ToString(),
+                                                       "ITD06 : Terms Net Due Date", "",
+                                                       "ITD07 : Terms Net Days: apsupp_terms_days", Data["apsupp_terms_days"].ToString());
+                    }
+                    
                     //DTM segment
                     WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier : Fixed : Purchase Order", "004",
                                                    "DTM02 : Date : popo_po_dte", string.Format("{0:yyyyMMdd}", Data["popo_po_dte"]),
@@ -278,7 +312,29 @@ namespace EDI_RSS.Helpers
                                                    "DTM02 : Date : popo_requ_dte", string.Format("{0:yyyyMMdd}", Data["popo_requ_dte"]),
                                                    "DTM03 : Time", "");
 
-                    WriteN9Loop1_MSG("popo_prt_note", Data["popo_prt_note"].ToString());
+                    if(Data["popo_ref_fourn"].ToString() != "")
+                    {
+                        WriteN9Loop1("popo_ref_fourn", "Votre référence / Your reference: " + Data["popo_ref_fourn"].ToString());
+                    }
+                    else
+                    {
+                        WriteN9Loop1("popo_prt_note", Data["popo_prt_note"].ToString());
+                    }
+
+                    string cie_name = "Unknown corporations";
+                    if (wscie == "E")
+                    {
+                        cie_name = "Enveloppe Laurentide Inc.";
+                    }
+                    else if(wscie == "M")
+                    {
+                        cie_name = "Multi Services GSTJ Inc.";
+                    }
+
+                    WriteN9Loop1("Termes", "Le fournisseur accepte les termes et conditions de " + cie_name
+                        + NL + "Le fournisseur est responsable d'aviser de toute différence de données technique entre les dossiers de " + cie_name + " et ceux du fournisseurs."
+                        + NL + "The supplier accepts the terms and conditions of " + cie_name
+                        + NL + "The supplier is responsible for notifying any technical data discrepancies between the "+ cie_name +" and the supplier's records.", "TERMES");
 
                     DB_PER pDB_PER = null;
                     pDB_PER = new DB_PER(this, PerCode.BD, Data["wsuser_name"].ToString(), Data["wsuser_tel"].ToString(), Data["wsuser_email"].ToString(), Data["wscie_cie_fax"].ToString());
@@ -301,7 +357,6 @@ namespace EDI_RSS.Helpers
                         WritePO1Loop1(DataDetail);
 
                     }
-
 
                     //CTT Loop
                     WriteSegmentLoop("CTTLoop1", "Loop", "CTT", "Segment",
@@ -338,7 +393,7 @@ namespace EDI_RSS.Helpers
                        "PO106 : Product/Service ID Qualifier: Fixed : Buyer's Part Number", "BP",
                       $"PO107 : Product/Service ID : ivprod_code (ivprod_ident={TheDataDetails["ivprod_ident"].ToString()})", TheDataDetails["ivprod_code"].ToString(),
                        "PO108 : Product/Service ID Qualifier: Fixed : Vendor's (Seller's) Part Number", "VP",
-                       "PO109 : Product/Service ID: ivprix_ref_fourn", TheDataDetails["ivprix_ref_fourn"].ToString());
+                       "PO109 : Product/Service ID: ivprix_ref_fourn", TheDataDetails["ivprix_ref_fourn"].ToString()); 
 
                 writer.WriteStartElement("PIDLoop1");
                 writer.WriteAttributeString("type", "Loop");
@@ -368,6 +423,8 @@ namespace EDI_RSS.Helpers
                     }
                 }
                 writer.WriteEndElement(); //SACLoop1
+
+                WriteN9Loop_Technique(Data, TheDataDetails);
             }
             writer.WriteEndElement(); //PO1Loop1
         }

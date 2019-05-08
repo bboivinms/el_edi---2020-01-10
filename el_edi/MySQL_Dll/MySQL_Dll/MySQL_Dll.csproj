@@ -4,14 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{891DCFB2-0D8C-4E2D-9F2F-24D15460EBEF}</ProjectGuid>
+    <ProjectGuid>{389B7C74-3792-4AF6-B482-2C912F1C1B5A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EDICommons</RootNamespace>
-    <AssemblyName>EDICommons</AssemblyName>
+    <RootNamespace>MySQL_Dll</RootNamespace>
+    <AssemblyName>MySQL_Dll</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,6 +30,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="MySql.Data, Version=8.0.13.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -42,19 +45,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Projets\MS\Vendor_MS.cs" />
-    <Compile Include="Projets\Vendor.cs" />
-    <Compile Include="Projets\EL\Vendor_EL.cs" />
+    <Compile Include="Edi855v.cs" />
+    <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools\DB_Commons.cs" />
-    <Compile Include="Tools\DB_XmlWriter.cs" />
-    <Compile Include="Tools\LogWriter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
+    <ProjectReference Include="W:\~Programmeurs\~GIT\repos\Rémi\repos\el_edi\el_edi\EDICommons\EDICommons.csproj">
+      <Project>{891dcfb2-0d8c-4e2d-9f2f-24d15460ebef}</Project>
+      <Name>EDICommons</Name>
+    </ProjectReference>
+    <ProjectReference Include="W:\~Programmeurs\~GIT\repos\Rémi\repos\el_edi\el_edi\EDI_RSS\EDI_RSS.csproj">
+      <Project>{68235704-7a84-4696-b3d7-068eac2152bc}</Project>
+      <Name>EDI_RSS</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
