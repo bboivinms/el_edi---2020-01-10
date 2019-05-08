@@ -262,7 +262,7 @@ namespace EDI_RSS.Helpers
                                                    "TXI03 : Percent: Percentage expressed as a decimal", (Convert.ToDecimal(Data["arinv_tvhtaux"]) / 100).ToString());
                 }
 
-                decimal totalTaxAmount = Convert.ToDecimal(Data["arinv_inv_tx_pst"]) + Convert.ToDecimal(Data["arinv_inv_tx_tvh"]);
+                decimal totalTaxAmount = Convert.ToDecimal(Data["arinv_inv_tx_pst"]) + Convert.ToDecimal(Data["arinv_inv_tx_gst"]) + Convert.ToDecimal(Data["arinv_inv_tx_tvh"]);
                 //AMT segment
                 WriteSegment("AMT", "Segment", "AMT01 : Amount Qualifier Code : Fixed : Tax", "T",
                                                "AMT02 : Monetary Amount", totalTaxAmount.ToString());
