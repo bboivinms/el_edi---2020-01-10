@@ -197,15 +197,15 @@ namespace EDI_DB.Data
                 XElement code_pal;
                 if((code_pal = node.XPathSelectElement(".//code_pal")) != null)
                 {
-                    string base64ImageRepresentation = "";
+                    //string base64ImageRepresentation = "";
 
                     string figFilename = @"C:\EDI_INFO" + @"\fig\" + code_pal.Value.TrimEnd('\n') + ".jpg";
                     if (File.Exists(figFilename))
                     {
-                        byte[] imageArray = System.IO.File.ReadAllBytes(figFilename);
-                        base64ImageRepresentation = Convert.ToBase64String(imageArray);
+                        //byte[] imageArray = System.IO.File.ReadAllBytes(figFilename);
+                        //base64ImageRepresentation = Convert.ToBase64String(imageArray);
 
-                        WriteN9Loop1("imageTextRepresentation", "data:image/jpg;base64," + base64ImageRepresentation, "CODE_PAL_IMAGE");
+                        //WriteN9Loop1("imageTextRepresentation", "data:image/jpg;base64," + base64ImageRepresentation, "CODE_PAL_IMAGE");
 
                         if (wscie == "E")
                             WriteN9Loop1("url", @"client.envl.ca/images/edi-fig/" + code_pal.Value.TrimEnd('\n') + ".jpg", "CODE_PAL_URL");
@@ -229,7 +229,7 @@ namespace EDI_DB.Data
                 XElement MSG1 = node.XPathSelectElement(".//MSG1");
 
                 if (MSG1 != null)
-                    WriteN9Loop1("note technique", MSG1.Value.TrimEnd('\n') + NL, "TECH_SPECS");
+                    WriteN9Loop1("note technique", MSG1.Value, "TECH_SPECS");
             }
         }
 
@@ -241,16 +241,23 @@ namespace EDI_DB.Data
                 WriteSegment("N9", "Segment", "N901 : Reference Identification Qualifier: Mutually Defined", "ZZ",
                                               "N902 : Reference Identification: Fixed", Ref_N902);
 
-                if(gIDataEdi_path["Edi_version"].ToString() == "00401")
+                string[]  msgArray = (Segment_MSG + NL).Replace("\r", "\n").Split('\n');
+                foreach (string item in msgArray)
                 {
-                    WriteSegment("MSG", "Segment", "MSG01 : Free-Form Message Text: " + Comment_MSG, Segment_MSG);
+                    if(item != "")
+                    {
+                        if (gIDataEdi_path["Edi_version"].ToString() == "00401")
+                        {
+                            WriteSegment("MSG", "Segment", "MSG01 : Free-Form Message Text: " + Comment_MSG, item.Trim());
+                        }
+                        else if (gIDataEdi_path["Edi_version"].ToString() == "00403")
+                        {
+                            WriteSegment("MTX", "Segment", "MTX01 : Note Reference Code: Mutually Defined", "ZZZ",
+                                                           "MTX02 : Message Text: " + Comment_MSG, item.Trim());
+                        }
+                    }
+                   
                 }
-                else if(gIDataEdi_path["Edi_version"].ToString() == "00403")
-                {
-                    WriteSegment("MTX", "Segment", "MTX01 : Note Reference Code: Mutually Defined", "ZZZ",
-                                                   "MTX02 : Message Text: " + Comment_MSG, Segment_MSG);
-                }
-                
             }
             writer.WriteEndElement(); //N9Loop1
         }
