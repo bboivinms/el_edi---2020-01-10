@@ -99,7 +99,7 @@ namespace EDI_RSS.Helpers
                 //TODO: decide if we will send the DTM once for the order, once per item, or both
                 // WriteSegment("DTM", "Segment", "002", string.Format("{0:yyyyMMdd}", RawDataPO.ElementAt(0)["cocomi_req_date"])); //Requested shipping date
 
-                WriteN1Loop1(EntityCode1.ST, EntityCode2.SellerCode, CDataCocom,
+                WriteN1Loop1(EntityCode1.ST, EntityCode2.BuyerCode, CDataCocom,
                     "iddel_addr", "2000", //iddel_addr
                     "cocom_del_name",
                     "cocom_daddr1",

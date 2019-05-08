@@ -276,7 +276,7 @@ namespace EDI_DB.Data
                 WriteSegment("N1", "Segment", "N101 : pEntityIdentifierCode: " + pEntityCode1[1], pEntityCode1[0],
                                               "N102 : " + Data_name, data_record[Data_name],
                                               "N103 : " + pEntityCode2[1], pEntityCode2[0],
-                                              "N104 : " + Comment_pId_addr, pId_addr);
+                                              "N104 : " + Comment_pId_addr, pId_addr.PadLeft(2, '0'));
                 if (data_record[Data_addr1] != "")
                 {
                     string state;
