@@ -10,6 +10,7 @@ using System.IO;
 using EDICommons.Tools;
 using EDI_DB.Data;
 using static EDI_DB.Data.Base;
+using System.Globalization;
 
 namespace EDI_RSS.Helpers
 {
@@ -40,7 +41,10 @@ namespace EDI_RSS.Helpers
                     cobil_ident = Data["cobil_ident"].ToString();
                     edi_ident = Data["edi_856_ident"].ToString();
 
-                    SetupClient(Convert.ToInt32(Data["cobil_clientid"]));
+                    string cobil_clientid = IsNull(Data["cobil_clientid"]);
+
+                    Status += "SetupClient: clientid :" + cobil_clientid + NL;
+                    //SetupClient(Convert.ToInt32(cobil_clientid.Replace(".", "").Replace(",", "")));
 
                     Status += "GetDataDetails: " + cobil_ident + NL;
 
@@ -48,7 +52,15 @@ namespace EDI_RSS.Helpers
 
                     xml = new Xml856Writer(Data, RawDataDetails);
 
-                    xml.Write(this);
+                    string strXml = xml.Write(this);
+
+                    if (gIDataEdi_path["Has_accent"].ToString() == "0")
+                    {
+                        strXml = RemoveDiacritics(strXml);
+                    }
+                    strXml = ReplaceTildeAndPipe(strXml);
+
+                    File.WriteAllText(xml.XmlFilePath, strXml);
 
                     UpdateFilename("edi_856", xml.OutputFileName, edi_ident);
                 }
@@ -56,8 +68,8 @@ namespace EDI_RSS.Helpers
             }
             catch (System.Exception e)
             {
-                Error += "Error caught: " + e.Message;
-                LogWriter.WriteMessage(LogEventSource, $"Error caught: {e.Message}");
+                Error += "Error caught: " + e.ToString();
+                LogWriter.WriteMessage(LogEventSource, $"Error caught: {e.ToString()}");
             }
             finally
             {
@@ -70,8 +82,8 @@ namespace EDI_RSS.Helpers
         //        INSERT INTO edi_856 (cobil_ident) 
         //        SELECT cobil.ident 
         //        FROM cobil
-        //            WHERE   cobil.clientid = 30037 AND 
-        //                    cobil.ident = 10 AND 
+        //            WHERE   cobil.STATUT = 'C' AND cobil.clientid = 30037 AND 
+        //                    cobil.ident = 10 AND
         //                    NOT EXISTS(SELECT 1 FROM edi_856 AS edi_856e WHERE edi_856e.cobil_ident = cobil.ident); 
         //        ALTER TABLE edi_856 AUTO_INCREMENT = 1;");
 
@@ -95,10 +107,6 @@ namespace EDI_RSS.Helpers
                 INNER JOIN edi_856 ON edi_856.cobil_ident = cobil.ident
                 INNER JOIN cobili ON cobil.ident = cobili.IDCOBIL
                 WHERE edi_856.Sent = false 
-                      AND
-                      cobil.ident = 10 
-                      AND
-                      cobil.STATUT = 'C'
                 ");
         }
 
@@ -119,7 +127,6 @@ namespace EDI_RSS.Helpers
                 INNER JOIN edi_856 ON edi_856.cobil_ident = cobil.ident
                 INNER JOIN cocom ON cocom.ident = cobili.IDCOM
                 WHERE   edi_856.Sent = false 
-                        AND cocom.CLIENTID = 30037 
                         AND cobil.ident = ?cobil_ident
                 GROUP BY cocom.ident
                 ORDER BY cobili.ident, cobili.line
@@ -155,7 +162,7 @@ namespace EDI_RSS.Helpers
             Params.Add("?cobili_idprod", cobili_idprod);
 
             return DB_VIVA.HExecuteSQLQuery(
-                @"SELECT SUM(cobili.qty) AS sum_cobili_qty FROM vivadata4.cobili wHERE cobili.IDCOM = ?cobili_idcom and COBILI.IDPROD = ?cobili_idprod
+                @"SELECT SUM(cobili.qty) AS sum_cobili_qty FROM cobili wHERE cobili.IDCOM = ?cobili_idcom and COBILI.IDPROD = ?cobili_idprod
                 ", Params);
         }
     }
@@ -175,16 +182,26 @@ namespace EDI_RSS.Helpers
 
             ClientID = Data["cobil_clientid"].ToString();
 
-            OutputFileName = $"{ClientID.PadLeft(5, '0')}-856OUT-{Data["cobil_ident"].ToString()}-{Base.ToAlphaNumeric(Data["cobil_clientpo"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
+            OutputFileName = $"{ClientID.PadLeft(5, '0')}-856-OUT-{Data["cobil_ident"].ToString()}-{Base.ToAlphaNumeric(Data["cobil_clientpo"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
 
-            XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
+            edi_doc_number = 856;
+            IDpartner = GetInt(ClientID);
 
-            Status += "Xml856Writer " + NL;
-            Status += "OutputFileName: " + OutputFileName + NL;
-            Status += "XmlFilePath: " + XmlFilePath + NL;
+            gIDataEdi_path = GetEdi_partner("edi_arclient");
+
+            if (gIDataEdi_path != null)
+            {
+                SetRouting_out_path("xml_x12");
+
+                XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
+
+                Status += "Xml856Writer " + NL;
+                Status += "OutputFileName: " + OutputFileName + NL;
+                Status += "XmlFilePath: " + XmlFilePath + NL;
+            }
         }
 
-        public void Write(Program_856 mysql)
+        public string Write(Program_856 mysql)
         {
             Random rand = new Random(Guid.NewGuid().GetHashCode());
             string TransactionControlNumber = rand.Next(0, 101).ToString("0000");
@@ -198,80 +215,84 @@ namespace EDI_RSS.Helpers
             Decimal TotalNumberOfLineItem = 0;
             Decimal TotalNumberOfLineItemQty = 0;
 
-            using (writer = XmlWriter.Create(XmlFilePath, settings))
+            using (var sw = new StringWriter())
             {
-
-                writer.WriteStartElement("TransactionSet");
-                writer.WriteStartElement("TX-00403-856");
-                writer.WriteAttributeString("type", "TransactionSet");
-
-                writer.WriteStartElement("Meta");
+                using (writer = XmlWriter.Create(sw, settings))
                 {
-                    writer.WriteElementString("STO1", "", "856"); //STO1 : Transaction Set Identifier Code: Ship Notice/Manifest
-                    writer.WriteElementString("STO2", "", TransactionControlNumber);  //STO2 : Transaction Set Control Number
-                }
-                writer.WriteEndElement(); //Meta
 
-                //BSN segment
-                WriteSegment("BSN", "Segment", "BSN01 : Transaction Set Purpose Code: Fixed : Original", "00",
-                                               "BSN02 : Shipment Identification : cobil_ident", Data["cobil_ident"].ToString(),
-                                               "BSN03 : Date : edi_856_ship_date", string.Format("{0:yyyyMMdd}", Data["edi_856_ship_date"]),
-                                               "BSN04 : Time : edi_856_ship_date", string.Format("{0:HHmmss}", Data["edi_856_ship_date"]));
+                    writer.WriteStartElement("TransactionSet");
+                    writer.WriteStartElement("TX-" + gIDataEdi_path["Edi_version"].ToString() + "-856"); //00401 || 00403
+                    writer.WriteAttributeString("type", "TransactionSet");
 
-                //DTM segment Shipped
-                WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier: Fixed : Shipped", "011",
-                                               "DTM02 : Date : cobil_bil_dte", string.Format("{0:yyyyMMdd}", Data["cobil_bil_dte"]));
-
-                DateTime cobil_bil_dte = DateTime.Parse(Data["cobil_bil_dte"].ToString());
-                //DTM segment Estimated Delivery
-                WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier: Fixed : Estimated Delivery", "017",
-                                               "DTM02 : Date : cobil_bil_dte", string.Format("{0:yyyyMMdd}", cobil_bil_dte.AddDays(1)));
-
-
-                WriteHLLoop1_Shipment(Data);
-
-                WriteN1Loop1_arclient(EntityCode1.ST, EntityCode2.BuyerCode);
-                WriteN1Loop1_wscie(EntityCode1.SF, EntityCode2.SellerCode);
-
-                List<IDataRecord> items;
-                List<IDataRecord> sum_cobili_qty;
-                int Id = 2;  //Hierarchical ID Number
-                int Pid = 1; //Hierarchical Parent ID Number
-
-                foreach (var DataDetail in RawDataDetails)
-                {
-                    WriteHLLoop1_Order(DataDetail, Id, Pid);
-                   
-                    items = mysql.GetItems(DataDetail["cobil_ident"].ToString(), DataDetail["cocom_ident"].ToString());
-                    Pid = Id;
-                    foreach (var item in items)
+                    writer.WriteStartElement("Meta");
                     {
-                        Id++;
-                        sum_cobili_qty = mysql.GetShippedDate(item["cocom_ident"].ToString(), item["ivprod_ident"].ToString());
-                        int ShippedToDate = Convert.ToInt32(sum_cobili_qty[0]["sum_cobili_qty"]) - Convert.ToInt32(item["cobili_qty"]);
-                        WriteHLLoop1_Item(item, ShippedToDate, Id, Pid);
-
-                        int QtyShipped = Convert.ToInt32(item["cobili_qty"]);
-
-                        TotalNumberOfLineItem++;
-                        TotalNumberOfLineItemQty += QtyShipped;
+                        writer.WriteElementString("ST01", "", "856"); //ST01 : Transaction Set Identifier Code: Ship Notice/Manifest
+                        writer.WriteElementString("ST02", "", TransactionControlNumber);  //ST02 : Transaction Set Control Number
                     }
-                    Id++;
-                    Pid = 1;
-                }
+                    writer.WriteEndElement(); //Meta
 
-                //CTT Loop
-                WriteSegmentLoop("CTTLoop1", "Loop", "CTT", "Segment",
-                    "Calc: TotalNumberOfLineItem", TotalNumberOfLineItem.ToString(),
-                    "Calc: TotalNumberOfLineItemQty", TotalNumberOfLineItemQty.ToString());
+                    //BSN segment
+                    WriteSegment("BSN", "Segment", "BSN01 : Transaction Set Purpose Code: Fixed : Original", "00",
+                                                   "BSN02 : Shipment Identification : cobil_ident", Data["cobil_ident"].ToString(),
+                                                   "BSN03 : Date : edi_856_ship_date", string.Format("{0:yyyyMMdd}", Data["edi_856_ship_date"]),
+                                                   "BSN04 : Time : edi_856_ship_date", string.Format("{0:HHmmss}", Data["edi_856_ship_date"]));
 
-                writer.WriteEndElement(); //TX-00403-856
+                    //DTM segment Shipped
+                    WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier: Fixed : Shipped", "011",
+                                                   "DTM02 : Date : cobil_bil_dte", string.Format("{0:yyyyMMdd}", Data["cobil_bil_dte"]));
 
-                writer.WriteEndElement(); //TransactionSet
+                    DateTime cobil_bil_dte = DateTime.Parse(Data["cobil_bil_dte"].ToString());
+                    //DTM segment Estimated Delivery
+                    WriteSegment("DTM", "Segment", "DTM01 : Date/Time Qualifier: Fixed : Estimated Delivery", "017",
+                                                   "DTM02 : Date : cobil_bil_dte", string.Format("{0:yyyyMMdd}", cobil_bil_dte.AddDays(1)));
 
 
-            } // Using XMLWriter
+                    WriteHLLoop1_Shipment(Data);
 
+                    WriteN1Loop1_arclient(EntityCode1.ST);
+                    WriteN1Loop1_wscie(EntityCode1.SF, EntityCode2.SellerCode);
+
+                    List<IDataRecord> items;
+                    List<IDataRecord> sum_cobili_qty;
+                    int Id = 2;  //Hierarchical ID Number
+                    int Pid = 1; //Hierarchical Parent ID Number
+
+                    foreach (var DataDetail in RawDataDetails)
+                    {
+                        WriteHLLoop1_Order(DataDetail, Id, Pid);
+
+                        items = mysql.GetItems(DataDetail["cobil_ident"].ToString(), DataDetail["cocom_ident"].ToString());
+                        Pid = Id;
+                        foreach (var item in items)
+                        {
+                            Id++;
+                            sum_cobili_qty = mysql.GetShippedDate(item["cocom_ident"].ToString(), item["ivprod_ident"].ToString());
+                            int ShippedToDate = Convert.ToInt32(sum_cobili_qty[0]["sum_cobili_qty"]) - Convert.ToInt32(item["cobili_qty"]);
+                            WriteHLLoop1_Item(item, ShippedToDate, Id, Pid);
+
+                            int QtyShipped = Convert.ToInt32(item["cobili_qty"]);
+
+                            TotalNumberOfLineItem++;
+                            TotalNumberOfLineItemQty += QtyShipped;
+                        }
+                        Id++;
+                        Pid = 1;
+                    }
+
+                    //CTT Loop
+                    WriteSegmentLoop("CTTLoop1", "Loop", "CTT", "Segment",
+                        "Calc: TotalNumberOfLineItem", TotalNumberOfLineItem.ToString(),
+                        "Calc: TotalNumberOfLineItemQty", TotalNumberOfLineItemQty.ToString());
+
+                    writer.WriteEndElement(); //TX-00403-856
+
+                    writer.WriteEndElement(); //TransactionSet
+
+
+                } // Using XMLWriter
+                return sw.ToString();
+            }// Using StringWriter
+            
         } // Write()
 
         public void WriteHLLoop1_Shipment(IDataRecord data)

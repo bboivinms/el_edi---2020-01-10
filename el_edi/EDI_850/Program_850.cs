@@ -63,9 +63,9 @@ namespace EDI_850
                 }
 
                 PortId_code = gIDataEdi_path["edi_code"].ToString().Substring(0, 3).ToUpper();
-                wscie = PortId_code.Substring(0, 1);
+                EDI_DB.Data.Base.wscie = PortId_code.Substring(0, 1);
                 IDE = PortId_code.Substring(1, 2);
-                arclient_ident = 30037;
+                IDpartner = 30037;
                 edi_doc_number = 850;
                 EdiProcess = "Routing In 850";
 

@@ -69,7 +69,7 @@ namespace EDI_850.Schema
         public void Validate()
         {
             Messages = new List<Message>();
-            arclient_ident = Id;
+            IDpartner = Id;
 
             //Validate and Set Customer Bill-To information
             SetCustomerBT();
@@ -86,7 +86,7 @@ namespace EDI_850.Schema
             
             if (string.IsNullOrEmpty(STAddress) && string.IsNullOrEmpty(BTAddress))
             {
-                Messages.Add(new Message { Text = $"<STRONG style='color:red'>{Resources.CustSTNotFound}: {arclient_ident}</STRONG>", Severity = Severity.Critical, Scope = Scope.Internal });
+                Messages.Add(new Message { Text = $"<STRONG style='color:red'>{Resources.CustSTNotFound}: {IDpartner}</STRONG>", Severity = Severity.Critical, Scope = Scope.Internal });
             }
 
         }
@@ -96,9 +96,9 @@ namespace EDI_850.Schema
             string Address = string.Empty;
 
             DB_VIVA.Params.Clear();
-            DB_VIVA.Params.Add("?id", arclient_ident.ToString());
+            DB_VIVA.Params.Add("?id", IDpartner.ToString());
 
-            IDataRecord result = DB_VIVA.GetAddressBT(arclient_ident);
+            IDataRecord result = DB_VIVA.GetAddressBT(IDpartner);
 
             if (result == null) { SetBTError();  return null; }
 
@@ -110,8 +110,8 @@ namespace EDI_850.Schema
 
         private void SetBTError()
         {
-            Messages.Add(new Message { Text = $"<STRONG style='color:red'>{Resources.InvalidCustId}: {arclient_ident}</STRONG>", Severity = Severity.Critical, Scope = Scope.Internal });
-            Messages.Add(new Message { Text = $"<STRONG style='color:red'>{Resources.CustBTNotFound}: {arclient_ident}</STRONG>", Severity = Severity.Critical, Scope = Scope.Internal });
+            Messages.Add(new Message { Text = $"<STRONG style='color:red'>{Resources.InvalidCustId}: {IDpartner}</STRONG>", Severity = Severity.Critical, Scope = Scope.Internal });
+            Messages.Add(new Message { Text = $"<STRONG style='color:red'>{Resources.CustBTNotFound}: {IDpartner}</STRONG>", Severity = Severity.Critical, Scope = Scope.Internal });
         }
 
         private void SetCustomerSTAddress()
@@ -132,7 +132,7 @@ namespace EDI_850.Schema
 
             string STZip = STPostalCode.ToUpper().Replace(" ", "");
 
-            IDataRecord DataAddress = DB_VIVA.GetAddressST(arclient_ident, STPostalCode);
+            IDataRecord DataAddress = DB_VIVA.GetAddressST(IDpartner, STPostalCode);
 
             if (Root.Order.sMSG != "")
             {
@@ -146,7 +146,7 @@ namespace EDI_850.Schema
                 STName = DataAddress["name"].ToString();
 
                 DB_VIVA.Params.Clear();
-                DB_VIVA.Params.Add("?arclient_ident", arclient_ident.ToString());
+                DB_VIVA.Params.Add("?arclient_ident", IDpartner.ToString());
                 DB_VIVA.Params.Add("?STPostalCode", STPostalCode.ToString());
                 DB_VIVA.Params.Add("?ST_IDDEL_ADDR", ST_IDDEL_ADDR.ToString());
                 DB_VIVA.Params.Add("?STN104", STN104.ToString());
@@ -177,7 +177,7 @@ namespace EDI_850.Schema
 
                 Messages.Add(new Message { Text = $"<STRONG style='color:red'>{Resources.CustSTNotFound}: {BTName}, {Resources.UseBT}. {Resources.NewSTAddress}<br>{addr.ToString()}</STRONG>", Severity = Severity.Warning, Scope = Scope.Internal });
 
-                ST_IDDEL_ADDR = Convert.ToInt32("4" + arclient_ident.ToString());
+                ST_IDDEL_ADDR = Convert.ToInt32("4" + IDpartner.ToString());
                 STAddress = BTAddress;
             }
 
@@ -419,7 +419,7 @@ namespace EDI_850.Schema
             cmd = DB_VIVA.conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
             cmd.CommandText = "SELECT taux FROM ivprixdcli WHERE idclient = ?arclient_ident AND idprod = ?idprod";
-            cmd.Parameters.AddWithValue("?arclient_ident", arclient_ident);
+            cmd.Parameters.AddWithValue("?arclient_ident", IDpartner);
             cmd.Parameters.AddWithValue("?idprod", IdProd);
 
             result = cmd.ExecuteScalar();
@@ -433,7 +433,7 @@ namespace EDI_850.Schema
             cmd = DB_VIVA.conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
             cmd.CommandText = "SELECT esclp FROM arclient WHERE ident = ?arclient_ident";
-            cmd.Parameters.AddWithValue("?arclient_ident", arclient_ident);
+            cmd.Parameters.AddWithValue("?arclient_ident", IDpartner);
 
             result = cmd.ExecuteScalar();
 
@@ -446,7 +446,7 @@ namespace EDI_850.Schema
             cmd = DB_VIVA.conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
             cmd.CommandText = "SELECT tauxpal FROM ivprixdcli WHERE idclient = ?arclient_ident AND idprod = ?idprod";
-            cmd.Parameters.AddWithValue("?arclient_ident", arclient_ident);
+            cmd.Parameters.AddWithValue("?arclient_ident", IDpartner);
             cmd.Parameters.AddWithValue("?idprod", IdProd);
 
             result = cmd.ExecuteScalar();
@@ -512,7 +512,7 @@ namespace EDI_850.Schema
             //                      The quantity will first be removed from Envl for same day delivery check
             cmd = DB_VIVA.conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "SELECT SUM(qty) FROM cobili LEFT JOIN cobil ON cobili.idcobil = cobil.ident WHERE cobili.idprod = ?idprod AND (cobil.statut = 'W' OR cobil.statut = 'E')";
+            cmd.CommandText = $"SELECT SUM(qty) FROM cobili LEFT JOIN cobil ON cobili.idcobil = cobil.ident WHERE cobili.idprod = ?idprod AND (cobil.statut = 'W' OR cobil.statut = 'EDI-{wscie}')";
             cmd.Parameters.AddWithValue("?idprod", IdProd);
 
             object result = cmd.ExecuteScalar();
@@ -527,9 +527,9 @@ namespace EDI_850.Schema
             //   pas encore été processé par le "form cobil" de VIVA.
 
             // consider status "W" or "E" only
-            cmd = DB_VIVA.conn.CreateCommand();
+            cmd = DB_WEB.conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "SELECT SUM(qty) FROM cobili LEFT JOIN cobil ON cobili.idcobil = cobil.ident WHERE cobili.idprod = ?idprod AND (cobil.statut = 'W' OR cobil.statut = 'E')";
+            cmd.CommandText = $"SELECT SUM(qty) FROM cobili LEFT JOIN cobil ON cobili.idcobil = cobil.ident WHERE cobili.idprod = ?idprod AND (cobil.statut = 'W' OR cobil.statut = 'EDI-{wscie}')";
             cmd.Parameters.AddWithValue("?idprod", IdProd);
 
             result = cmd.ExecuteScalar();
@@ -709,7 +709,7 @@ namespace EDI_850.Schema
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandText = "SELECT ident FROM ivprod WHERE ident > 0 AND code = ?code AND (idclient = 11173 OR idclient = ?arclient_ident)";  //11173 is Id of Enveloppes Laurentides
                 cmd.Parameters.AddWithValue("?code", ItemId);
-                cmd.Parameters.AddWithValue("?arclient_ident", arclient_ident);
+                cmd.Parameters.AddWithValue("?arclient_ident", IDpartner);
 
                 result = cmd.ExecuteScalar();
 
@@ -736,7 +736,7 @@ namespace EDI_850.Schema
                 cmd = DB_VIVA.conn.CreateCommand();
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandText = "SELECT idprod FROM ivprixdcli WHERE idclient = ?arclient_ident AND codecli = ?codecli";
-                cmd.Parameters.AddWithValue("?arclient_ident", arclient_ident);
+                cmd.Parameters.AddWithValue("?arclient_ident", IDpartner);
                 cmd.Parameters.AddWithValue("?codecli", CustomerItemId);
                 result = cmd.ExecuteScalar();
 

@@ -10,7 +10,6 @@ using System.IO;
 using EDICommons.Tools;
 using EDI_DB.Data;
 using static EDI_DB.Data.Base;
-using System.Globalization;
 
 namespace EDI_RSS.Helpers
 {
@@ -51,7 +50,7 @@ namespace EDI_RSS.Helpers
 
                     if (gIDataEdi_path["Has_accent"].ToString() == "0")
                     {
-                        strXml = RemoveDiacritics(xml.Write(this));
+                        strXml = RemoveDiacritics(strXml);
                     }
 
                     strXml = ReplaceTildeAndPipe(strXml);
@@ -156,43 +155,6 @@ namespace EDI_RSS.Helpers
                 ORDER BY popoi.idpo, popoi.line
                 ", Params);
         }
-
-        /*
-         * Replace all diacritics of a string with their alternatives.
-         * Params string text the text we want to remove diacritics.
-         * return String who contain no diacritics.
-         */
-        static string RemoveDiacritics(string text)
-        {
-
-            var normalizedString = text.Normalize(NormalizationForm.FormD);
-            var stringBuilder = new StringBuilder();
-
-            foreach (var c in normalizedString)
-            {
-                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
-                {
-                    stringBuilder.Append(c);
-                }
-            }
-
-            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
-        }
-
-        static string ReplaceTildeAndPipe(string XmlText)
-        {
-            string result = XmlText.Replace("~", "-");
-            result = result.Replace("|", ":");
-            result = result.Replace("*", "°");
-            return result;
-        }
-
-        static string ReplaceTelephoneNumber(string XmlText)
-        {
-            string result = XmlText.Replace("843-2385", "843-9645");
-            return result;
-        }
     }
 
     class Xml850Writer : DB_XmlWriter
@@ -213,7 +175,7 @@ namespace EDI_RSS.Helpers
             OutputFileName = $"{ClientID.PadLeft(5, '0')}-850-OUT-{Data["popo_ident"].ToString()}-{Base.ToAlphaNumeric(Data["popo_pono"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
 
             edi_doc_number = 850;
-            arclient_ident = GetInt(ClientID);
+            IDpartner = GetInt(ClientID);
 
             gIDataEdi_path = GetEdi_partner("edi_apsupp");
 
@@ -338,10 +300,10 @@ namespace EDI_RSS.Helpers
 
                     DB_PER pDB_PER = null;
                     pDB_PER = new DB_PER(this, PerCode.BD, Data["wsuser_name"].ToString(), Data["wsuser_tel"].ToString(), Data["wsuser_email"].ToString(), Data["wscie_cie_fax"].ToString());
-                    WriteN1Loop1_wscie(EntityCode1.BY, EntityCode2.BuyerCode, pDB_PER);
+                    WriteN1Loop1_wscie(EntityCode1.BY, EntityCode2.MutuallyDefined, pDB_PER, "101440");
 
                     pDB_PER = new DB_PER(this, PerCode.CN, Data["popo_contact"].ToString(), "", Data["popo_contactemail"].ToString(), Data["popo_contactfax"].ToString());
-                    WriteN1Loop1_apsupp(ClientId, EntityCode1.VN, EntityCode2.SellerCode, pDB_PER);
+                    WriteN1Loop1_apsupp(ClientId, EntityCode1.VN, pDB_PER);
 
                     pDB_PER = new DB_PER(this, PerCode.CN, Data["wscie_cie_name"].ToString(), Data["wscie_cie_tel"].ToString(), Data["wscie_email"].ToString(), Data["wscie_cie_fax"].ToString());
                     WriteN1Loop1_arclient_name(Data["popo_del_name"].ToString(), EntityCode1.ST, EntityCode2.BuyerCode, pDB_PER);
@@ -370,7 +332,7 @@ namespace EDI_RSS.Helpers
 
                 } // Using XMLWriter
                 return sw.ToString();
-            }
+            }// Using StringWriter
         } // Write()
 
         /**

@@ -19,10 +19,10 @@ namespace EDI_RSS.Helpers
         {
             TransactionCode = "810";
 
-            LogEventSource = "EDI 810 Processor";
+            LogEventSource = "EDI 810 Writers";
 
-            Xml810Writer xml = null;
-
+            Xml810Writer xml;
+            
             List<IDataRecord> RawDataDetails;
             string arinv_ident;
             string edi_ident;
@@ -137,8 +137,8 @@ namespace EDI_RSS.Helpers
 
             OutputFileName = $"{ClientID.PadLeft(5, '0')}-810-OUT-{Data["arinv_ident"].ToString()}-{Base.ToAlphaNumeric(Data["arinv_po"].ToString())}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}";
 
-            edi_doc_number = 850;
-            arclient_ident = GetInt(ClientID);
+            edi_doc_number = 810;
+            IDpartner = GetInt(ClientID);
 
             gIDataEdi_path = GetEdi_partner("edi_arclient");
 
@@ -148,7 +148,7 @@ namespace EDI_RSS.Helpers
 
                 XmlFilePath = Path.Combine(RSS_send_path, OutputFileName + ".xml");
 
-                Status += "Xml850Writer " + NL;
+                Status += "Xml810Writer " + NL;
                 Status += "OutputFileName: " + OutputFileName + NL;
                 Status += "XmlFilePath: " + XmlFilePath + NL;
             }
@@ -172,7 +172,7 @@ namespace EDI_RSS.Helpers
             {
 
                 writer.WriteStartElement("TransactionSet");
-                writer.WriteStartElement("TX-00403-810");
+                writer.WriteStartElement("TX-" + gIDataEdi_path["Edi_version"].ToString() + "-810"); //00401 || 00403
                 writer.WriteAttributeString("type", "TransactionSet");
 
                 writer.WriteStartElement("Meta");
@@ -204,9 +204,9 @@ namespace EDI_RSS.Helpers
                 //WriteSegment("REF", "Segment", "VR", "TBD"); //TODO: get the EL supplier ID for the current customer
 
 
-                WriteN1Loop1_arclient(EntityCode1.BY, EntityCode2.SellerCode);
-                WriteN1Loop1_ffaddr(int.Parse(Data["arinv_ident"].ToString()), EntityCode1.ST, EntityCode2.SellerCode);
-                WriteN1Loop1_wscie(EntityCode1.VN, EntityCode2.SellerCode);
+                WriteN1Loop1_arclient(EntityCode1.BY);
+                WriteN1Loop1_ffaddr(int.Parse(Data["arinv_ident"].ToString()), EntityCode1.ST);
+                WriteN1Loop1_wscie(EntityCode1.VN, EntityCode2.BuyerCode, null, "20036");
 
                 //ITD segment
                 WriteSegment("ITD", "Segment", "ITD01 : Terms Type Code", "",
@@ -230,10 +230,7 @@ namespace EDI_RSS.Helpers
                 }
 
                 //TDS segment
-                WriteSegment("TDS", "Segment", "TDS01 : Total Invoice Amount : arinv_inv_mnt", Data["arinv_inv_mnt"].ToString());
-                //"TDS02 : Total Amount Subject to Discount", "",
-                //"TDS03 : Discounted Amount Due", "",
-                //"TDS04 : Terms Discount Amount", ""
+                WriteSegment("TDS", "Segment", "TDS01 : Total Invoice Amount : arinv_inv_mnt", Convert.ToInt32(Math.Round(Convert.ToDecimal(Data["arinv_inv_mnt"]), 2)*100).ToString());
 
                 //tps
                 if (Convert.ToInt32(Data["arinv_inv_tx_gst"]) != 0 && Convert.ToInt32(Data["arinv_tpstaux"]) != 0)
@@ -299,10 +296,9 @@ namespace EDI_RSS.Helpers
 
                 decimal MonetaryAmount = (Convert.ToDecimal(TheDataDetails["arinvd_qty"]) / 1000) * Convert.ToDecimal(TheDataDetails["arinvd_inv_mnt_unit"]);
                 //PAM Loop
-                WriteSegment("PAM", "Segment", "PAM01 : Quantity Qualifier : Fixed : Discrete Quantity", "01",
+                WriteSegment("PAM", "Segment", "PAM01 : Quantity Qualifier : Fixed : Billable Quantity", "94",
                                                "PAM02 : Quantity : Calc: arinvd_qty / 1000", Math.Round((Convert.ToDecimal(TheDataDetails["arinvd_qty"]) / 1000), 3).ToString(),
-                                               "PAM03-01 : Unit or Basis for Measurement Code : Fixed : per thousand", "TP",
-                                               "PAM03-02 : Multiplier : arinvd_inv_mnt_unit", Math.Round(Convert.ToDecimal(TheDataDetails["arinvd_inv_mnt_unit"]), 3).ToString(),
+                                               "PAM03 : Unit or Basis for Measurement Code : Fixed : per thousand", "TH",
                                                "PAM04 : Amount Qualifier Code : Fixed : Line Item Total", "1",
                                                "PAM05 : Monetary Amount : MonetaryAmount", Math.Round(MonetaryAmount, 2).ToString());
 

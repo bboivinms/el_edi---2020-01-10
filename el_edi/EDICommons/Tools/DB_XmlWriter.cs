@@ -12,6 +12,7 @@ using static EDI_DB.Data.Base;
 using System.Diagnostics;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using System.Globalization;
 
 namespace EDI_DB.Data
 {
@@ -82,6 +83,7 @@ namespace EDI_DB.Data
             public static string[] ST = { "ST", "Ship To" };
             public static string[] SF = { "SF", "Ship From" };
             public static string[] BY = { "BY", "Buying Party (Purchaser)" };
+            public static string[] BT = { "BT", "Bill-to-Party (Purchaser)" };
             public static string[] VN = { "VN", "Vendor" };
         }
 
@@ -89,16 +91,30 @@ namespace EDI_DB.Data
         {
             public static string[] SellerCode = { "91", "Assigned by Seller or Seller's Agent" };
             public static string[] BuyerCode = { "92", "Assigned by Buyer or Buyer's Agent" };
+            public static string[] MutuallyDefined = { "ZZ", "Mutually Defined" };
         }
 
         /// It write the N1Loop1 xml tag for the arclient
-        public void WriteN1Loop1_arclient(string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
+        public void WriteN1Loop1_arclient(string[] entityCode1, DB_PER pDB_PER = null)
         {
-            CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclient(arclient_ident));
+            CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclient(IDpartner));
+            string[] entityCode2;
+            string iddel_addr;
+            
+            if (IDpartner == 30037)
+            {
+                entityCode2 = EntityCode2.BuyerCode;
+                iddel_addr = "2000";
+            }
+            else
+            {
+                entityCode2 = EntityCode2.SellerCode;
+                iddel_addr = data_record["iddel_addr"];
+            }
 
             WriteN1Loop1(entityCode1, entityCode2, data_record,
                 "iddel_addr",
-                "2000",
+                iddel_addr,
                 "arclient_name",
                 "arclient_addr1",
                 "arclient_addr2",
@@ -128,16 +144,30 @@ namespace EDI_DB.Data
             );
         }
 
-        public void WriteN1Loop1_ffaddr(int arinv_ident, string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
+        public void WriteN1Loop1_ffaddr(int arinv_ident, string[] entityCode1, DB_PER pDB_PER = null)
         {
             string postalCode = DB_VIVA.GetPostalCode(arinv_ident);
 
-            CIDataRecord addressST_Data = new CIDataRecord(DB_VIVA.GetAddressST(arclient_ident, postalCode));
+            CIDataRecord addressST_Data = new CIDataRecord(DB_VIVA.GetAddressST(IDpartner, postalCode));
+
+            string[] entityCode2;
+            string iddel_addr;
+
+            if (IDpartner == 30037)
+            {
+                entityCode2 = EntityCode2.BuyerCode;
+                iddel_addr = "2000";
+            }
+            else
+            {
+                entityCode2 = EntityCode2.SellerCode;
+                iddel_addr = addressST_Data["iddel_addr"];
+            }
 
             //write N1Loop1 xml tag for shipto
             WriteN1Loop1(entityCode1, entityCode2, addressST_Data,
                 "iddel_addr",
-                "2000",
+                iddel_addr,
                 "name",
                 "addr1",
                 "addr2",
@@ -148,14 +178,31 @@ namespace EDI_DB.Data
             );
         }
 
-        public void WriteN1Loop1_wscie(string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
+        public void WriteN1Loop1_wscie(string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null, string Id = "0")
         {
             CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressWscie());
 
+            //ariva 101440 = by 850
+            //ariva : 20036 = seller 810
+
+            string commentId = "Fixed : Id provide by partner";
+
+            if (IDpartner == 929)
+            {
+                commentId = "Fixed : Id provide by kruger";
+                Id = "323646";
+            }
+            else if(Id == "0")
+            {
+                commentId = "wscie_cie_id";
+                Id = data_record["wscie_cie_id"].ToString();
+                Id = Id.PadLeft(2, '0');
+            }
+
             //write N1Loop1 xml tag for 
             WriteN1Loop1(entityCode1, entityCode2, data_record,
-                "wscie_cie_id",
-                data_record["wscie_cie_id"],
+                commentId,
+                Id,
                 "wscie_name",
                 "wscie_adr1",
                 "wscie_adr2",
@@ -166,14 +213,19 @@ namespace EDI_DB.Data
             );
         }
 
-        public void WriteN1Loop1_apsupp(int idVendor, string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
+        public void WriteN1Loop1_apsupp(int idVendor, string[] entityCode1, DB_PER pDB_PER = null)
         {
             CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressApsupp(idVendor));
+            string[] entityCode2;
+
+            string pId_addr;
+            entityCode2 = EntityCode2.BuyerCode;
+            pId_addr = data_record["apsupp_ident"].ToString();
 
             //write N1Loop1 xml tag for 
             WriteN1Loop1(entityCode1, entityCode2, data_record,
                 "apsupp_ident",
-                data_record["apsupp_ident"],
+                pId_addr,
                 "apsupp_name",
                 "apsupp_addr1",
                 "apsupp_addr2",
@@ -283,7 +335,7 @@ namespace EDI_DB.Data
                 WriteSegment("N1", "Segment", "N101 : pEntityIdentifierCode: " + pEntityCode1[1], pEntityCode1[0],
                                               "N102 : " + Data_name, data_record[Data_name],
                                               "N103 : " + pEntityCode2[1], pEntityCode2[0],
-                                              "N104 : " + Comment_pId_addr, pId_addr.PadLeft(2, '0'));
+                                              "N104 : " + Comment_pId_addr, pId_addr);
                 if (data_record[Data_addr1] != "")
                 {
                     string state;

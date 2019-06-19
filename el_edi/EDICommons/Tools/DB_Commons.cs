@@ -47,7 +47,7 @@ namespace EDI_DB.Data
         public static string IDE_status = "";
         public static string Edi_protocol = ""; 
         public static string alias = "";
-        public static int arclient_ident = 0;
+        public static int IDpartner = 0; 
         public static string arclient_idedi = "";
         public static int edi_doc_number = 0;
         public static string arclient_short_name;
@@ -99,10 +99,10 @@ namespace EDI_DB.Data
 
         public static void SetupClient(int pArclient_ident)
         {
-            arclient_ident = pArclient_ident;
+            IDpartner = pArclient_ident;
             arclient_short_name = "";
 
-            if (arclient_ident == 30037) arclient_short_name = "ariva";
+            if (IDpartner == 30037) arclient_short_name = "ariva";
         }
 
         public static string ToAlphaNumeric(string str)
@@ -159,7 +159,7 @@ namespace EDI_DB.Data
         {
             if (IDE == "") return null;
             if (edi_doc_number != 810 && edi_doc_number != 855 && edi_doc_number != 856 && edi_doc_number != 850) return null;
-            if (arclient_ident <= 0 && arclient_idedi == "") return null;
+            if (IDpartner <= 0 && arclient_idedi == "") return null;
             if (wscie == "") return null;
             if (table != "edi_arclient" && table != "edi_apsupp") return null;
 
@@ -173,7 +173,7 @@ namespace EDI_DB.Data
             Dictionary<string, string> Params = new Dictionary<string, string>();
 
             Params.Clear();
-            Params.Add("?idclient", arclient_ident.ToString());
+            Params.Add("?idclient", IDpartner.ToString()); //idclient or idvendor
             Params.Add("?arclient_idedi", arclient_idedi);
             Params.Add("?wscie", wscie);
 
@@ -191,7 +191,7 @@ namespace EDI_DB.Data
 				INNER JOIN
 					edi_path ON X{IDE}_path = edi_path
                 WHERE
-                    ({ID} = ?idclient OR {table}.idedi = ?arclient_idedi) AND 
+                    ({ID} = ?idclient OR {table}.idedi = ?arclient_idedi OR {table}.idedi_test = ?arclient_idedi) AND 
                     wscie = ?wscie
                 ", Params);
 
@@ -203,11 +203,11 @@ namespace EDI_DB.Data
             inner_log += "Wscie: " + wscie + NL;
             inner_log += "IDE: " + IDE + NL;
             inner_log += "Filename to be parsed: " + Filename + NL;
-            inner_log += "arclient_ident: " + arclient_ident.ToString() + NL;
+            inner_log += "arclient_ident: " + IDpartner.ToString() + NL; //idclient or idvendor
             inner_log += "edi_doc_number: " + edi_doc_number.ToString() + NL;
 
             alias = result["alias"].ToString();
-            arclient_ident = Convert.ToInt32(result["id"]);
+            IDpartner = Convert.ToInt32(result["id"]); //idclient or idvendor | id_vendor_client
 
             DB_RSS.LogData(inner_log);
 
@@ -362,7 +362,7 @@ namespace EDI_DB.Data
             cmd.Parameters.AddWithValue("?mysql_type", mysql_type);
             cmd.Parameters.AddWithValue("?mysql_programid", ProgramId);
             cmd.Parameters.AddWithValue("?mysql_portid", PortId);
-            cmd.Parameters.AddWithValue("?mysql_clientid", arclient_ident.ToString());
+            cmd.Parameters.AddWithValue("?mysql_clientid", IDpartner.ToString());
             cmd.Parameters.AddWithValue("?mysql_datapath", EdiPath);
             cmd.Parameters.AddWithValue("?mysql_process", EdiProcess);
 

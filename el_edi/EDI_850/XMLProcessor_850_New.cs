@@ -6,32 +6,175 @@ using System.Linq;
 using EDICommons.Tools;
 using EDI_DB.Data;
 using static EDI_DB.Data.Base;
+using System.Xml;
+using System.IO;
+using System.Text;
 
 namespace EDI_850
 {
     public partial class XMLProcessor_850_New
     {
+        private XmlNamespaceManager nsmgr;
 
-
-        public XMLProcessor_850_New()
+        public XMLProcessor_850_New(XmlNamespaceManager nsmgr)
         {
-
+            this.nsmgr = nsmgr;
         }
 
 
-        public void ProcessOrder(string XMLStringFile)
+        public void ProcessOrder(XmlNode root)
         {
             Schema.root r = null;
 
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "\t";
+            settings.OmitXmlDeclaration = true;
+
+            var sw = new StringWriter();
+
+            using (var xw = XmlWriter.Create(sw, settings))
+                {
+                    xw.WriteStartElement("root");
+                    {
+                        xw.WriteStartElement("Customer");
+                        {
+                            xw.WriteElementString("Id", "", IDpartner.ToString());
+                            int n = 1;
+
+                            XmlNode N1Loop1 = Get_Node(root, "//N1Loop1[N1/N101 = 'ST']");
+                            if (N1Loop1 != null)
+                            {
+                                xw.WriteElementString("STName", "", IIF_NULL(N1Loop1, ".//N102"));
+
+                                if (Get_Node(N1Loop1, ".//N3") != null)
+                                {
+                                    //N3
+                                    foreach (XmlNode i in Get_Node(N1Loop1, ".//N3").ChildNodes)
+                                    {
+                                        if (i.NodeType != XmlNodeType.Comment)
+                                        {
+                                            xw.WriteElementString("STAddress" + n, "", i.InnerText);
+                                            n++;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Error! : N3 is missing");
+                                }
+
+                                if (Get_Node(N1Loop1, ".//N4") != null)
+                                {
+                                    //N4
+                                    string[] strWords = { "STCity", "STCountry", "STPostalCode", "STState" };
+                                    n = 0;
+                                    foreach (XmlNode i in Get_Node(N1Loop1, ".//N4").ChildNodes)
+                                    {
+                                        if (i.NodeType != XmlNodeType.Comment)
+                                        {
+                                            xw.WriteElementString(strWords[n], "", i.InnerText);
+                                            n++;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Error : N4 is missing");
+                                }
+                                xw.WriteElementString("STN103", "", IIF_NULL(N1Loop1, ".//N103"));
+                                xw.WriteElementString("STN104", "", IIF_NULL(N1Loop1, ".//N104"));
+                            }
+                            else
+                            {
+                                xw.WriteElementString("Error", "", "Error : ST is missing");
+                            }
+
+                            N1Loop1 = Get_Node(root, "//N1Loop1[N1/N101 = 'BY']");
+                            if (N1Loop1 != null)
+                            {
+                                if (Get_Node(N1Loop1, ".//PER") != null)
+                                {
+                                    //PER
+                                    for (int i = 1; i < 9; i++)
+                                    {
+                                        xw.WriteElementString("PER0" + i, "", IIF_NULL(N1Loop1, ".//PER/PER0" + i));
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Error : PER is missing");
+                                }
+                            }
+                            else
+                            {
+                                xw.WriteElementString("Error", "", "Error : BY is missing");
+                            }
+
+                        }
+                        xw.WriteEndElement(); //Customers
+
+                        xw.WriteStartElement("Order");
+                        {
+                            //DTM01 = 004
+                            xw.WriteElementString("Date", StringToDate(IIF_NULL(root, "//DTM[DTM01 = '004']/DTM02")));
+
+                            //Number
+                            xw.WriteElementString("Number", IIF_NULL(root, "//BEG/BEG03"));
+
+                            //DTM01 = 002
+                            xw.WriteElementString("RequestedShipDate", StringToDate(IIF_NULL(root, "//DTM[DTM01 = '002']/DTM02")));
+
+                            //harcode
+                            xw.WriteElementString("CreatedBy", "EDI-" + wscie + IDE);
+                            xw.WriteElementString("Status", "EDI-" + wscie + IDE);
+                            xw.WriteElementString("UserCode", "XEDI-" + wscie + IDE);
+
+                            ////MSG
+                            //xw.WriteElementString("MSG", IIF_NULL(root, "//N9Loop1/MTX/MSG"));
+
+                            //items
+                            int nb = 1;
+                            XmlNode PO1Loop1;
+                            while ((PO1Loop1 = Get_Node(root, "//PO1Loop1[" + nb + "]", false)) != null)
+                            {
+                                xw.WriteStartElement("OrderItem");
+                                {
+                                    xw.WriteElementString("ItemDescription", IIF_NULL(PO1Loop1, ".//PIDLoop1/PID/PID05"));
+                                    xw.WriteElementString("ItemId", IIF_NULL(PO1Loop1, ".//PO1/PO109"));
+                                    xw.WriteElementString("CustomerItemId", IIF_NULL(PO1Loop1, ".//PO1/PO107"));
+                                    xw.WriteElementString("ItemLineId", IIF_NULL(PO1Loop1, ".//PO1/PO101"));
+                                    xw.WriteElementString("ItemQuantity", IIF_NULL(PO1Loop1, ".//PO1/PO102"));
+                                    xw.WriteElementString("ItemUnitOfMeasure", IIF_NULL(PO1Loop1, ".//PO1/PO103"));
+                                    xw.WriteElementString("ItemRate", IIF_NULL(PO1Loop1, ".//PO1/PO104"));
+                                    xw.WriteElementString("ItemUnitOfPrice", IIF_NULL(PO1Loop1, ".//PO1/PO105"));
+                                    xw.WriteElementString("TimeModified", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"));
+                                    xw.WriteElementString("Status", "EDI-" + wscie + IDE);
+                                    xw.WriteElementString("RequestedShipDate", StringToDate(IIF_NULL(PO1Loop1, ".//DTM[DTM01 = '002']/DTM02")));
+                                    nb++;
+                                }
+                                xw.WriteEndElement(); //OrderItem 
+                            }
+                        }
+                        xw.WriteEndElement(); //Order
+                    }
+                    xw.WriteEndElement(); //root
+                } //xmlwriter
+
+            string text;
+            text = "\n";
+            text += File.ReadAllText(Filepath, Encoding.UTF8);
+            sw.WriteLine(text);
+
             try
             {
-                r = Schema.root.Deserialize(XMLStringFile);
+                r = Schema.root.Deserialize(sw.ToString());
             }
             catch (Exception e)
             {
 
                 //Write to application log
-                LogWriter.WriteMessage(Program_850.LogEventSource, $"Error reading XML file: XMLStringFile\r\n\r\n{e.Message}");
+                LogWriter.WriteMessage(Program_850.LogEventSource, $"Error reading XML file: sw.ToString()\r\n\r\n{e.Message + NL + sw.ToString()}");
 
                 string tt = e.Message;
                 Environment.Exit(-1);
@@ -187,7 +330,7 @@ namespace EDI_850
                         cmd.Parameters.AddWithValue("?ref", r.Order.Number);
                         cmd.Parameters.AddWithValue("?statut", r.Order.Status);
                         cmd.Parameters.AddWithValue("?req_dte", cobil_req_dte);
-                        cmd.Parameters.AddWithValue("?clientid", arclient_ident);
+                        cmd.Parameters.AddWithValue("?clientid", IDpartner);
                         cmd.Parameters.AddWithValue("?client_name", r.Customer.BTName);
                         cmd.Parameters.AddWithValue("?client_addr", r.Customer.BTAddress);
                         cmd.Parameters.AddWithValue("?date_entered", DateTime.Today);
@@ -251,5 +394,46 @@ namespace EDI_850
 
         }
 
+        /**
+        * return a xml node with the namespace in the xpath
+        */
+        public XmlNode Get_Node(XmlNode node, string xpath, bool isBrackets = true)
+        {
+            xpath = xpath.Replace("/", "/ic:");
+            xpath = xpath.Replace("/ic:/ic:", "//ic:");
+            if (isBrackets)
+                xpath = xpath.Replace("[", "[ic:");
+
+            if (node == null) { return null; }
+
+            return node.SelectSingleNode(xpath, nsmgr);
+        }
+
+        /**
+         * return the value of a xml node if is not null
+         */
+        public string IIF_NULL(XmlNode node, string xpath, bool isBrackets = true, string nullValue = "")
+        {
+            if (Get_Node(node, xpath, isBrackets) == null)
+            {
+                return nullValue;
+            }
+
+            return Get_Node(node, xpath, isBrackets).InnerText;
+        }
+
+        /**
+        * return a string date in the format : yyyy-MM-dd
+        */
+        public string StringToDate(string date)
+        {
+            string year = date.Substring(0, 4);
+            string month = date.Substring(4, 2);
+            string day = date.Substring(6, 2);
+
+            string outputDate = year + "-" + month + "-" + day;
+
+            return outputDate;
+        }
     }
 }

@@ -7,87 +7,143 @@ using EDICommons.Tools;
 using EDI_DB.Data;
 using static EDI_DB.Data.Base;
 using System.Xml;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace EDI_RSS
 {
     public partial class XMLProcessor_810
     {
         private XmlNamespaceManager nsmgr;
+        private Dictionary<string, string> Params = new Dictionary<string, string>();
+        private long lastInsertedId;
+        private int IDvendor;
+        private string error = "";
 
-        public XMLProcessor_810(XmlNamespaceManager nsmgr)
+        public XMLProcessor_810(XmlNamespaceManager nsmgr, int idvendor)
         {
             this.nsmgr = nsmgr;
+            IDvendor = idvendor;
         }
-
 
         public void ProcessOrder(XmlNode XMLNode, string filepath)
         {
             string program810Id = (DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds.ToString();
-
+            
             XmlNode N1Loop1ST = Get_Node(XMLNode, "//N1Loop1[N1/N101 = 'ST']");
             XmlNode N1Loop1VN = Get_Node(XMLNode, "//N1Loop1[N1/N101 = 'VN']");
 
+            int arinv_inv_mnt = Convert.ToInt32(IIF_NULL(XMLNode, "//TDS//TDS01"));
+            decimal totalCost = 0;
+            decimal TotalAllCost = 0;
+            int amountWithTax;
+
             try
             {
-                MySqlCommand cmd = DB_VIVA.CreateCommand();
-                cmd.CommandType = CommandType.Text;
+                Params.Clear();
+                Params.Add("?idvendor", IDvendor.ToString());
+                Params.Add("?filename", filepath);
+                Params.Add("?arinv_invdte", IIF_NULL(XMLNode, "//BIG//BIG01"));
+                Params.Add("?arinv_invno", IIF_NULL(XMLNode, "//BIG//BIG02"));
+                Params.Add("?arinv_po", IIF_NULL(XMLNode, "//BIG//BIG04"));
+                Params.Add("?arinv_idbil", IIF_NULL(XMLNode, "//TX-00403-810//REF//REF02"));
+                Params.Add("?STname", IIF_NULL(N1Loop1ST, ".//N102"));
+                Params.Add("?STiddel_addr", IIF_NULL(N1Loop1ST, ".//N104"));
+                Params.Add("?STaddr1", IIF_NULL(N1Loop1ST, ".//N301"));
+                Params.Add("?STaddr2", IIF_NULL(N1Loop1ST, ".//N302"));
+                Params.Add("?STcity", IIF_NULL(N1Loop1ST, ".//N401"));
+                Params.Add("?STstate", IIF_NULL(N1Loop1ST, ".//N402"));
+                Params.Add("?STzip", IIF_NULL(N1Loop1ST, ".//N403"));
 
-                cmd.CommandText = "INSERT INTO edi_810v (Filename, arinv_invdte, arinv_invno, arinv_po, arinv_idbil," +
-                    "STname, STiddel_addr, STaddr1, STaddr2, STcity, STstate, STzip, VNname, VNiddel_addr, VNaddr1, VNaddr2, VNcity, VNstate, VNzip, arinv_inv_mnt)" +
-                    " VALUE(?Filename, ?arinv_invdte, ?arinv_invno, ?arinv_po, ?arinv_idbil, ?STname, ?STiddel_addr, ?STaddr1, ?STaddr2, ?STcity, ?STstate," +
-                    " ?STzip, ?VNname, ?VNiddel_addr, ?VNaddr1, ?VNaddr2, ?VNcity, ?VNstate, ?VNzip, ?arinv_inv_mnt)";
+                Params.Add("?arinv_inv_mnt", arinv_inv_mnt.ToString());
+                Params.Add("?programId", program810Id);
+                Params.Add("?Xml810Raw", XMLNode.InnerXml);      //Xml810Raw original
 
-                cmd.Parameters.AddWithValue("?Filename", filepath);
-                cmd.Parameters.AddWithValue("?arinv_invdte", IIF_NULL(XMLNode, "//BIG//BIG01"));
-                cmd.Parameters.AddWithValue("?arinv_invno", IIF_NULL(XMLNode, "//BIG//BIG02"));
-                cmd.Parameters.AddWithValue("?arinv_po", IIF_NULL(XMLNode, "//BIG//BIG04"));
-                cmd.Parameters.AddWithValue("?arinv_idbil", IIF_NULL(XMLNode, "//TX-00403-810//REF//REF02"));
-                cmd.Parameters.AddWithValue("?STname", IIF_NULL(N1Loop1ST, ".//N102"));
-                cmd.Parameters.AddWithValue("?STiddel_addr", IIF_NULL(N1Loop1ST, ".//N104"));
-                cmd.Parameters.AddWithValue("?STaddr1", IIF_NULL(N1Loop1ST, ".//N301"));
-                cmd.Parameters.AddWithValue("?STaddr2", IIF_NULL(N1Loop1ST, ".//N302"));
-                cmd.Parameters.AddWithValue("?STcity", IIF_NULL(N1Loop1ST, ".//N401"));
-                cmd.Parameters.AddWithValue("?STstate", IIF_NULL(N1Loop1ST, ".//N402"));
-                cmd.Parameters.AddWithValue("?STzip", IIF_NULL(N1Loop1ST, ".//N403"));
-                cmd.Parameters.AddWithValue("?VNname", IIF_NULL(N1Loop1VN, ".//N102"));
-                cmd.Parameters.AddWithValue("?VNiddel_addr", IIF_NULL(N1Loop1VN, ".//N104"));
-                cmd.Parameters.AddWithValue("?VNaddr1", IIF_NULL(N1Loop1VN, ".//N301"));
-                cmd.Parameters.AddWithValue("?VNaddr2", IIF_NULL(N1Loop1VN, ".//N302"));
-                cmd.Parameters.AddWithValue("?VNcity", IIF_NULL(N1Loop1VN, ".//N401"));
-                cmd.Parameters.AddWithValue("?VNstate", IIF_NULL(N1Loop1VN, ".//N402"));
-                cmd.Parameters.AddWithValue("?VNzip", IIF_NULL(N1Loop1VN, ".//N403"));
-                cmd.Parameters.AddWithValue("?arinv_inv_mnt", IIF_NULL(XMLNode, "//TDS//TDS01"));
-
-                cmd.ExecuteNonQuery();
+                lastInsertedId = DB_VIVA.HExecuteSQLNonQuery(@"
+                    INSERT INTO edi_810v (idvendor, filename, arinv_invdte, arinv_invno, arinv_po, arinv_idbil, STname, STiddel_addr, STaddr1, STaddr2, STcity, STstate, STzip, arinv_inv_mnt, programId, Xml810Raw)
+                    VALUE(?idvendor, ?filename, ?arinv_invdte, ?arinv_invno, ?arinv_po, ?arinv_idbil, ?STname, ?STiddel_addr, ?STaddr1, ?STaddr2, ?STcity, ?STstate, ?STzip, ?arinv_inv_mnt, ?programId, ?Xml810Raw)
+                    ", Params);
 
                 //loop items
                 int nb = 1;
                 XmlNode IT1Loop1;
                 while ((IT1Loop1 = Get_Node(XMLNode, "//IT1Loop1[" + nb + "]", false)) != null)
                 {
-                    cmd.CommandText = "INSERT INTO edi_810vd (arinvd_invline, arinvd_qty, UnitMeasurementCode, arinvd_inv_mnt_unit," +
-                    " UnitPriceCode, ivprixdcli_codecli, ivprod_code, ivprod_desc, arinvd_idbil, cocom_clientpo, cocom_ident, programId)" +
-                    " VALUE(?arinvd_invline, ?arinvd_qty, ?UnitMeasurementCode, ?arinvd_inv_mnt_unit, ?UnitPriceCode, ?ivprixdcli_codecli," +
-                    " ?ivprod_code, ?ivprod_desc, ?arinvd_idbil, ?cocom_clientpo, ?cocom_ident, ?programId)";
+                    Params.Clear();
+                    Params.Add("?edi_810v_ident", lastInsertedId.ToString());          //edi_810v_ident
+                    Params.Add("?popoi_line", IIF_NULL(IT1Loop1, ".//IT1//IT101"));    //popoi_line
+                    Params.Add("?popoi_qty_ord", IIF_NULL(IT1Loop1, ".//IT1//IT102")); //popoi_qty_ord
+                    Params.Add("?UnitMeasurementCode", IIF_NULL(IT1Loop1, ".//IT1//IT103"));
+                    Params.Add("?popoi_cost", IIF_NULL(IT1Loop1, ".//IT1//IT104"));   //cost 
+                    Params.Add("?UnitPriceCode", IIF_NULL(IT1Loop1, ".//IT1//IT105"));
+                    Params.Add("?ivprixdcli_codecli", IIF_NULL(IT1Loop1, ".//IT1//IT107"));
+                    Params.Add("?ivprod_code", IIF_NULL(IT1Loop1, ".//IT1//IT109"));
+                    Params.Add("?ivprod_desc", IIF_NULL(IT1Loop1, ".//PIDLoop1//PID//PID05"));
+                    Params.Add("?arinvd_idbil", IIF_NULL(IT1Loop1, ".//PIDLoop1//REF[1]//REF02", false));
+                    Params.Add("?cocom_clientpo", IIF_NULL(IT1Loop1, ".//PIDLoop1//REF[2]//REF02", false));
+                    Params.Add("?cocom_ident", IIF_NULL(IT1Loop1, ".//PIDLoop1//REF[3]//REF02", false));
+                    Params.Add("?programId", program810Id);
+                    Params.Add("?Xml810ItemRaw", IT1Loop1.InnerXml);      //Xml810ItemRaw
 
-                    cmd.Parameters.AddWithValue("?arinvd_invline", IIF_NULL(IT1Loop1, ".//IT1//IT101"));
-                    cmd.Parameters.AddWithValue("?arinvd_qty", IIF_NULL(IT1Loop1, ".//IT1//IT102"));
-                    cmd.Parameters.AddWithValue("?UnitMeasurementCode", IIF_NULL(IT1Loop1, ".//IT1//IT103"));
-                    cmd.Parameters.AddWithValue("?arinvd_inv_mnt_unit", IIF_NULL(IT1Loop1, ".//IT1//IT104"));
-                    cmd.Parameters.AddWithValue("?UnitPriceCode", IIF_NULL(IT1Loop1, ".//IT1//IT105"));
-                    cmd.Parameters.AddWithValue("?ivprixdcli_codecli", IIF_NULL(IT1Loop1, ".//IT1//IT107"));
-                    cmd.Parameters.AddWithValue("?ivprod_code", IIF_NULL(IT1Loop1, ".//IT1//IT109"));
-                    cmd.Parameters.AddWithValue("?ivprod_desc", IIF_NULL(IT1Loop1, ".//PIDLoop1//PID//PID05"));
+                    string strQty, strCost;
+                    if ((strQty = IIF_NULL(IT1Loop1, ".//IT1//IT102")) != "" && (strCost = IIF_NULL(IT1Loop1, ".//IT1//IT104")) != "")
+                    {
+                        totalCost = Convert.ToInt32(strQty) * Convert.ToDecimal(strCost, CultureInfo.InvariantCulture);
+                    }
+                    TotalAllCost += totalCost;
 
-                    cmd.Parameters.AddWithValue("?arinvd_idbil", IIF_NULL(IT1Loop1, ".//PIDLoop1//REF[1]//REF02", false));
-                    cmd.Parameters.AddWithValue("?cocom_clientpo", IIF_NULL(IT1Loop1, ".//PIDLoop1//REF[2]//REF02", false));
-                    cmd.Parameters.AddWithValue("?cocom_ident", IIF_NULL(IT1Loop1, ".//PIDLoop1//REF[3]//REF02", false));
-                    cmd.Parameters.AddWithValue("?programId", program810Id);
+                    DB_VIVA.HExecuteSQLNonQuery(@"
+                     INSERT INTO edi_810vd (edi_810v_ident, popoi_line, popoi_qty_ord, UnitMeasurementCode, popoi_cost, UnitPriceCode, ivprixdcli_codecli,
+                                            ivprod_code, ivprod_desc, arinvd_idbil, cocom_clientpo, cocom_ident, programId, Xml810ItemRaw)
+                        VALUE(?edi_810v_ident, ?popoi_line, ?popoi_qty_ord, ?UnitMeasurementCode, ?popoi_cost, ?UnitPriceCode, ?ivprixdcli_codecli,
+                              ?ivprod_code, ?ivprod_desc, ?arinvd_idbil, ?cocom_clientpo, ?cocom_ident, ?programId, ?Xml810ItemRaw)
+                     ", Params);
+
                     nb++;
-
-                    cmd.ExecuteNonQuery();
-                    cmd.Parameters.Clear();
                 }
+
+                decimal GstAmount = 0;
+                string strGst;
+                if ((strGst = IIF_NULL(XMLNode, "//TXI[TXI01 = 'GS']//TXI02")) != "")
+                {
+                    GstAmount = decimal.Parse(strGst, CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    GstAmount = Math.Round(TotalAllCost * (decimal)0.05, 2);
+                    error += "erreur no gst tax found in xml 810 doc" + NL;
+                }
+
+                decimal QstAmount = 0;
+                string strQst;
+                if ((strQst = IIF_NULL(XMLNode, "//TXI[TXI01 = 'SP']//TXI02")) != "")
+                {
+                    QstAmount = decimal.Parse(strQst, CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    QstAmount = Math.Round(TotalAllCost * (decimal)0.09975, 2);
+                    error += "erreur no qst tax found in xml 810 doc" + NL;
+                }
+                amountWithTax = (int)(Math.Round(TotalAllCost + GstAmount + QstAmount, 2) * 100);
+
+                if (amountWithTax != arinv_inv_mnt)
+                {
+                    error += "error montant total facture : amountWithTax=" + amountWithTax + "!= arinv_inv_mnt=" + arinv_inv_mnt + NL;
+                }
+
+                Params.Clear();
+                Params.Add("?arinv_inv_mnt", amountWithTax.ToString());
+                Params.Add("?error", error);
+                Params.Add("?programId", program810Id);
+
+                DB_VIVA.HExecuteSQLNonQuery(@"
+                    UPDATE edi_810v SET arinv_inv_mnt = ?arinv_inv_mnt, error = ?error WHERE programId = ?programId;
+                    ", Params);
+
+                //Email810Writer email810 = new Email810Writer(program810Id);
+                //email810.Build();
+                //email810.Send();
             }
             catch (Exception ex)
             {

@@ -13,6 +13,7 @@ using EDI_RSS.Helpers;
 using EDICommons.Tools;
 using System.Xml;
 using EDI_850;
+using System.Globalization;
 
 namespace EDI_RSS
 {
@@ -75,6 +76,52 @@ namespace EDI_RSS
             DB_VIVA.HExecuteSQLQuery(@"UPDATE " + tablaname + " SET filename = ?filename WHERE ident = ?edi_ident; ", Params);
         }
 
+        /*
+         * Replace all diacritics of a string with their alternatives.
+         * Params string text the text we want to remove diacritics.
+         * return String who contain no diacritics.
+         */
+        public string RemoveDiacritics(string text)
+        {
+
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
+
+        public string ReplaceTildeAndPipe(string XmlText)
+        {
+            string result = XmlText.Replace("~", "-");
+            result = result.Replace("|", ":");
+            result = result.Replace("*", "°");
+            return result;
+        }
+
+        public string ReplaceTelephoneNumber(string XmlText)
+        {
+            string result = XmlText.Replace("843-2385", "843-9645");
+            return result;
+        }
+
+        public string IsNull(object value)
+        {
+            if (value == null)
+            {
+                return "0";
+            }
+
+            return value.ToString();
+        }
     }
 
     public partial class Program_RSS : Program_Base
@@ -90,8 +137,6 @@ namespace EDI_RSS
                                     "MLE", "MTE", "MTI", "MTL" };
 
         public string PortId_code;
-
-        private XmlNamespaceManager nsmgr;
 
         public bool Routing(string[] args)
         {
@@ -123,6 +168,9 @@ namespace EDI_RSS
             //      The port ID will always be a path and second character is a colon (:)
             // "Live" "edi_rss" "D:\Vivael\data" "855P-ALL" "[ErrorMessage]"
             // "Test" "edi_rss" "E:\TEST_VIVA_ENV\CLIENT_ARIVA_DATA" "855P-ALL" "[ErrorMessage]"
+
+            //Status += $"datapath: {PortId.ToString() + NL}";
+
             gIDataEdi_path = GetIDedi_path(PortId.ToString());
             if (!vendor.Edi_path_after_Setup()) return false;
 
@@ -175,13 +223,13 @@ namespace EDI_RSS
 
         public bool RoutingIn()
         {
-            string path = "C:\\TMP_IN\\Westrock-MultiServices_ASN_000000008.xml";
             // Load the document and set the root element.  
             XmlDocument doc = new XmlDocument();
-            doc.Load(path);
+            doc.Load(Filepath);
             XmlNode root = doc.DocumentElement;
 
             // Add the namespace for see the nodes of the xml file
+            XmlNamespaceManager nsmgr;
             nsmgr = new XmlNamespaceManager(doc.NameTable);
             nsmgr.AddNamespace("ic", "http://www.rssbus.com");
 
@@ -228,165 +276,26 @@ namespace EDI_RSS
             {
                 if (edi_doc_number == 850)
                 {
-                    XmlWriterSettings settings = new XmlWriterSettings();
-                    settings.Indent = true;
-                    settings.IndentChars = "\t";
-                    settings.OmitXmlDeclaration = true;
-
-                    var sw = new StringWriter();
-                    using (var xw = XmlWriter.Create(sw, settings))
-                    {
-                        xw.WriteStartElement("root");
-                        {
-                            xw.WriteStartElement("Customer");
-                            {
-                                xw.WriteElementString("Id", "", arclient_ident.ToString());
-                                int n = 1;
-
-                                XmlNode N1Loop1 = Get_Node(root, "//N1Loop1[N1/N101 = 'ST']");
-                                if (N1Loop1 != null)
-                                {
-                                    xw.WriteElementString("STName", "", IIF_NULL(N1Loop1, ".//N102"));
-
-                                    if (Get_Node(N1Loop1, ".//N3") != null)
-                                    {
-                                        //N3
-                                        foreach (XmlNode i in Get_Node(N1Loop1, ".//N3").ChildNodes)
-                                        {
-                                            if (i.NodeType != XmlNodeType.Comment)
-                                            {
-                                                xw.WriteElementString("STAddress" + n, "", i.InnerText);
-                                                n++;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Error! : N3 is missing");
-                                    }
-
-                                    if (Get_Node(N1Loop1, ".//N4") != null)
-                                    {
-                                        //N4
-                                        string[] strWords = { "STCity", "STCountry", "STPostalCode", "STState" };
-                                        n = 0;
-                                        foreach (XmlNode i in Get_Node(N1Loop1, ".//N4").ChildNodes)
-                                        {
-                                            if (i.NodeType != XmlNodeType.Comment)
-                                            {
-                                                xw.WriteElementString(strWords[n], "", i.InnerText);
-                                                n++;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Error : N4 is missing");
-                                    }
-                                    xw.WriteElementString("STN103", "", IIF_NULL(N1Loop1, ".//N103"));
-                                    xw.WriteElementString("STN104", "", IIF_NULL(N1Loop1, ".//N104"));
-                                }
-                                else
-                                {
-                                    xw.WriteElementString("Error", "", "Error : ST is missing");
-                                }
-
-                                N1Loop1 = Get_Node(root, "//N1Loop1[N1/N101 = 'BY']");
-                                if (N1Loop1 != null)
-                                {
-                                    if (Get_Node(N1Loop1, ".//PER") != null)
-                                    {
-                                        //PER
-                                        for (int i = 1; i < 9; i++)
-                                        {
-                                            xw.WriteElementString("PER0" + i, "", IIF_NULL(N1Loop1, ".//PER/PER0" + i));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Error : PER is missing");
-                                    }
-                                }
-                                else
-                                {
-                                    xw.WriteElementString("Error", "", "Error : BY is missing");
-                                }
-
-                            }
-                            xw.WriteEndElement(); //Customers
-
-                            xw.WriteStartElement("Order");
-                            {
-                                //DTM01 = 004
-                                xw.WriteElementString("Date", StringToDate(IIF_NULL(root, "//DTM[DTM01 = '004']/DTM02")));
-
-                                //Number
-                                xw.WriteElementString("Number", IIF_NULL(root, "//BEG/BEG03"));
-
-                                //DTM01 = 002
-                                xw.WriteElementString("RequestedShipDate", StringToDate(IIF_NULL(root, "//DTM[DTM01 = '002']/DTM02")));
-
-                                //harcode
-                                xw.WriteElementString("CreatedBy", "EDI-" + wscie + IDE);
-                                xw.WriteElementString("Status", "EDI-" + wscie + IDE);
-                                xw.WriteElementString("UserCode", "XEDI-" + wscie + IDE);
-
-                                ////MSG
-                                //xw.WriteElementString("MSG", IIF_NULL(root, "//N9Loop1/MTX/MSG"));
-
-                                //items
-                                int nb = 1;
-                                XmlNode PO1Loop1;
-                                while ((PO1Loop1 = Get_Node(root, "//PO1Loop1[" + nb + "]", false)) != null)
-                                {
-                                    xw.WriteStartElement("OrderItem");
-                                    {
-                                        xw.WriteElementString("ItemDescription", IIF_NULL(PO1Loop1, ".//PIDLoop1/PID/PID05"));
-                                        xw.WriteElementString("ItemId", IIF_NULL(PO1Loop1, ".//PO1/PO109"));
-                                        xw.WriteElementString("CustomerItemId", IIF_NULL(PO1Loop1, ".//PO1/PO107"));
-                                        xw.WriteElementString("ItemLineId", IIF_NULL(PO1Loop1, ".//PO1/PO101"));
-                                        xw.WriteElementString("ItemQuantity", IIF_NULL(PO1Loop1, ".//PO1/PO102"));
-                                        xw.WriteElementString("ItemUnitOfMeasure", IIF_NULL(PO1Loop1, ".//PO1/PO103"));
-                                        xw.WriteElementString("ItemRate", IIF_NULL(PO1Loop1, ".//PO1/PO104"));
-                                        xw.WriteElementString("ItemUnitOfPrice", IIF_NULL(PO1Loop1, ".//PO1/PO105"));
-                                        xw.WriteElementString("TimeModified", DateTime.Now.ToString().Replace(" ", "T"));
-                                        xw.WriteElementString("Status", "EDI-" + wscie + IDE);
-                                        xw.WriteElementString("RequestedShipDate", StringToDate(IIF_NULL(PO1Loop1, ".//DTM[DTM01 = '002']/DTM02")));
-                                        nb++;
-                                    }
-                                    xw.WriteEndElement(); //OrderItem 
-                                }
-                            }
-                            xw.WriteEndElement(); //Order
-                        }
-                        xw.WriteEndElement(); //root
-                    } //xmlwriter
-
-                    string text;
-                    text = "\n";
-                    text += File.ReadAllText(path, Encoding.UTF8);
-                    sw.WriteLine(text);
-
-                    XMLProcessor_850_New proc = new XMLProcessor_850_New();
-                    proc.ProcessOrder(sw.ToString());
+                    XMLProcessor_850_New proc = new XMLProcessor_850_New(nsmgr);
+                    proc.ProcessOrder(root);
                 }
 
                 if (edi_doc_number == 810)
                 {
-                    XMLProcessor_810 proc810 = new XMLProcessor_810(nsmgr);
-                    proc810.ProcessOrder(root, path);
+                    XMLProcessor_810 proc810 = new XMLProcessor_810(nsmgr, IDpartner);
+                    proc810.ProcessOrder(root, Filepath);
                 }
 
                 if (edi_doc_number == 855)
                 {
-                    XMLProcessor_855 proc855 = new XMLProcessor_855(nsmgr, doc);
-                    proc855.ProcessOrder(root, path);
+                    XMLProcessor_855 proc855 = new XMLProcessor_855(nsmgr, doc, IDpartner);
+                    proc855.ProcessOrder(root, Filepath);
                 }
 
                 if (edi_doc_number == 856)
                 {
-                    XMLProcessor_856 proc856 = new XMLProcessor_856(nsmgr, doc);
-                    proc856.ProcessOrder(root, path);
+                    XMLProcessor_856 proc856 = new XMLProcessor_856(nsmgr, doc, IDpartner);
+                    proc856.ProcessOrder(root, Filepath);
                 }
 
             } //if send or create
@@ -411,7 +320,7 @@ namespace EDI_RSS
             // Only on outgoing files that we have control overfilenames
             // Going to have to check port if its routing in or routing out
 
-            arclient_ident = GetInt(Filename.Substring(0, 5));
+            IDpartner = GetInt(Filename.Substring(0, 5));
             edi_doc_number = GetInt(Filename.Substring(6, 3));
 
             EdiProcess = "Routing Out or AS2";
@@ -421,10 +330,10 @@ namespace EDI_RSS
             Status += "Wscie: " + wscie + NL;
             Status += "IDE: " + IDE + NL;
             Status += "Filename to be parsed: " + Filename + NL;
-            Status += "arclient_ident: " + arclient_ident.ToString() + NL;
+            Status += "IDpartner: " + IDpartner.ToString() + NL;
             Status += "edi_doc_number: " + edi_doc_number.ToString() + NL;
 
-            if (arclient_ident <= 0 || (edi_doc_number != 810 && edi_doc_number != 855 && edi_doc_number != 856 && edi_doc_number != 850))
+            if (IDpartner <= 0 || (edi_doc_number != 810 && edi_doc_number != 855 && edi_doc_number != 856 && edi_doc_number != 850))
             {
                 Status += "Parse error" + NL;
                 DB_RSS.LogData("ERROR: File not properly formatted: " + NL + Status);
@@ -469,8 +378,13 @@ namespace EDI_RSS
                     if(Edi_protocol == "SFTP")
                     {
                         File.Copy(Filepath, Path.Combine(RSS_send_path.Replace(@"\Send", @"\Sent"), Filename));
-                        UpdateSent("edi_" + edi_doc_number, Filename);
+                        UpdateSent("edi_" + edi_doc_number, Filename, 7); // 7 == send sftp waiting for 997
                     }
+                }
+
+                else if (PortId == PortId_code + "_routing_out" && IDE_status == "create")
+                {
+                    UpdateSent("edi_" + edi_doc_number, Filename, 3); // 3 == create only
                 }
 
                 else if (PortId.Substring(PortId.Length - 3) == "AS2")
@@ -478,7 +392,7 @@ namespace EDI_RSS
                     Status += "ErrorMessage: " + ErrorMessage + NL;
                     if (ErrorMessage == "")
                     {
-                        UpdateSent("edi_" + edi_doc_number, Filename);
+                        UpdateSent("edi_" + edi_doc_number, Filename); // standard : 1 == send
                     }
                     else
                     {
@@ -490,7 +404,7 @@ namespace EDI_RSS
             return true;
         }
 
-        public void UpdateSent(string table, string pFilename)
+        public void UpdateSent(string table, string pFilename, int sent = 1)
         {
             if (table != "edi_855" && table != "edi_810" && table != "edi_856" && table != "edi_850")
             {
@@ -498,9 +412,16 @@ namespace EDI_RSS
                 return;
             }
 
+            string statusFieldname = "";
+            if(table == "edi_855" && sent == 3) // 3 = create only 
+            {
+                statusFieldname = "Status = 'X',";
+            }
+
             Params.Clear();
             Params.Add("?Filename", pFilename);
-            DB_VIVA.HExecuteSQLQuery(@"UPDATE " + table + " SET sent = true WHERE LOCATE(Filename, ?Filename); ", Params);
+            Params.Add("?sent", sent.ToString());
+            DB_VIVA.HExecuteSQLQuery($"UPDATE " + table + $" SET {statusFieldname} sent = ?sent WHERE LOCATE(Filename, ?Filename); ", Params);
         }
 
         public void DisPatch_IDedi_rss()
@@ -547,7 +468,7 @@ namespace EDI_RSS
                                             WHERE IDedi_rss = ?IDedi_rss", Params);
         }
         
-        public void SetParams(string TheUseSystem, string TheTransactionCode, string ThePortId, string TheFilename, string TheErrorMessage)
+        public void SetParams(string TheUseSystem, string TheTransactionCode, string ThePortId, string TheFilename, string TheErrorMessage, string TheFilepath)
         {
             // Overrides Parameters
             UseSystem = TheUseSystem.ToLower();
@@ -555,6 +476,7 @@ namespace EDI_RSS
             PortId = ThePortId;
             Filename = TheFilename;
             ErrorMessage = TheErrorMessage;
+            Filepath = TheFilepath;
         }
 
         public int GetFirstInt(string text)
@@ -567,46 +489,6 @@ namespace EDI_RSS
                 retVal += c;
             }
             return int.Parse(retVal);
-        }
-
-        /**
-         * return a xml node with the namespace in the xpath
-         */
-        public XmlNode Get_Node(XmlNode node, string xpath, bool isBrackets = true)
-        {
-            xpath = xpath.Replace("/", "/ic:");
-            xpath = xpath.Replace("/ic:/ic:", "//ic:");
-            if (isBrackets)
-                xpath = xpath.Replace("[", "[ic:");
-
-            return node.SelectSingleNode(xpath, nsmgr);
-        }
-
-        /**
-         * return the value of a xml node if is not null
-         */
-        public string IIF_NULL(XmlNode node, string xpath, string nullValue = "")
-        {
-            if (Get_Node(node, xpath) == null)
-            {
-                return nullValue;
-            }
-
-            return Get_Node(node, xpath).InnerText;
-        }
-
-        /**
-         * return a string date in the format : yyyy-MM-dd
-         */
-        public string StringToDate(string date)
-        {
-            string year = date.Substring(0, 4);
-            string month = date.Substring(4, 2);
-            string day = date.Substring(6, 2);
-
-            string outputDate = year + "-" + month + "-" + day;
-
-            return outputDate;
         }
     }
 }

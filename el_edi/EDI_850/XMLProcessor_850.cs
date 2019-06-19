@@ -187,7 +187,7 @@ namespace EDI_850
                         cmd.Parameters.AddWithValue("?ref", r.Order.Number);
                         cmd.Parameters.AddWithValue("?statut", r.Order.Status);
                         cmd.Parameters.AddWithValue("?req_dte", cobil_req_dte);
-                        cmd.Parameters.AddWithValue("?clientid", arclient_ident);
+                        cmd.Parameters.AddWithValue("?clientid", IDpartner);
                         cmd.Parameters.AddWithValue("?client_name", r.Customer.BTName);
                         cmd.Parameters.AddWithValue("?client_addr", r.Customer.BTAddress);
                         cmd.Parameters.AddWithValue("?date_entered", DateTime.Today);

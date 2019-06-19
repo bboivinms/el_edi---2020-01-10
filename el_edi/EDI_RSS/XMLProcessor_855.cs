@@ -16,15 +16,16 @@ namespace EDI_RSS
     {
         private XmlNamespaceManager nsmgr;
         private XmlDocument doc;
-        //private string namespaceURI;
+        private int IDvendor;
+
         private Dictionary<string, string> Params = new Dictionary<string, string>();
         private string error = "";
 
-        public XMLProcessor_855(XmlNamespaceManager nsmgr, XmlDocument doc)
+        public XMLProcessor_855(XmlNamespaceManager nsmgr, XmlDocument doc, int idvendor)
         {
             this.nsmgr = nsmgr;
             this.doc = doc;
-            //namespaceURI = "http://www.rssbus.com";
+            IDvendor = idvendor;
         }
 
 
@@ -37,8 +38,8 @@ namespace EDI_RSS
                 MySqlCommand cmd = DB_VIVA.CreateCommand();
                 cmd.CommandType = CommandType.Text;
 
-                cmd.CommandText = "INSERT INTO vivams4.edi_855v (popo_ident, Filename, popo_pono, po_dte, popo_del_name, iddel_addr, Xml855Raw, error)" +
-                                  " VALUES(?popo_ident, ?Filename, ?popo_pono, ?po_dte, ?popo_del_name, ?iddel_addr, ?Xml855Raw, ?error);";
+                cmd.CommandText = "INSERT INTO edi_855v (idvendor, popo_ident, filename, popo_pono, po_dte, popo_del_name, iddel_addr, Xml855Raw, error, programId)" +
+                                  " VALUES(?idvendor, ?popo_ident, ?Filename, ?popo_pono, ?po_dte, ?popo_del_name, ?iddel_addr, ?Xml855Raw, ?error, ?programId);";
 
                 string poNumber = IIF_NULL(XMLNode, "//BAK03"); //popo_pono
                 XmlNode N1Loop1 = Get_Node(XMLNode, "//N1Loop1[N1/N101 = 'ST']");
@@ -46,7 +47,9 @@ namespace EDI_RSS
                 //select ident of popo with the pono
                 Params.Clear();
                 Params.Add("?poNumber", poNumber);
-                List<IDataRecord> result = DB_VIVA.HExecuteSQLQuery("SELECT ident, DEL_NAME FROM vivams4.popo where popo.PONO = ?poNumber", Params);
+                List<IDataRecord> result = DB_VIVA.HExecuteSQLQuery("SELECT ident, DEL_NAME FROM popo where popo.PONO = ?poNumber", Params);
+
+                cmd.Parameters.AddWithValue("?idvendor", IDvendor);
 
                 //if their purchase order is found in our popo table
                 if (result.Count != 0)
@@ -81,14 +84,10 @@ namespace EDI_RSS
                 cmd.Parameters.AddWithValue("?Filename",     filepath);
                 cmd.Parameters.AddWithValue("?popo_pono",    poNumber);                             //popo_pono
                 cmd.Parameters.AddWithValue("?po_dte", StringToDate(IIF_NULL(XMLNode, "//BAK04"))); //po_dte
-                cmd.Parameters.AddWithValue("?iddel_addr",     IIF_NULL(N1Loop1, ".//N104")); //iddel_addr
-
-                //N1Loop1 = Get_Node(XMLNode, "//N1Loop1[N1/N101 = 'BT']");   
-                //cmd.Parameters.AddWithValue("?popo_del_nameBT", IIF_NULL(N1Loop1, ".//N102")); //popo_del_nameBT
-                //cmd.Parameters.AddWithValue("?iddel_addrBT",    IIF_NULL(N1Loop1, ".//N104")); //iddel_addrBT
-
-                cmd.Parameters.AddWithValue("?Xml855Raw", XMLNode.InnerXml); //Xml855Raw
-                cmd.Parameters.AddWithValue("?error", error);
+                cmd.Parameters.AddWithValue("?iddel_addr",     IIF_NULL(N1Loop1, ".//N104"));       //iddel_addr
+                cmd.Parameters.AddWithValue("?Xml855Raw", XMLNode.InnerXml);                        //Xml855Raw
+                cmd.Parameters.AddWithValue("?error", error);                                       //error dans xml
+                cmd.Parameters.AddWithValue("?programId", program855Id);                            //programId
 
                 cmd.ExecuteNonQuery();
                 cmd.Parameters.Clear();
@@ -104,12 +103,13 @@ namespace EDI_RSS
                     {
                         Params.Clear();
                         Params.Add("?ident", result[0]["ident"].ToString());
-                        List<IDataRecord> popoiData = DB_VIVA.HExecuteSQLQuery("SELECT ivprix.REF_FOURN, popoi.COST, popoi.QTY_ORD, ivprod.CODE, popo.EXPE_DTE FROM popoi "+
-                                                                                "inner join popo on popo.ident = popoi.IDPO "+
-                                                                                "inner join ivprix on ivprix.IDVENDOR = popo.IDVENDOR and ivprix.IDPRODUIT = popoi.IDPROD "+
-                                                                                "inner join ivprod on popoi.IDPROD = ivprod.ident "+
-                                                                                "Where popoi.idpo = ?ident order by ivprix.ident desc limit 1", Params);
+                        List<IDataRecord> popoiData = DB_VIVA.HExecuteSQLQuery(@"SELECT ivprix.REF_FOURN, popoi.COST, popoi.QTY_ORD, ivprod.CODE, ivprod.desc AS ivprod_desc, popo.EXPE_DTE FROM popoi
+                                                                                inner join popo on popo.ident = popoi.IDPO
+                                                                                inner join ivprix on ivprix.IDVENDOR = popo.IDVENDOR and ivprix.IDPRODUIT = popoi.IDPROD 
+                                                                                inner join ivprod on popoi.IDPROD = ivprod.ident 
+                                                                                Where popoi.idpo = ?ident order by ivprix.ident desc limit 1", Params);
 
+                        string ivprod_desc = popoiData[0]["ivprod_desc"].ToString();
                         string qty_ord = IIF_NULL(PO1Loop1.Item(i), ".//PO102"); //quantity ordered / popoi_qty_ord
 
                         //verify if we have the same qty_ord
@@ -150,18 +150,19 @@ namespace EDI_RSS
                             error += "Error : The Estimated Delivery date : " + StringToDate(IIF_NULL(xmlItems.Item(j), ".//ACK05")) + " do not correspond with us EXPE_DTE : " + popoiData[0]["EXPE_DTE"].ToString().Substring(0, 10) + "\n";
                         }
                         
-                        cmd.CommandText = "INSERT INTO vivams4.edi_855vpoi (popoi_line, popoi_qty_tot, popoi_unit, popoi_cost, popoi_unite, " +
-                                          "ivprix_ref_fourn, ivprod_code, popo_pono, popoi_idpo, statusCode, popoi_qty_ord, popoi_item_unit, popo_expe_dte, programId, error) " +
-                                          "VALUES(?popoi_line, ?popoi_qty_ord, ?popoi_unit, ?popoi_cost, ?popoi_unite, ?ivprix_ref_fourn, ?ivprod_code, " +
-                                          "?popo_pono, ?popoi_idpo, ?statusCode, ?popoi_qty_ord, ?popoi_item_unit, ?popo_expe_dte, ?programId, ?error);";
+                        cmd.CommandText = "INSERT INTO edi_855vd (popoi_line, popoi_qty_tot, popoi_unit, popoi_cost, popoi_unite, " +
+                                          "ivprix_ref_fourn, ivprod_code, ivprod_desc, popo_pono, popoi_idpo, statusCode, popoi_qty_ord, popoi_item_unit, popo_expe_dte, programId, error, Xml855ItemRaw) " +
+                                          "VALUES(?popoi_line, ?popoi_qty_ord, ?popoi_unit, ?popoi_cost, ?popoi_unite, ?ivprix_ref_fourn, ?ivprod_code, ?ivprod_desc, " +
+                                          "?popo_pono, ?popoi_idpo, ?statusCode, ?popoi_qty_ord, ?popoi_item_unit, ?popo_expe_dte, ?programId, ?error, ?Xml855ItemRaw);";
 
                         cmd.Parameters.AddWithValue("?popoi_line", IIF_NULL(PO1Loop1.Item(i), ".//PO101"));                     //AssignedIdentification / popoi_line
                         cmd.Parameters.AddWithValue("?popoi_qty_tot", IIF_NULL(PO1Loop1.Item(i), ".//PO102"));                  //QuantityOrdered / popoi_qty_tot
-                        cmd.Parameters.AddWithValue("?popoi_unit", IIF_NULL(PO1Loop1.Item(i), ".//PO103"));                     //UnitCode / popoi_unit
-                        cmd.Parameters.AddWithValue("?popoi_cost", IIF_NULL(PO1Loop1.Item(i), ".//PO104"));                     //UnitPrice / decimal / popoi_cost
+                        cmd.Parameters.AddWithValue("?popoi_unit", "TP");                                                       //UnitCode / popoi_unit fixed : TP
+                        cmd.Parameters.AddWithValue("?popoi_cost", cost);                                                       //UnitPrice / decimal / popoi_cost
                         cmd.Parameters.AddWithValue("?popoi_unite", IIF_NULL(PO1Loop1.Item(i), ".//PO105"));                    //(unite): each / popoi_unite 
                         cmd.Parameters.AddWithValue("?ivprix_ref_fourn", IIF_NULL(PO1Loop1.Item(i), ".//PO107"));               //VendorPartNumber / ivprix_ref_fourn
                         cmd.Parameters.AddWithValue("?ivprod_code", IIF_NULL(PO1Loop1.Item(i), ".//PO109"));                    //BuyerPartNumber / ivprod_code
+                        cmd.Parameters.AddWithValue("?ivprod_desc", ivprod_desc);                                               //BuyerPartNumber / ivprod_code
                         cmd.Parameters.AddWithValue("?popo_pono",   IIF_NULL(PO1Loop1.Item(i), ".//REF[REF01 = 'PO']//REF02")); // Purchase Order Number / popo_pono
 
                         if (result[0]["ident"].ToString() != "")
@@ -178,12 +179,16 @@ namespace EDI_RSS
 
                         cmd.Parameters.AddWithValue("?programId",       program855Id);                                         //programId
                         cmd.Parameters.AddWithValue("?error",           error);
+                        cmd.Parameters.AddWithValue("?Xml855ItemRaw",   PO1Loop1.Item(i).InnerXml);                             //les noeud xml pour un item
 
                         cmd.ExecuteNonQuery();
                         cmd.Parameters.Clear();
                     }
-                }  
+                }
 
+                //Email855Writer email855 = new Email855Writer(program855Id);
+                //email855.Build();
+                //email855.Send();
             }
             catch (Exception ex)
             {

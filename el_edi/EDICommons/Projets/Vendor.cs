@@ -1,5 +1,4 @@
 ﻿using EDICommons.Tools;
-using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -55,7 +54,7 @@ namespace EDI_RSS
 
             if (gIDataEdi_path == null)
             {
-                DB_RSS.LogData("ERROR: Could not get routing information : " + NL + Status);
+                //DB_RSS.LogData("ERROR: Could not get routing information : " + NL + Status); see later for now
                 return false;
             }
 
@@ -100,7 +99,7 @@ namespace EDI_RSS
 
             if (gIDataEdi_path == null)
             {
-                DB_RSS.LogData("ERROR: Could not get routing information : " + NL + Status);
+                DB_RSS.LogData("ERROR: Could not get routing information : Edi_path_after_Setup" + NL + Status);
                 return false;
             }
 
