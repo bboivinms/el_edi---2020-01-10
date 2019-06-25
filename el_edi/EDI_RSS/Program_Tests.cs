@@ -14,7 +14,7 @@ namespace EDI_RSS
     {
         public void Test()
         {
-            if (UseSystem == "local") { IsLocalTest = true; Test_810_STEP_2(); }
+            if (UseSystem == "local") { IsLocalTest = true; Test_850_STEP_2(); }
         }
 
         // Called by auto timer on 254 machine using parameters
@@ -28,9 +28,9 @@ namespace EDI_RSS
         //                      // Test  // dispatches the file in (\\192.168.1.252\edi_test) and is processed by RSSBus
         // Filename             // 000P-ALL to process all
 
-        public void Test_855_STEP_1() { SetParams("Test", "edi_rss", @"E:\TEST_VIVA_ENV\CLIENT_ARIVA_DATA", "855P-ALL", "[ErrorMessage]"); } //script on 254 and foxpro
+        public void Test_855_STEP_1() { SetParams("Test", "edi_rss", @"E:\TEST_VIVA_ENV\CLIENT_ARIVA_DATA", "855P-ALL", "[ErrorMessage]", ""); } //script on 254 and foxpro
         // public void Test_810_STEP_1() { SetParams("Local", "edi_rss", @"C:\VIVAEL\DATA", "810P-ALL", ""); } //foxpro
-        // public void Test_856_STEP_1() { SetParams("Local", "edi_rss", @"C:\VIVAEL\DATA", "856P-ALL", ""); } //foxpro
+         //public void Test_856_STEP_1() { SetParams("Test", "856", @"C:\VIVAEL\DATA", "856P-ALL", "[ErrorMessage]", ""); } //foxpro
         // public void Test_850_STEP_1() { SetParams("Local", "edi_rss", @"C:\VIVAEL\DATA", "850P-ALL", ""); } //done by foxpro
 
         // Activates Program_000 and stores corresponding 000 XML files in RSS_send_path (C:\TMP for Local)
@@ -43,21 +43,21 @@ namespace EDI_RSS
         // Parameters
         // Filename             // Starts with the corresponding IDedi_rss WHERE rss_done = 0
 
-        public void Test_855_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "110-855P-ALL.txt", ""); }
-        public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "3-810P-ALL.txt", ""); }
-        public void Test_856_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "5-856P-ALL.txt", ""); }
-        public void Test_850_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "747-850P-ALL.txt", ""); }
+        public void Test_855_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "110-855P-ALL.txt", "", ""); }
+        public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "3-810P-ALL.txt", "", ""); }
+        public void Test_856_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "1275-856P-ALL.txt", "", ""); }
+        public void Test_850_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "1268-850P-ALL.txt", "", ""); }
 
         // Processes The filename to be set as sent that was processed in 000-STEP-2
         // edi_000.Sent = true WHERE Filename = { Filename }
 
         // Parameters
         // Filename             // Changes every time STEP-2 is processed, references a edi_000.Filename
-        public void Test_STEP_IN() { SetParams("Local", "", "MTL_routing_in", "xxxx30037-855-12135-4501000073-1544798977.26278", ""); }
-        public void Test_855_STEP_3() { SetParams("Local", "855", "ETI_routing_out", "30037-855-12135-4501000073-1544798977.26278", ""); }
-        public void Test_810_STEP_3() { SetParams("Local", "810", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
-        public void Test_856_STEP_3() { SetParams("Local", "856", "NONE", "30037-12135-4501000073-1544798977.26278", ""); }
-        public void Test_850_STEP_3() { SetParams("Local", "850", "MTL_routing_out", "00056-850-12135-4501000073-1544798977.26278", ""); }
+        public void Test_STEP_IN() { SetParams("Local", "810", "MTL_routing_in", "2019-05-16-10-23-17-009145_000000019_151530263.xml", "", @"C:\TMP_IN\2019-05-16-10-23-17-009145_000000019_151530263.xml"); }
+        public void Test_855_STEP_3() { SetParams("Local", "855", "ETI_routing_out", "30037-855-12135-4501000073-1544798977.26278", "", ""); }
+        public void Test_810_STEP_3() { SetParams("Local", "810", "NONE", "30037-12135-4501000073-1544798977.26278", "", ""); }
+        public void Test_856_STEP_3() { SetParams("Local", "856", "NONE", "30037-12135-4501000073-1544798977.26278", "", ""); }
+        public void Test_850_STEP_3() { SetParams("Local", "850", "MTL_routing_out", "00056-850-12135-4501000073-1544798977.26278", "", ""); }
 
     }
 }
