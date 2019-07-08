@@ -214,6 +214,21 @@ namespace MySQL_Dll
             return "SUCCESS";
         }
 
+        public string Get_DB_VIVA(string rss_datapath, string default_value = "")
+        {
+            vendor = new EDI_RSS.Vendor();
+            DB_RSS = new EDI_DB.Data.CDB_RSS(vendor.SetupRSS("rss_bus"));
+
+            Status += $"datapath: {rss_datapath + NL}";
+
+            //avec le datapath, on connect avec la bonne DB
+            gIDataEdi_path = GetIDedi_path(rss_datapath);
+
+            if (gIDataEdi_path == null) return default_value; //setup connection DB 
+
+            return gIDataEdi_path["edi_db_viva"].ToString(); 
+        }
+
         public void DispatchEdi_rss(string rss_datapath, int edi_doc_number)
         {
             vendor = new EDI_RSS.Vendor();
