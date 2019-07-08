@@ -211,7 +211,7 @@ namespace EDI_RSS.Helpers
             settings.IndentChars = "\t";
             settings.OmitXmlDeclaration = true;
 
-            int ClientId = Convert.ToInt32(Data["cobil_clientid"]);
+            int ClientId = Convert.ToInt32(mysql.IsNull(Data["cobil_clientid"]));
             Decimal TotalNumberOfLineItem = 0;
             Decimal TotalNumberOfLineItemQty = 0;
 

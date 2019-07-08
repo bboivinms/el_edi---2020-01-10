@@ -73,7 +73,17 @@ namespace EDI_DB.Data
         public static void SetRouting_out_path(string TheType)
         {
             string where = "error";
-            if (IDE.Substring(0, 1) == "L") { where = "data_live"; }
+            if (IDE.Substring(0, 1) == "L")
+            {
+                if(IDpartner == 56)
+                {
+                    where = "data";
+                }
+                else
+                {
+                    where = "data_live";
+                }
+            }
             if (IDE.Substring(0, 1) == "T") { where = "data_test"; }
 
             if (IDE.Substring(1, 1) == "L")

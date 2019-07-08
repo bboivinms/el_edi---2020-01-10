@@ -316,7 +316,7 @@ namespace EDI_RSS.Helpers
                         int QtyOrdered = Convert.ToInt32(DataDetail["popoi_qty_ord"]);
 
                         TotalNumberOfLineItem++;
-                        TotalNumberOfLineItemQty += QtyOrdered;
+                        TotalNumberOfLineItemQty += Math.Abs(QtyOrdered);
 
                         WritePO1Loop1(DataDetail);
 

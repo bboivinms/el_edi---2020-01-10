@@ -222,7 +222,7 @@ namespace EDI_RSS.Helpers
                     int QtyInvoiced = Convert.ToInt32(DataDetail["arinvd_qty"]);
 
                     TotalNumberOfLineItem++;
-                    TotalNumberOfLineItemQty += QtyInvoiced;
+                    TotalNumberOfLineItemQty += Math.Abs(QtyInvoiced);
 
                     WriteIT1Loop1(DataDetail);
                     

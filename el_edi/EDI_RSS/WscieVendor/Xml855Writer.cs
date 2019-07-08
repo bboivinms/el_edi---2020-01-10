@@ -81,9 +81,9 @@ namespace EDI_RSS.Helpers
             }
             catch (System.Exception e)
             {
-                Error += "Error caught: " + e.Message;
+                Error += "Error caught: " + e.ToString();
                 // Something unexpected went wrong.
-                LogWriter.WriteMessage(LogEventSource, $"Error caught: {e.Message}");
+                LogWriter.WriteMessage(LogEventSource, $"Error caught: {e.ToString()}");
             }
         }
 
@@ -346,11 +346,11 @@ namespace EDI_RSS.Helpers
 
                     foreach (var DataCocomiItem in RawDataCocomi)
                     {
-                        Decimal QtyOrdered = Convert.ToDecimal("0" + DataCocomiItem["cocomi_qty_ord"]);
-                        Decimal TotalNumberOfShippingQty = 0;
+                        decimal QtyOrdered = Convert.ToDecimal(mysql.IsNull(DataCocomiItem["cocomi_qty_ord"]));
+                        decimal TotalNumberOfShippingQty = 0;
 
                         TotalNumberOfLineItem++;
-                        TotalNumberOfLineItemQty += QtyOrdered;
+                        TotalNumberOfLineItemQty += Math.Abs(QtyOrdered);
 
                         writer.WriteStartElement("PO1Loop1");
                         writer.WriteAttributeString("type", "Loop");
@@ -382,7 +382,7 @@ namespace EDI_RSS.Helpers
                             //There might be multiple 855, each group represents a single one
                             foreach (IDataRecord DataCocomiLineItem in RawDataCocomiLine)
                             {
-                                TotalNumberOfShippingQty += Convert.ToDecimal("0" + DataCocomiLineItem["cobili_qty"]);
+                                TotalNumberOfShippingQty += Convert.ToDecimal(mysql.IsNull(DataCocomiLineItem["cobili_qty"]));
 
                                 // ACK01        : "IA": "Item Accepted", "IB": "Item Backordered", "IC": "Item Accepted - Changes Made", "ID": "Item Deleted", "IE": "Item Accepted, Price Pending",
                                 //              : "AC": "Item Accepted and Shipped", "AR": "Item Accepted and Released for Shipment", "BP": "Item Accepted - Partial Shipment, Balance Backordered",
@@ -390,7 +390,7 @@ namespace EDI_RSS.Helpers
                                 // ACK03 / PO103 / SCH02: "EA": "Each", "EV": "Envelope"
                                 // ACK04 / SCH05              : "067": "Current Schedule Delivery"
 
-                                if (Convert.ToDecimal("0" + DataCocomiLineItem["cobili_qty"]) != 0)
+                                if (Convert.ToDecimal(mysql.IsNull(DataCocomiLineItem["cobili_qty"])) != 0)
                                 {
                                     WriteSegmentLoop("ACKLoop1", "Loop", "ACK", "Segment",
                                            "Fixed: Item Accepted", "IA",
@@ -418,7 +418,7 @@ namespace EDI_RSS.Helpers
                             {
                                 // ACK03 / PO103 / SCH02: "EA": "Each", "EV": "Envelope"
                                 // ACK04 / SCH05              : "067": "Current Schedule Delivery"
-                                if (Convert.ToDecimal("0" + DataCocomiLineItem["cobili_qty"]) != 0)
+                                if (Convert.ToDecimal(mysql.IsNull(DataCocomiLineItem["cobili_qty"])) != 0)
                                 {
                                     WriteSegmentLoop("SCHLoop1", "Loop", "SCH", "Segment",
                                        "cobili_qty", DataCocomiLineItem["cobili_qty"].ToString(),
