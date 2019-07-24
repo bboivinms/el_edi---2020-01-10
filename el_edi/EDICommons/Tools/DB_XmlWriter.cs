@@ -125,9 +125,9 @@ namespace EDI_DB.Data
             );
         }
 
-        public void WriteN1Loop1_arclient_name(string arclient_name, string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null)
+        public void WriteN1Loop1_arclient_name(string arclient_name, string[] entityCode1, string[] entityCode2, DB_PER pDB_PER = null, int iddel_addr_start_num = 4)
         {
-            CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclientName(arclient_name));
+            CIDataRecord data_record = new CIDataRecord(DB_VIVA.GetAddressArclientName(arclient_name, iddel_addr_start_num));
 
             if (data_record.data_record == null) return;
 

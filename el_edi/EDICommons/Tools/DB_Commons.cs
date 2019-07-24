@@ -60,6 +60,8 @@ namespace EDI_DB.Data
         // public static IDataRecord gDataIDedi_path;
         public static IDataRecord gIDataEdi_path;
 
+        public static T IIf<T>(bool expression, T truePart, T falsePart) { return expression ? truePart : falsePart; }
+
         public static bool TimePassed(int hour, int minute)
         {
             if (hour < 0 || hour > 24) hour = 0;
@@ -450,15 +452,15 @@ namespace EDI_DB.Data
             return results[0];
         }
 
-        public IDataRecord GetAddressArclientName(string arclient_name)
+        public IDataRecord GetAddressArclientName(string arclient_name, int iddel_addr_start_num = 4)
         {
             List<IDataRecord> results;
             Params.Clear();
             Params.Add("arclient_name", arclient_name.ToString().Replace('-', ' ').Replace(".", ""));
 
-            results = HExecuteSQLQuery(@"
+            results = HExecuteSQLQuery($@"
                 SELECT 
-                    CONCAT('4', CAST(ident AS CHAR)) AS iddel_addr,
+                    CONCAT('{iddel_addr_start_num}', CAST(ident AS CHAR)) AS iddel_addr,
                     Name AS arclient_name,
                     addr1 AS arclient_addr1,
                     addr2 AS arclient_addr2,

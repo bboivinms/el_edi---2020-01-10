@@ -14,7 +14,7 @@ namespace EDI_RSS
     {
         public void Test()
         {
-            if (UseSystem == "local") { IsLocalTest = true; Test_850_STEP_2(); }
+            if (UseSystem == "local") { IsLocalTest = true; Test_STEP_IN_850(); }
         }
 
         // Called by auto timer on 254 machine using parameters
@@ -46,7 +46,7 @@ namespace EDI_RSS
         public void Test_855_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "110-855P-ALL.txt", "", ""); }
         public void Test_810_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "3-810P-ALL.txt", "", ""); }
         public void Test_856_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "1275-856P-ALL.txt", "", ""); }
-        public void Test_850_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "1268-850P-ALL.txt", "", ""); }
+        public void Test_850_STEP_2() { SetParams("Local", "edi_rss", "ET_fox_to_rss", "1251-850P-ALL.txt", "", ""); }
 
         // Processes The filename to be set as sent that was processed in 000-STEP-2
         // edi_000.Sent = true WHERE Filename = { Filename }
@@ -54,6 +54,7 @@ namespace EDI_RSS
         // Parameters
         // Filename             // Changes every time STEP-2 is processed, references a edi_000.Filename
         public void Test_STEP_IN() { SetParams("Local", "810", "MTL_routing_in", "2019-05-16-10-23-17-009145_000000019_151530263.xml", "", @"C:\TMP_IN\2019-05-16-10-23-17-009145_000000019_151530263.xml"); }
+        public void Test_STEP_IN_850() { SetParams("Local", "850", "ETL_routing_in", "2019-06-12-15-48-26-6543211_111481215.xml", "", @"C:\TMP_IN\2019-06-12-15-48-26-6543211_111481215.xml"); }
         public void Test_855_STEP_3() { SetParams("Local", "855", "ETI_routing_out", "30037-855-12135-4501000073-1544798977.26278", "", ""); }
         public void Test_810_STEP_3() { SetParams("Local", "810", "NONE", "30037-12135-4501000073-1544798977.26278", "", ""); }
         public void Test_856_STEP_3() { SetParams("Local", "856", "NONE", "30037-12135-4501000073-1544798977.26278", "", ""); }

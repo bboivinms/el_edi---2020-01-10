@@ -88,7 +88,7 @@ namespace EDI_RSS.Helpers
         {
             return DB_VIVA.HExecuteSQLQuery(@"
                 SELECT  
-                        popo.ident AS popo_ident, popo.idvendor AS popo_idvendor, popo.pono AS popo_pono, 
+                        popo.ident AS popo_ident, popo.idvendor AS popo_idvendor, popo.pono AS popo_pono, popo.entrepot AS popo_entrepot,
                         popo.desc AS popo_desc, popo.po_dte AS popo_po_dte, popo.requ_dte AS popo_requ_dte,
                         popo.contact as popo_contact, popo.contactfax AS popo_contactfax, popo.contactemail AS popo_contactemail,
                         popo.del_name AS popo_del_name, popo.prt_note AS popo_prt_note, popo.ref_fourn AS popo_ref_fourn,
@@ -306,7 +306,9 @@ namespace EDI_RSS.Helpers
                     WriteN1Loop1_apsupp(ClientId, EntityCode1.VN, pDB_PER);
 
                     pDB_PER = new DB_PER(this, PerCode.CN, Data["wscie_cie_name"].ToString(), Data["wscie_cie_tel"].ToString(), Data["wscie_email"].ToString(), Data["wscie_cie_fax"].ToString());
-                    WriteN1Loop1_arclient_name(Data["popo_del_name"].ToString(), EntityCode1.ST, EntityCode2.BuyerCode, pDB_PER);
+
+                    WriteN1Loop1_arclient_name(Data["popo_del_name"].ToString(), EntityCode1.ST, EntityCode2.BuyerCode, pDB_PER, 
+                        IIf(Data["popo_entrepot"].ToString() == "24", 4, 5));
 
                     //PO1Loop1 avec PIDLoop1
                     foreach (var DataDetail in RawDataDetails)
