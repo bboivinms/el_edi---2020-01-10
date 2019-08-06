@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=utf-8'><meta http-equiv='Content-Language' content='fr-ca'>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'/>
+		<title>Validation email</title>
+		
+	</head>
+	<body>
+		<style type="text/css"> 
+			  table {border-collapse:separate;}
+			  a, a:link, a:visited {text-decoration: none; color: #00788a;} 
+			  a:hover {text-decoration: underline;}
+			  h2,h2 a,h2 a:visited,h3,h3 a,h3 a:visited,h4,h5,h6,.t_cht {color:#000 !important;}
+			  .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td {line-height: 100%;}
+			  .ExternalClass {width: 100%;}
+	
+			body{ font-family: Arial; } 
+			#table1, #tableTax { border-collapse: collapse; border: 1px solid black; } 
+			#table1 tr:first-child {} 
+			#table1 tr {border: 1px solid #black;} 
+			#table1 th {border-bottom: 1px solid black;}
+			#table1 td, #tableTax td { border-right: 1px solid black;} 
+			#table1 td:nth-child(5), #table1 td:nth-child(6) {text-align: right;} 
+			.notes {  border: 2px solid black; padding: 2px; font-size: 15px;}
+			.numberNote { text-align: center; Margin: 0; }
+			.address { Margin: 10px; }
+			.message { Margin: 0; text-align: center; width: 100%;}
+			.right { text-align: right;}
+		</style>
+		<table cellpadding="0" cellspacing="0" border="0"> 
+		<tr> 
+			<table width='730px' cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width='78%' align='left'>~#vendorAddress#~</td>
+					<td><b>FACTURE / INVOICE</b></td>
+				</tr>
+			</table>
+
+			<table>
+				<tr>
+					<td align='middle' colspan='3'><hr></td>
+				</tr>
+				
+				<tr>
+					<td class='notes' width='242.14'>
+						<b>Votre # de comm. / Your Order #</b><p class='numberNote'>~#po#~</p>
+					</td>
+					<td class='notes' width='215.14'>
+						<b>No. de facture / Invoice No. </b><p class='numberNote'>~#invoiceNo#~</p>
+					</td>
+					<td class='notes' width='262.14'>
+						<b>Date de facturation / Invoice Date</b><p class='numberNote'>~#invoiceDate#~</p>
+					</td>
+				</tr>
+				
+				<tr>
+					<td>
+						<p class='address'>
+							<b>Adresse de livraison:</b><br>
+							<span>~#ShipToAddress#~</span>
+						</p>
+					</td>
+				</tr>
+				
+				<tr>
+					<td valign="top" colspan='3'>
+						<table width="100%" id="table1" cellspacing="3" cellpadding="3">
+							<tr>
+								<th>Item</th>
+								<th>Quantité</th>
+								<th>Unité</th>
+								<th>Description</th>
+								<th>Prix unitaire</th>
+								<th>Montant</th>
+							</tr>
+							~#details#~
+							
+							<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+							<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+							<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+							<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+							
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan='3'>
+						<table align='right' width='50%' style=" border-collapse: collapse;" id='tableTax'>
+							<tr>
+								<td>Avant taxe / Total before tax</td>
+								<td class='right'>~#before_tax#~</td>
+							</tr>
+							<tr>
+								<td>G.S.T. / T.P.S. 101658292</td>
+								<td class='right'>~#GST#~</td>
+							</tr>
+							<tr>
+								<td>P.S.T. / T.V.Q. 1001435767</td>
+								<td class='right'>~#PST#~</td>
+							</tr>
+							<tr>
+								<td>H.S.T. / T.V.H.  </td>
+								<td class='right'>~#HST#~</td>
+							</tr>
+							<tr>
+								<td><span>Montant payé / Paid</span></td>
+								<td class='right'>~#amountpaid#~</td>
+							</tr>
+							<tr>
+								<td class='right' style='padding: 10px;  border: 1px solid black;'>Montant total à remettre<br>Total amount payable</td>
+								<td class='right' style='border: 1px solid black;'>~#total#~</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td class='message' colspan='3'>
+						<b>Facture reçu par EDI le ~#timestamp#~</b>
+					</td>
+				</tr>
+			</table>
+		</tr> 
+		</table>
+	</body>
+</html>

@@ -13,7 +13,10 @@ namespace EDI_RSS
         override public string SetupWeb(string DB_Name)
         {
             Status += "SetupWeb: " + DB_Name + NL;
-            return DB_String("192.168.1.253", "webcms", "mfnDLfntCDPADATh", DB_Name);
+
+            // 253 error, temporarily connect to 254
+            // return DB_String("192.168.1.253", "webcms", "mfnDLfntCDPADATh", DB_Name);
+            return DB_String("192.168.1.254", "envl_web", "7Cf!688ZFFYSvMDywNmcPxrwVMbdxVkQQ", "envl_test");
         }
 
     }

@@ -186,9 +186,9 @@ namespace EDI_RSS
                     }
                 }
 
-                //Email855Writer email855 = new Email855Writer(program855Id);
-                //email855.Build();
-                //email855.Send();
+                Email855Writer email855 = new Email855Writer(program855Id);
+                email855.Build();
+                email855.Send();
             }
             catch (Exception ex)
             {

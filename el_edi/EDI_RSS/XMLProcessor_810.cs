@@ -141,9 +141,9 @@ namespace EDI_RSS
                     UPDATE edi_810v SET arinv_inv_mnt = ?arinv_inv_mnt, error = ?error WHERE programId = ?programId;
                     ", Params);
 
-                //Email810Writer email810 = new Email810Writer(program810Id);
-                //email810.Build();
-                //email810.Send();
+                Email810Writer email810 = new Email810Writer(program810Id);
+                email810.Build();
+                email810.Send();
             }
             catch (Exception ex)
             {

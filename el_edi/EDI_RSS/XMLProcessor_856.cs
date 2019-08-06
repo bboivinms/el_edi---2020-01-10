@@ -167,9 +167,9 @@ namespace EDI_RSS
                                                   " ?ivprod_code, ?ivprod_desc, ?ivprod_ident, ?qtyShipped, ?unitQtyShippedCode, ?MeasurementValue, ?MeasurementCode, ?SerialNumber, ?programId, ?Xml856ItemRaw)", Params);
                 }
 
-                //Email856Writer email856 = new Email856Writer(program856Id);
-                //email856.Build();
-                //email856.Send();
+                Email856Writer email856 = new Email856Writer(program856Id);
+                email856.Build();
+                email856.Send();
             }
             catch (Exception ex)
             {

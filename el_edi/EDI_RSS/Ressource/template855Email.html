@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=utf-8'><meta http-equiv='Content-Language' content='fr-ca'>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'/>
+		<title>Validation email</title>
+		
+	</head>
+	<body>
+		<style type="text/css"> 
+			  table {border-collapse:separate;}
+			  a, a:link, a:visited {text-decoration: none; color: #00788a;} 
+			  a:hover {text-decoration: underline;}
+			  h2,h2 a,h2 a:visited,h3,h3 a,h3 a:visited,h4,h5,h6,.t_cht {color:#000 !important;}
+			  .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td {line-height: 100%;}
+			  .ExternalClass {width: 100%;}
+	
+			body{ font-family: Arial; } 
+			#table1, #tableTax { border-collapse: collapse; border: 1px solid black; } 
+			#table1 tr:first-child {} 
+			#table1 tr {border: 1px solid #black;} 
+			#table1 th {border-bottom: 1px solid black;}
+			#table1 td, #tableTax td { border-right: 1px solid black;} 
+			#table1 td:nth-child(5), #table1 td:nth-child(6) {text-align: right;} 
+			.notes {  border: 2px solid black; padding: 2px; font-size: 15px;}
+			.numberNote { text-align: center; Margin: 0; }
+			.address { Margin: 10px; }
+			.message { Margin: 0; text-align: center; width: 100%;}
+			.right { text-align: right;}
+		</style>
+		<table cellpadding="0" cellspacing="0" border="0"> 
+		<tr> 
+			<table width='730px' cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width='64%' align='left'>~#vendorAddress#~</td>
+					<td><b> CONFIRMATION DE COMMANDE /<br>ORDER CONFIRMATION</b></td>
+				</tr>
+			</table>
+
+			<table>
+				<tr>
+					<td align='middle' colspan='3'><hr></td>
+				</tr>
+				
+				<tr>
+					<td class='notes' width='232px'>
+						<b>Votre # de comm. / Your Order #</b><p class='numberNote'>~#po#~</p>
+					</td>
+					<td class='notes' width='280px'>
+						<b>Date Commande / Purchase order Date</b><p class='numberNote'>~#orderDate#~</p>
+					</td>
+					<td class='notes' width='200px'>
+						<b>Date requis / Required Date</b><p class='numberNote'>~#requiredDate#~</p>
+					</td>
+				</tr>
+				
+				<tr>
+					<td>
+						<p class='address'>
+							<b>Adresse de livraison:</b><br>
+							<span>~#ShipToAddress#~</span>
+						</p>
+					</td>
+					
+					<td>
+						<p>
+							<b>Date d'expédition / Expedition date:</b><br>
+							<span>~#expe_dte#~</span>
+						</p>
+					</td>
+				</tr>
+				
+				<tr>
+					<td valign="top" colspan='3'>
+						<table width="100%" id="table1" cellspacing="3" cellpadding="3">
+							<tr>
+								<th>Item</th>
+								<th>Description</th>
+								<th>Qté <br> Qty</th>
+								<th>Date d'expédition<br> Ship date</th>
+								<th>Prix <br> Price</th>
+							</tr>
+							~#details#~
+							
+							<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+							<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+							<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+							<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+							
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td class='message' colspan='3'>
+						<b>Confirmation de commande reçu par EDI le ~#timestamp#~</b>
+					</td>
+				</tr>
+			</table>
+		</tr> 
+		</table>
+	</body>
+</html>

@@ -11,9 +11,7 @@ namespace EDI_850
         public static readonly string LogEventSource = "EDI 850 Processor";
 
         public static string XmlFilePath = "";
-
-        public static string PortId_code;
-
+        
         static void Main(string[] args)
         {
             try
@@ -63,7 +61,7 @@ namespace EDI_850
                 }
 
                 PortId_code = gIDataEdi_path["edi_code"].ToString().Substring(0, 3).ToUpper();
-                EDI_DB.Data.Base.wscie = PortId_code.Substring(0, 1);
+                wscie = PortId_code.Substring(0, 1);
                 IDE = PortId_code.Substring(1, 2);
                 IDpartner = 30037;
                 edi_doc_number = 850;
@@ -80,7 +78,7 @@ namespace EDI_850
                     return;
                 }
 
-                if (!vendor.After_Setup(false)) return;
+                if (!vendor.After_Setup_Partner(false)) return;
 
                 XMLProcessor_850 proc = new XMLProcessor_850();
                 proc.ProcessOrder();

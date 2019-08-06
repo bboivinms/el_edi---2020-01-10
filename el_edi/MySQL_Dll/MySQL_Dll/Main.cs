@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EDI_DB.Data;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -12,30 +13,38 @@ namespace MySQL_Dll
     {
         public Dictionary<string, string> Params = new Dictionary<string, string>();
         public EDI_RSS.Program_RSS Program_RSS = new EDI_RSS.Program_RSS(new string[0]);
+        
+        public bool Startup = false;
 
+        public Main()
+        {
+            
+        }
+
+        // Setup Datapaths on startup
+        // Should be loaded with datapath upon declaration
+        public void Load_DB(string datapath, string default_value = "")
+        {
+            Get_DB_VIVA(datapath, default_value);
+
+
+            Startup = true;
+        }
         /**
          * Insert in the table edi_850 and edi_rss a purchase order
          * Params :
-         * 1. string rss_datapath : C:\VIVAEL\DATA
-         * 2. int id : 56 idvendor ou 30037 pour clientid or custid
-         * 3. int ident : 17703 : popo_ident or arinv_ident or cobil_ident
-         * 4. int edi_doc_number : 850
-         * 5. string Xml_technique : le technique de chaque item dans un po
-         * 6. string error : indique s'il manque des données dans le technique ou autres (optional)
+         * 1. int id : 56 idvendor ou 30037 pour clientid or custid
+         * 2. int ident : 17703 : popo_ident or arinv_ident or cobil_ident
+         * 3. int edi_doc_number : 850
+         * 4. string Xml_technique : le technique de chaque item dans un po
+         * 5. string error : indique s'il manque des données dans le technique ou autres (optional)
          */
-        public string MySQL(string rss_datapath, int id, int ident, int edi_doc_number, string Xml_technique = "", string error = "")
+        public string MySQL(int id, int ident, int edi_doc_number, string Xml_technique = "", string error = "")
         {
+            if (!Startup) return "";
+
             try
             {
-                vendor = new EDI_RSS.Vendor();
-                DB_RSS = new EDI_DB.Data.CDB_RSS(vendor.SetupRSS("rss_bus"));
-
-                Status += $"datapath: {rss_datapath + NL}";
-
-                //avec le datapath, on connect avec la bonne DB
-                gIDataEdi_path = GetIDedi_path(rss_datapath);
-                if (!vendor.Edi_path_after_Setup()) return "Erreur connection"; //setup connection DB 
-
                 string portID;
                 portID = "X" + IDE + "_" + edi_doc_number; //X LE _ 850
 
@@ -199,7 +208,7 @@ namespace MySQL_Dll
                     }
 
                     //rss_bus has access to the document
-                    DispatchEdi_rss(rss_datapath, edi_doc_number);
+                    DispatchEdi_rss(edi_doc_number);
                 }
                 //log les queries
                 DB_RSS.LogData(Status_Queries);
@@ -216,30 +225,26 @@ namespace MySQL_Dll
 
         public string Get_DB_VIVA(string rss_datapath, string default_value = "")
         {
-            vendor = new EDI_RSS.Vendor();
-            DB_RSS = new EDI_DB.Data.CDB_RSS(vendor.SetupRSS("rss_bus"));
+            gRss_datapath = rss_datapath;
 
-            Status += $"datapath: {rss_datapath + NL}";
+            Debug += $"MySQL_DLL: Main: datapath: {gRss_datapath + NL}";
+            Status += $"MySQL_DLL: Main: datapath: {gRss_datapath + NL}";
+
+            vendor = new EDI_RSS.Vendor();
+            DB_RSS = new CDB_RSS(vendor.SetupRSS("rss_bus"));
 
             //avec le datapath, on connect avec la bonne DB
-            gIDataEdi_path = GetIDedi_path(rss_datapath);
+            gIDataEdi_path = GetIDedi_path(gRss_datapath);
 
             if (gIDataEdi_path == null) return default_value; //setup connection DB 
+
+            vendor.After_Setup();
 
             return gIDataEdi_path["edi_db_viva"].ToString(); 
         }
 
-        public void DispatchEdi_rss(string rss_datapath, int edi_doc_number)
+        public void DispatchEdi_rss(int edi_doc_number)
         {
-            vendor = new EDI_RSS.Vendor();
-            DB_RSS = new EDI_DB.Data.CDB_RSS(vendor.SetupRSS("rss_bus"));
-
-            Status += $"datapath: {rss_datapath + NL}";
-
-            //avec le datapath, on connect avec la bonne DB
-            gIDataEdi_path = GetIDedi_path(rss_datapath);
-            if (!vendor.Edi_path_after_Setup()) return; //setup connection DB 
-
             gRss_request = edi_doc_number + "P";
             gRss_client = "ALL";
 
@@ -250,35 +255,26 @@ namespace MySQL_Dll
             Params.Clear();
             Params.Add("?rss_client", gRss_client);   //ALL
             Params.Add("?rss_request", gRss_request); //850P
-            Params.Add("?rss_datapath", rss_datapath);//exemple path: C:\VIVAEL\DATA
+            Params.Add("?rss_datapath", gRss_datapath);//exemple path: C:\VIVAEL\DATA
 
             IDedi_rss = DB_RSS.HExecuteSQLNonQuery(@"INSERT INTO rss_bus.edi_rss (rss_client, rss_request, rss_datapath) VALUES (?rss_client, ?rss_request, ?rss_datapath)", Params);
 
             if (IDedi_rss <= 0) return;
 
             EDI_RSS.Program_RSS.EdiFilename = IDedi_rss.ToString() + $"-{gRss_request}-{gRss_client}.txt";
-
-            if(rss_datapath.ToUpper() == @"C:\VIVAEL\DATA".ToUpper() || rss_datapath.ToUpper() == @"C:\VivaStock2\DATA".ToUpper())
-            {
+            
+            if (gRss_datapath.ToUpper().Left(2) == "C:") {
                 UseSystem = "local";
             }
+
             Program_RSS.DisPatch_IDedi_rss();  //creer un fichier dans serveur 252
         }
 
         /**
          * Insert in the table edi_855
          */
-        public void InsertEdi_855(string rss_datapath, int idclient, int ident, int edi_doc_number)
+        public void InsertEdi_855(int idclient, int ident, int edi_doc_number)
         {
-            vendor = new EDI_RSS.Vendor();
-            DB_RSS = new EDI_DB.Data.CDB_RSS(vendor.SetupRSS("rss_bus"));
-
-            Status += $"datapath: {rss_datapath + NL}";
-
-            //avec le datapath, on connect avec la bonne DB
-            gIDataEdi_path = GetIDedi_path(rss_datapath);
-            if (!vendor.Edi_path_after_Setup()) return; //setup connection DB 
-
             gRss_request = edi_doc_number + "P";
             gRss_client = "ALL";
 
@@ -316,22 +312,12 @@ namespace MySQL_Dll
             Status_Queries = ""; 
         }
 
-        public string GetStatut(string rss_datapath)
+        public string GetStatut()
         {
-            rss_datapath.Replace(@"\\", @"\");
-
             string lStatut = "(statut = 'W' OR statut = 'E')";
 
-            vendor = new EDI_RSS.Vendor();
-            DB_RSS = new EDI_DB.Data.CDB_RSS(vendor.SetupRSS("rss_bus"));
-
-            Status += $"datapath: {rss_datapath + NL}";
-
-            gIDataEdi_path = GetIDedi_path(rss_datapath);
-            if (!vendor.Edi_path_after_Setup()) return ""; //setup connection DB 
-
             Params.Clear();
-            Params.Add("?edi_path", rss_datapath.ToString());
+            Params.Add("?edi_path", gRss_datapath.Replace(@"\\", @"\"));
 
             List<IDataRecord> result = DB_RSS.HExecuteSQLQuery("SELECT edi_code FROM rss_bus.edi_path WHERE edi_path = ?edi_path", Params);
 
