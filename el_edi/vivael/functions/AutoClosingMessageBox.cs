@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace vivael.wsforms
+namespace vivael
 {
     public class AutoClosingMessageBox
     {

@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using System.Linq.Expressions;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace vivael
 {
@@ -32,12 +33,13 @@ namespace vivael
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public DataRow datarow { get; set; }
-        public DataSet ds { get; set; }
+        public DataSet ds { get; set; } 
         public string Table_name { get; set; }
         public List<IDataRecord> result { get; set; }
         public List<IDataRecord> fields_result { get; set; } = null;
         public DataSourceInfo i = new DataSourceInfo();
         public bool isFoxpro;
+        public string Fox_ai { get; set; } = "";
         public string MyQuery { get; set; } = "";
         public int noCurrent { get; set; }
 
@@ -89,7 +91,7 @@ namespace vivael
                 }
                 else if (type == typeof(bool) || type == typeof(bool?))
                 {
-                    PropertyValue = bool.Parse(PropertyValue.ToString());
+                    PropertyValue = Convert.ToBoolean(PropertyValue);
                 }
 
                 GetType().GetProperty(PropertyName).SetValue(this, PropertyValue);
@@ -121,7 +123,6 @@ namespace vivael
                 {
                     name = ToTitleCase(this.result[0].GetName(i).ToLower());
                     this[name] = this.result[0][name];
-                    //Console.WriteLine(name + " : " + this[name]);
                 }
             }
             catch (Exception ex)
@@ -169,9 +170,20 @@ namespace vivael
 
         public int RECCOUNT()
         {
-            DataSource temp = new DataSource();
-            gQuery(MyQuery, temp,0,0, isFoxpro);
-            return temp.result.Count();
+            if(MyQuery != "")
+            {
+                DataSource temp = new DataSource();
+                gQuery(MyQuery, temp, 0, 0, isFoxpro);
+                return temp.result.Count();
+            }
+            else if(result != null)
+            {
+                return result.Count();
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public bool Found()
@@ -199,16 +211,58 @@ namespace vivael
             return vLReturn;
         }
 
-        public void SaveRow(string sPAction = "update")
+        public string SaveRow(string sPAction)
         {
-            string query = "";
-            if(sPAction == "update")
+            string sLOperationSQL = "";
+
+            if (sPAction == "insert")
             {
-                query = gCreateUpdate(this);
+                sLOperationSQL = gCreateInsert(this);
+            }
+            else if(sPAction == "update")
+            {
+                sLOperationSQL = gCreateUpdate(this);
+            }
+            else if(sPAction == "delete")
+            {
+                sLOperationSQL = gCreateDelete(this);
             }
 
-            gQuery(query, this.isFoxpro);
+            if (sLOperationSQL != "")
+                gQuery(sLOperationSQL, isFoxpro);
+
+            return sLOperationSQL;
         }
+
+        public void ResetProperties()
+        {
+            Type type = this.GetType();
+            PropertyInfo[] properties = type.GetProperties();
+            for (int i = 0; i < properties.Length-9; ++i)
+            {
+                if (properties[i].PropertyType == typeof(bool?) || properties[i].PropertyType == typeof(bool))
+                {
+                    properties[i].SetValue(this, false);
+                }
+                else if (properties[i].PropertyType == typeof(byte) || properties[i].PropertyType == typeof(byte?))
+                {
+                    properties[i].SetValue(this, Convert.ToByte(0));
+                }
+                else if (properties[i].PropertyType == typeof(int) || properties[i].PropertyType == typeof(int?))
+                {
+                    properties[i].SetValue(this, 0);
+                }
+                else if (properties[i].PropertyType == typeof(decimal) || properties[i].PropertyType == typeof(decimal?))
+                {
+                    properties[i].SetValue(this, Convert.ToDecimal(0));
+                }
+                else
+                {
+                    properties[i].SetValue(this, null);
+                }
+            }
+        }
+                
 
         protected virtual void OnPropertyChanged(string propertyName)
         {

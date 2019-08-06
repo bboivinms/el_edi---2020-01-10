@@ -4,7 +4,7 @@ namespace vivael
 {
 	public class data_wsuser : DataSource
 	{
-		public data_wsuser() { Table_name = i.name = "wsuser"; i.primary_1 = "ident"; i.primary_2 = null; i.primary_3 = null; isFoxpro = true; }
+		public data_wsuser() { Table_name = i.name = "wsuser"; i.primary_1 = "ident"; i.primary_2 = null; i.primary_3 = null; isFoxpro = true; Fox_ai = "Ident";}
 
 		private int _Ident; public int Ident { get { return _Ident; } set { Set(ref _Ident, value, "Ident"); } }
 		private string _Code; public string Code { get { return _Code; } set { Set(ref _Code, value, "Code"); } }
@@ -12,7 +12,8 @@ namespace vivael
 		private decimal? _Idnum; public decimal? Idnum { get { return _Idnum; } set { Set(ref _Idnum, value, "Idnum"); } }
 		private string _Group; public string Group { get { return _Group; } set { Set(ref _Group, value, "Group"); } }
 		private string _Passwd; public string Passwd { get { return _Passwd; } set { Set(ref _Passwd, value, "Passwd"); } }
-		private bool? _Active; public bool? Active { get { return _Active; } set { Set(ref _Active, value, "Active"); } }
+        private string _Zart; public string Zart { get { return _Zart; } set { Set(ref _Zart, value, "Zart"); } }
+        private bool? _Active; public bool? Active { get { return _Active; } set { Set(ref _Active, value, "Active"); } }
 		private byte? _Usertimer; public byte? Usertimer { get { return _Usertimer; } set { Set(ref _Usertimer, value, "Usertimer"); } }
 		private int? _Fbackcolor; public int? Fbackcolor { get { return _Fbackcolor; } set { Set(ref _Fbackcolor, value, "Fbackcolor"); } }
 		private int? _Fforecolor; public int? Fforecolor { get { return _Fforecolor; } set { Set(ref _Fforecolor, value, "Fforecolor"); } }

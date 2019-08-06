@@ -21,11 +21,5 @@ namespace vivael.wscontrols
         {
             InitializeComponent();
         }
-
-        //[System.Diagnostics.DebuggerStepThrough]
-        //protected override void OnPaint(PaintEventArgs pe)
-        //{
-        //    base.OnPaint(pe);
-        //}
     }
 }

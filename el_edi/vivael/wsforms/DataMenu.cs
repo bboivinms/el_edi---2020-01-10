@@ -8,70 +8,72 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using vivael;
+using vivael.forms;
 using vivael.wscontrols;
+using vivael.wsforms;
 using static vivael.Globals;
 
-namespace vivael
+namespace vivael.wsforms
 {
     public partial class DataMenu : Form
     {
         public DataMenu()
         {
             InitializeComponent();
-            m0frch = false;
+            TranslateForm(this);
         }
 
 
         public object parameters;
         public DataSource sdPTable = new DataSource();
-        bool bTableIsSet = false; //ADDED_VARIABLE_KJ_2018_10_30 // used to see if SetTable was called and Data Source manipulation is needed
+        public bool bTableIsSet = false; //ADDED_VARIABLE_KJ_2018_10_30 // used to see if SetTable was called and Data Source manipulation is needed
 
         string search_form = ""; // *-- Name of the associated search form
         string notekey1_entity = ""; // *-- Main key 1 for the note. Ex.:"CLIENT"
         string notekey2_context = ""; // *-- Main key 2 for the note (Used to be more specific), usually blank.
-        string formaction = ""; // *-- Action given when called by the menu (Usually blank)
-        Nullable<int> sessioninstance = 0; // *-- Instance in the Session.Active_form
+        protected string formaction = ""; // *-- Action given when called by the menu (Usually blank)
+        int? sessioninstance = 0; // *-- Instance in the Session.Active_form
         int uniqueid = 0; // *-- if there is a unique sequencial id to fill in the main key, put the name of the field here
-        string report_name = ""; // *-- Name of the attached report
+        protected string report_name = ""; // *-- Name of the attached report
         string report_type = "F"; // *-- Type <F>oxpor or <C>rystal of the attached report
-        int newrecord = 0; // *-- Used to bring back the saved record
-        bool lajout = true;
-        bool lmodif = true;
-        bool lsupp = true;
-        bool limp = true;
-        string search_form_param = "";
-        bool proportional_resize = true;
+        protected int newrecord = 0; // *-- Used to bring back the saved record
+        protected bool lajout = true;
+        protected bool lmodif = true;
+        protected bool lsupp = true;
+        protected bool limp = true;
+        //string search_form_param = "";
+        //bool proportional_resize = true;
         bool use_transaction = false;
         int temp_id = 0;
         bool search_modal = true; // KJ: 2018-10-03: Foxpro + Go Fish: Value is always true for vivasoft.pjx + only used in wsmaintform2
         bool init_ok = true;
 
-        bool eof = false; // *-- Currently on last record
-        bool bof = false; // *-- Currently on first record
-        bool editing = false; // *-- Currently in edition
+        protected bool eof = false; // *-- Currently on last record
+        protected bool bof = false; // *-- Currently on first record
+        protected bool editing = false; // *-- Currently in edition
         int nrecordbeforeadd = 0; // *-- Record before performing an add
         string formname; // *-- Name of the form when called from the menu.
-        bool adding = false; // *-- .T. if we are in adding mode (new rec option)
-        int formrecno = 0;
+        protected bool adding = false; // *-- .T. if we are in adding mode (new rec option)
+        protected int formrecno = 0;
         bool? paramplus = false; // *-- Used to keep an additionnal parameter when calling the form
         bool start_on_last = false;
-        bool lreturnrec = false;
-        bool o_left = false;
-        bool o_top = false;
-        bool o_height = false;
-        bool o_width = false;
-        bool is_resizable = false;
-        bool ldemo = false;
+        //bool lreturnrec = false;
+        //bool o_left = false;
+        //bool o_top = false;
+        //bool o_height = false;
+        //bool o_width = false;
+        //bool is_resizable = false;
+        //bool ldemo = false;
         bool search_form_lident = true;
-        string search_form_order = "";
+        //string search_form_order = "";
         string cfunction = "";
 
         wsreport WsReport1;
 
         int WindowType = 0; //NULL_INT; // ADDED_VARIABLE_KJ_2018_06_05
         int record_position = -1; // ADDED_VARIABLE_KJ_2018_06_05
-        Nullable<int> search_form_variant = null; // ADDED_VARIABLE_KJ_2018_06_12
-        bool Closable; //ADDED_VARIABLE_KJ_2018_06_18
+        //Nullable<int> search_form_variant = null; // ADDED_VARIABLE_KJ_2018_06_12
+        protected bool Closable; //ADDED_VARIABLE_KJ_2018_06_18
 
         string sMyOrder = ""; //ADDED_VARIABLE_KJ_2018_09_11 // used in navfirst to set order
         bool Modified { get; set; } //WIP
@@ -82,7 +84,7 @@ namespace vivael
             // -- Nothing in it. To use into the form. Called before moving the cursor.
         }
 
-        public void EnableButtons()
+        public virtual void EnableButtons()
         {
             if (!IsFirst(sdPTable))
             {
@@ -193,7 +195,6 @@ namespace vivael
             //UNKNOWN_KJ_2018_07_30//}
 
             formname = cFormName;
-            this.Text = formname;
             formaction = Upper(cAction);
             formrecno = nRecno;
             sessioninstance = nInstance;
@@ -306,7 +307,8 @@ namespace vivael
                 ActionModify();
             }
 
-            Application.Run(this);
+            //Application.Run(this);
+            this.Show();
             return true;
         }
 
@@ -357,7 +359,7 @@ namespace vivael
             {
                 if (!eof && !bof)
                 {
-                    nrecordbeforeadd = RECNO();
+                    nrecordbeforeadd = RECNO(sdPTable);
                 }
                 else
                 {
@@ -394,28 +396,31 @@ namespace vivael
             return 0; //WIP: return value was undefined
         }
 
-        public void ActionDelete()
+        public bool ActionDelete()
         {
-            if (!bTableIsSet) { return; }
+            if (!bTableIsSet) { return false; }
 
             int nResult;
 
             if (Valid_del())
             {
                 //WIP: int.. get from messagebox
-                nResult = (int) MESSAGEBOX(IIF(m0frch, "Effacer l'entrée courante ?",
-                    "Delete the current entry ?"),
-                    4 + 32 + 256,
-                    IIF(m0frch, "Suppression données", "Data supression"));
+                nResult = MESSAGEBOX(IIF(m0frch, "Effacer l'entrée courante ?",
+                                    "Delete the current entry ?"),
+                                    4 + 32 + 256,
+                                    IIF(m0frch, "Suppression données", "Data supression"));
 
-                if (nResult == 6)
+                if (nResult == 6)//if yes
                 {
                     doBefore_delete();
+                    sdPTable.SaveRow("delete");
+                }
+                else
+                {
+                    return false;
                 }
 
                 ScreenToFile();
-
-                gSaveRow(sdPTable, "delete");
 
                 doAfter_delete();
 
@@ -433,6 +438,7 @@ namespace vivael
                     FileToScreen();
                 }
             }
+            return true;
         }
 
         public void ActionModify()
@@ -472,7 +478,7 @@ namespace vivael
 
             if (!(eof && bof))
             {
-                nrecordbeforeadd = RECNO();
+                nrecordbeforeadd = RECNO(sdPTable);
             }
             else
             {
@@ -489,12 +495,12 @@ namespace vivael
 
         public void ActionNew()
         {
-            if (!bTableIsSet)
+            if (!bTableIsSet) //if we have set a table for the form
             {
                 return;
             }
 
-            int vId_key;
+            //int vId_key;
 
             //* Verify if user changed something and save/discard them
             if (!Verify_change())
@@ -524,7 +530,7 @@ namespace vivael
 
             if (!(eof && bof))
             {
-                nrecordbeforeadd = RECNO();
+                nrecordbeforeadd = RECNO(sdPTable);
             }
             else
             {
@@ -533,18 +539,18 @@ namespace vivael
 
             temp_id = 0;
 
-            if (EMPTY(uniqueid))
-            {
-                //UNKNOWN_KJ_2018_05_24// APPEND BLANK
-            }
-            else
-            {
-                // * if this table requires a unique ident, we insert it with a temporary number (negative)
-                vId_key = 0;
-                vId_key = oSession.get_temp_id(Upper(sdPTable.Table_name));
-                temp_id = vId_key;
-                gQuery("INSERT INTO " + ALLTRIM(sdPTable.Table_name) + " (" + uniqueid + ") VALUES (" + ALLTRIM(STR(vId_key)) + ")");
-            }
+            //if (EMPTY(uniqueid))  //sdPTable.i.primary_1
+            //{
+            //    //UNKNOWN_KJ_2018_05_24// APPEND BLANK
+            //}
+            //else
+            //{
+            //    // * if this table requires a unique ident, we insert it with a temporary number (negative)
+            //    vId_key = 0;
+            //    vId_key = oSession.get_temp_id(Upper(sdPTable.Table_name));
+            //    temp_id = vId_key;
+            //    gQuery("INSERT INTO " + ALLTRIM(sdPTable.Table_name) + " (" + uniqueid + ") VALUES (" + ALLTRIM(STR(vId_key)) + ")");
+            //}
 
             editing = true;
             Refresh();
@@ -570,10 +576,10 @@ namespace vivael
             }
             else
             {
-                thekey = STR(RECNO());
+                thekey = STR(RECNO(sdPTable));
             }
 
-            OpenSister(new WsMesg(), notekey1_entity, notekey2_context, thekey);   //NOTE_CHECK_CODE_KJ_2018_05_24//NAME = MesgForm + LINKED//UNKNOWN
+            OpenSister(new wsMesg(), notekey1_entity, notekey2_context, thekey);   //NOTE_CHECK_CODE_KJ_2018_05_24//NAME = MesgForm + LINKED//UNKNOWN
         }
 
         private void OpenSister(Form wsForm, string notekey1_entity, string notekey2_context, object thekey)
@@ -645,13 +651,17 @@ namespace vivael
                     }
                 }
             }
-
+           
             // * Save the data (main table only)
             ScreenToFile();
-            
 
-            sError_message = gSaveRow(sdPTable);
+            if(adding)
+                sdPTable.SaveRow("insert");
+            else
+                sdPTable.SaveRow("update");
 
+            //sError_message = gSaveRow(sdPTable);
+            sError_message = "";
             if (sError_message != "")
             {
                 WAIT(IIF(m0frch, "Erreur de sauvegarde...(" + sError_message + ")", "Error with save...(" + sError_message + ")"), "WINDOW NOWAIT");
@@ -672,6 +682,7 @@ namespace vivael
 
             editing = false;
             adding = false;
+            gLast(sdPTable);
             EnableButtons();
 
             // * Disable the fields
@@ -738,25 +749,77 @@ namespace vivael
                 return;
             }
 
-            //Loop through controls and enable / disable fields
-            int i = 1;
-            //WIP
-            foreach (Control control in this.Controls)
+            //Loop through the form and find groupbox with children and enable / disable fields
+            foreach (Control control in this.Controls) 
             {
-                if (control is wstextbox || control is wsComboBox)
+                if (control is GroupBox && control.HasChildren)
                 {
-                    control.Enabled = vPEnableDisable == "E";
+                    foreach (Control ctrl in control.Controls) //loop through controls within the groupbox
+                    {
+                        if (ctrl is wstextbox || ctrl is wsComboBox || ctrl is wsnumbox)
+                        {
+                            ctrl.Enabled = vPEnableDisable == "E";
 
-                    if (!control.Enabled)
-                    {
-                        control.BackColor = oSession.fdisabledBackColor;
-                    }
-                    else
-                    {
-                        control.BackColor = oSession.fBackColor;
+                            if (!ctrl.Enabled)
+                            {
+                                ctrl.BackColor = oSession.fdisabledBackColor;
+                                ctrl.ForeColor = oSession.fdisabledForeColor;
+                            }
+                            else
+                            {
+                                ctrl.BackColor = oSession.fBackColor;
+                                ctrl.ForeColor = oSession.fForeColor;
+                            }
+                        }
+                        if (ctrl is wsCheckBox || ctrl is wsoptiongroup)
+                        {
+                            ctrl.Enabled = vPEnableDisable == "E";
+
+                            if (!ctrl.Enabled)
+                            {
+                                ctrl.ForeColor = oSession.fdisabledForeColor;
+                            }
+                            else
+                            {
+                                ctrl.ForeColor = oSession.fForeColor;
+                            }
+                        }
+                        if (ctrl is Label)
+                        {
+                            ctrl.Enabled = vPEnableDisable == "E";
+
+                            if (!ctrl.Enabled)
+                            {
+                                ctrl.ForeColor = oSession.LdisabledForeColor;
+                                ctrl.BackColor = oSession.LdisabledBackColor;
+
+                            }
+                            else
+                            {
+                                ctrl.ForeColor = oSession.LForeColor;
+                                ctrl.BackColor = oSession.LBackColor;
+                            }
+                        }
                     }
                 }
             }
+
+            //foreach (Control control in this.Controls)
+            //{
+            //    if (control is wstextbox || control is wsComboBox)
+            //    {
+            //        control.Enabled = vPEnableDisable == "E";
+
+            //        if (!control.Enabled)
+            //        {
+            //            control.BackColor = oSession.fdisabledBackColor;
+            //        }
+            //        else
+            //        {
+            //            control.BackColor = oSession.fBackColor;
+            //        }
+            //    }
+            //}
             /*
             while (EnumControl(MyWindow, i) != "")
             {
@@ -961,17 +1024,7 @@ namespace vivael
             gFirst(sdPTable, sMyOrder);
             HRestorePosition(sdPTable, nPos);
             gPrevious(sdPTable);
-            //if (gPrevious(sdPTable))
-            //{
-            //    BtnLast.Enabled = true;
-            //    BtnNext.Enabled = true;
-            //}
 
-            //if (IsFirst(sdPTable))
-            //{
-            //    BtnFirst.Enabled = false;
-            //    BtnPrev.Enabled = false;
-            //}
             /// ADDED STUFF
             FileToScreen();
 
@@ -992,55 +1045,67 @@ namespace vivael
                 return;
             }
 
-            // *** } public void THAT CALL THE SEARCH SCREEN ***
+            // *** public void THAT CALL THE SEARCH SCREEN ***
             int lRecordId = NULL_INT;
 
-        // * Verify if user changed something and save/discard them
-            if (Verify_change())
+            // * Verify if user changed something and save/discard them
+            if (!Verify_change())
             {
                 return;
             }
 
-            //WIP: TO CHECK WHERE THE IFS ARE SITUATED
-            if (!EMPTY(search_form) && search_modal)
+            wsSearchForm wsSearch = new wsSearchForm(sdPTable);
+            DialogResult dr = wsSearch.ShowDialog();
+
+            if (dr == DialogResult.Cancel)
             {
-                // *----------------------------------------------------------*
-                // * if there is a search form, use it to get the proper rec. *
-                // *----------------------------------------------------------*
-
-                // WIP: 2 LINES TO FIX
-                // search_form_variant.search_form_param = search_form_param;
-                // lRecordId = DO_FORM_LINKED(search_form, search_form_variant);
-                
-                if (lRecordId != NULL_INT && search_form_lident == false) //  && return record number
-                {
-                    if (lRecordId <= RECCOUNT(sdPTable))
-                    {
-                        NavGo(lRecordId);
-                    }
-                }
+                NavGo(wsSearch.RecordId);
             }
-
-            if (lRecordId != NULL_INT && search_form_lident == true) //  && return ident
+            else if (dr == DialogResult.OK)
             {
-                // * Used for special processes in the form (empty here)
-                doBefore_nav();
-
-                gSearch(sdPTable, "ident", lRecordId + "");
-
-                EnableButtons();
-
-                // STORE "SET ORDER TO " + THISFORM.Search_form_order TO cCommand
-                // &cCommand
-                // SEEK lRecordId
-                // if FOUND()
-                // Thisform.bof = BOF()
-                // Thisform.eof = EOF()
-                // } else {
-                // NAVGO(nRecNo)
-                // }
-
+                NavGo(wsSearch.RecordId);
             }
+            FileToScreen();
+            EnableButtons();
+            ////WIP: TO CHECK WHERE THE IFS ARE SITUATED
+            //if (!EMPTY(search_form) && search_modal)
+            //{
+            //    // *----------------------------------------------------------*
+            //    // * if there is a search form, use it to get the proper rec. *
+            //    // *----------------------------------------------------------*
+
+            //    // WIP: 2 LINES TO FIX
+            //     //search_form_variant.search_form_param = search_form_param;
+            //    //lRecordId = DO_FORM_LINKED(search_form, search_form_variant);
+
+            //    if (lRecordId != NULL_INT && search_form_lident == false) //  && return record number
+            //    {
+            //        if (lRecordId <= RECCOUNT(sdPTable))
+            //        {
+            //            NavGo(lRecordId);
+            //        }
+            //    }
+            //}
+
+            //if (lRecordId != NULL_INT && search_form_lident == true) //  && return ident
+            //{
+            //    // * Used for special processes in the form (empty here)
+            //    doBefore_nav();
+
+            //    gSearch(sdPTable, "ident", lRecordId + "");
+
+            //    EnableButtons();
+
+            //    // STORE "SET ORDER TO " + THISFORM.Search_form_order TO cCommand
+            //    // &cCommand
+            //    // SEEK lRecordId
+            //    // if FOUND()
+            //    // Thisform.bof = BOF()
+            //    // Thisform.eof = EOF()
+            //    // } else {
+            //    // NAVGO(nRecNo)
+            //    // }
+            //}
         }
           
         public void NavSearch2()
@@ -1088,7 +1153,7 @@ namespace vivael
             }
         }
 
-        public void RefreshBar()
+        public virtual void RefreshBar()
         {
             if (!bTableIsSet)
             {
@@ -1101,7 +1166,7 @@ namespace vivael
                 // * Visualization only - No changes          *
                 // *------------------------------------------*
                 if (eof && bof) // && No data
-                { 
+                {
                     BtnFirst.Visible = false;
                     BtnPrev.Visible = false;
                     BtnNext.Visible = false;
@@ -1122,7 +1187,7 @@ namespace vivael
 
 
                     if (EMPTY(report_name)) // && AND EMPTY(doprint)
-                    { 
+                    {
                         BtnPrint.Visible = false;
                     }
                     else
@@ -1161,9 +1226,9 @@ namespace vivael
                 }
                 else
                 { // && NOT IN EDIT MODE
-              // *------------------------------------------*
-              // * In screen but NOT in edition             *
-              // *------------------------------------------*
+                  // *------------------------------------------*
+                  // * In screen but NOT in edition             *
+                  // *------------------------------------------*
                     if (ALLTRIM(formaction) == "JUST1")
                     { //  && With JUST1, we are sure that we have data
 
@@ -1343,7 +1408,7 @@ namespace vivael
             return true;
         }
 
-        public bool Valid_sav()
+        public virtual bool Valid_sav()
         {
 
             //*** VALIDATION if WE CAN SAVE OR NOT     ***
@@ -1364,7 +1429,7 @@ namespace vivael
             // *** RETURNS .F. if VALIDATION FAILED THE SAVE, .T. if OK
             // *** ---> So normally, always comes back with .T.
 
-            bool bL_status = true;
+            //bool bL_status = true;
 
                 // * Do we have an error if yes no change
             if (oSession.on_error_quit)
@@ -1394,12 +1459,12 @@ namespace vivael
                 if (m0frch)
                 {
                     //WIP
-                    nResult = (int) MESSAGEBOX("L'entrée courante a été modifiée.  Sauvegarder ?", 4 + 32 + 0, "Changement des données");
+                    nResult = MESSAGEBOX("L'entrée courante a été modifiée.  Sauvegarder ?", 4 + 32 + 0, "Changement des données");
                 }
                 else
                 {
                     //WIP
-                    nResult = (int) MESSAGEBOX("The current entry has been modified.  Save it now ?", 4 + 32 + 0, "Data changes detected");
+                    nResult = MESSAGEBOX("The current entry has been modified.  Save it now ?", 4 + 32 + 0, "Data changes detected");
                 }
 
                 if (nResult == 7)
@@ -1418,9 +1483,7 @@ namespace vivael
                 }
             }
 
-
-            return -1==-1; // Need to check if the -1 is required or used
-
+            return true; //-1==-1; // Need to check if the -1 is required or used
         }
 
         public bool Verify_change_plus()
@@ -1445,19 +1508,19 @@ namespace vivael
         {
             //*-- Nothing in it. To use into the form. Called after moving the cursor (and after refresh).
         }
-        public void doBefore_new()
+        public virtual void doBefore_new()
         {
           //*-- Nothing in it. To use into the form. Called before adding a new record.
         }
-        public void doAfter_new()
+        public virtual void doAfter_new()
         {
           //*-- Nothing in it. To use into the form. Called after adding a new record (After the refresh).
         }
-        public void doBefore_sav()
+        public virtual void doBefore_sav()
         {
             //*-- Nothing in it. To use into the form. Called before saving the current record.
         }
-        public void doAfter_sav()
+        public virtual void doAfter_sav()
         {
           //*-- Nothing in it. To use into the form. Called after saving the current record.
         }
@@ -1479,7 +1542,7 @@ namespace vivael
         {
           //*-- Hook to put some code before saving the details view
         }
-        public void doAfter_init()
+        public virtual void doAfter_init()
         {
           //*-- Hook to add code to form.init without having to issue a nodefault
         }
@@ -1526,19 +1589,20 @@ namespace vivael
 
             }
         }
+
         private void DataMenu_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void BtnQuit_Click(object sender, EventArgs e)
-        {
-            RELEASE();
-        }
-
         public void RELEASE()
         {
             Close();
+        }
+
+        private void BtnQuit_Click(object sender, EventArgs e)
+        {
+            RELEASE();
         }
 
         private void BtnPrint_Click(object sender, EventArgs e)
@@ -1563,16 +1627,16 @@ namespace vivael
 
             if (ALLTRIM(formaction) == "ADD" || ALLTRIM(formaction) == "MOD")
             {
-                newrecord = RECNO();
+                newrecord = RECNO(sdPTable);
                 formaction = "JUST1";
 
                 RefreshBar();
-            // * THISFORM.Release()  no, we will do it when we go out
-		    }
+                // * THISFORM.Release()  no, we will do it when we go out
+            }
 
             if (ALLTRIM(formaction) == "ADDMODAL" || ALLTRIM(formaction) == "ADDMODALFILTER")
             {
-                newrecord = RECNO();
+                newrecord = RECNO(sdPTable);
 
                 RELEASE();
             }
@@ -1622,39 +1686,70 @@ namespace vivael
             NavFirst();
         }
 
-        public void bindControl(Control control, DataSource source)
+        public void bindControls(DataSource source)
         {
             string propertyName = "";
             string[] dataMember;
 
-
-            if (control.GetType().GetInterface("IDataControls") == typeof(IDataControls))
+            foreach (Control control in this.Controls)
             {
-                IDataControls iControl = (IDataControls)control;
-
-                if(iControl is TextBox || iControl is ComboBox)
+                if (control is GroupBox && control.HasChildren)
                 {
-                    propertyName = "Text";
-                }
-
-                dataMember = iControl.apControlSource.Split('.');
-
-                if(dataMember.Count() != 2)
-                {
-                    return;
-                }
-                
-                if (dataMember[0] == source.Table_name)
-                {
-                    if (dataMember[1] == "")
+                    foreach (Control ctrl in control.Controls)
                     {
-                        return;
-                    }
-                    control.DataBindings.Clear();
-                    control.DataBindings.Add(propertyName, source, ToTitleCase(dataMember[1]), false, DataSourceUpdateMode.OnPropertyChanged);
-                }
+                        if (ctrl.GetType().GetInterface("IDataControls") == typeof(IDataControls))
+                        {
+                            IDataControls iControl = (IDataControls)ctrl;
+                            dataMember = iControl.apControlSource.Split('.');
 
-            }
+                            if (iControl is TextBox)
+                            {
+                                propertyName = "Text";
+                            }
+
+                            if (iControl is CheckBox)
+                            {
+                                propertyName = "Checked";
+                            }
+
+                            if (iControl is wsoptiongroup || iControl is wsnumbox)
+                            {
+                                propertyName = "Value";
+                            }
+
+                            if (iControl is ComboBox)
+                            {
+                                propertyName = "SelectedValue";
+
+                                if (dataMember[1] == "type")
+                                {
+                                    propertyName = "Text";
+                                }
+                            }
+
+                            if (dataMember.Count() != 2)
+                            {
+                                return;
+                            }
+
+                            if (dataMember[0] == source.Table_name)
+                            {
+                                if (dataMember[1] == "")
+                                {
+                                    return;
+                                }
+                                ctrl.DataBindings.Clear();
+                                
+                                ctrl.DataBindings.Add(propertyName, source, ToTitleCase(dataMember[1]), false, DataSourceUpdateMode.OnPropertyChanged);
+                            }
+
+                        }
+
+                    }   //end foreach control
+                }   //end if groupbox control
+            } //end foreach form control
+            
         }
+
     }
 }

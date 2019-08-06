@@ -40,13 +40,23 @@
     <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.5\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="Devart.Data, Version=5.0.2045.0, Culture=neutral, PublicKeyToken=09af7300eec23701" />
-    <Reference Include="Devart.Data.MySql, Version=8.12.1253.0, Culture=neutral, PublicKeyToken=09af7300eec23701, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Windows.Forms, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="FlashControlV71, Version=1.0.3187.32366, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
     <Reference Include="Google.Protobuf, Version=3.8.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.8.0\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=8.0.16.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.8.0.16\lib\net452\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=8.0.17.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.17\lib\net452\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="OptionGropup, Version=1.1.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\OptionGropup.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -54,9 +64,13 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Management" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Presentation" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -75,11 +89,29 @@
     <Compile Include="data\ComHelper.cs" />
     <Compile Include="data\DllFoxpro.cs" />
     <Compile Include="data\IDataControls.cs" />
-    <Compile Include="forms\Form1.cs">
+    <Compile Include="forms\ReportPreview.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="forms\ReportPreview.Designer.cs">
+      <DependentUpon>ReportPreview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\VivaMainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\VivaMainWindow.designer.cs">
+      <DependentUpon>VivaMainWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\wsLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsLogin.designer.cs">
+      <DependentUpon>wsLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\wsmuser2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsmuser2.Designer.cs">
+      <DependentUpon>wsmuser2.cs</DependentUpon>
     </Compile>
     <Compile Include="functions\foxpro.cs" />
     <Compile Include="functions\vivael.cs" />
@@ -300,17 +332,72 @@
     <Compile Include="model\data_wstax.cs" />
     <Compile Include="model\data_wstext.cs" />
     <Compile Include="model\data_wsuser.cs" />
+    <Compile Include="wscontrols\btnroundlrg.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\btnroundlrg.designer.cs">
+      <DependentUpon>btnroundlrg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\btnroundsml.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\btnroundsml.designer.cs">
+      <DependentUpon>btnroundsml.cs</DependentUpon>
+    </Compile>
     <Compile Include="wscontrols\commandbutton.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="wscontrols\commandbutton.Designer.cs">
       <DependentUpon>commandbutton.cs</DependentUpon>
     </Compile>
+    <Compile Include="wscontrols\wsCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsCheckBox.Designer.cs">
+      <DependentUpon>wsCheckBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="wscontrols\wsComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="wscontrols\wsComboBox.Designer.cs">
       <DependentUpon>wsComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\WsControl.cs" />
+    <Compile Include="wscontrols\wsGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsGrid.Designer.cs">
+      <DependentUpon>wsGrid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsgroupbox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsgroupbox.Designer.cs">
+      <DependentUpon>wsgroupbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wslabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wslabel.Designer.cs">
+      <DependentUpon>wslabel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wslink.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wslink.Designer.cs">
+      <DependentUpon>wslink.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsnumbox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsnumbox.Designer.cs">
+      <DependentUpon>wsnumbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsoptiongroup.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsoptiongroup.Designer.cs">
+      <DependentUpon>wsoptiongroup.cs</DependentUpon>
     </Compile>
     <Compile Include="wscontrols\wstextbox.cs">
       <SubType>Component</SubType>
@@ -324,16 +411,28 @@
     <Compile Include="wscontrols\wsbutton.Designer.cs">
       <DependentUpon>wsbutton.cs</DependentUpon>
     </Compile>
+    <Compile Include="wscontrols\WsToolStripButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\WsToolStripButton.Designer.cs">
+      <DependentUpon>WsToolStripButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsToolStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsToolStripMenuItem.Designer.cs">
+      <DependentUpon>wsToolStripMenuItem.cs</DependentUpon>
+    </Compile>
     <Compile Include="wsforms\DataMenu.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="wsforms\DataMenu.Designer.cs">
       <DependentUpon>DataMenu.cs</DependentUpon>
     </Compile>
-    <Compile Include="wsforms\gMessageBox.cs">
+    <Compile Include="forms\gMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="wsforms\gMessageBox.Designer.cs">
+    <Compile Include="forms\gMessageBox.Designer.cs">
       <DependentUpon>gMessageBox.cs</DependentUpon>
     </Compile>
     <Compile Include="forms\wsm1permis.cs">
@@ -344,18 +443,36 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="wsforms\AutoClosingMessageBox.cs" />
-    <Compile Include="wsforms\Wsmaintform2.cs">
+    <Compile Include="functions\AutoClosingMessageBox.cs" />
+    <Compile Include="wsforms\wsform.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="wsforms\Wsmaintform2.Designer.cs">
-      <DependentUpon>Wsmaintform2.cs</DependentUpon>
+    <Compile Include="wsforms\wsform.Designer.cs">
+      <DependentUpon>wsform.cs</DependentUpon>
     </Compile>
-    <Compile Include="wsforms\WsMesg.cs">
+    <Compile Include="wsforms\wsmaintform2.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="wsforms\WsMesg.Designer.cs">
-      <DependentUpon>WsMesg.cs</DependentUpon>
+    <Compile Include="wsforms\wsmaintform2.Designer.cs">
+      <DependentUpon>wsmaintform2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\wsMesg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsMesg.Designer.cs">
+      <DependentUpon>wsMesg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wsforms\wsmaintform4.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsmaintform4.Designer.cs">
+      <DependentUpon>wsmaintform4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wsforms\wsmaintform5.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsmaintform5.Designer.cs">
+      <DependentUpon>wsmaintform5.cs</DependentUpon>
     </Compile>
     <Compile Include="wsforms\wsModalForm.cs">
       <SubType>Form</SubType>
@@ -364,8 +481,26 @@
       <DependentUpon>wsModalForm.cs</DependentUpon>
     </Compile>
     <Compile Include="classes\WsSession.cs" />
-    <EmbeddedResource Include="forms\Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="wsforms\wsSearchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsSearchForm.Designer.cs">
+      <DependentUpon>wsSearchForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="forms\ReportPreview.resx">
+      <DependentUpon>ReportPreview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\VivaMainWindow.resx">
+      <DependentUpon>VivaMainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\wsLogin.resx">
+      <DependentUpon>wsLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\wsm1permis.resx">
+      <DependentUpon>wsm1permis.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\wsmuser2.resx">
+      <DependentUpon>wsmuser2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -377,18 +512,51 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="wscontrols\btnroundlrg.resx">
+      <DependentUpon>btnroundlrg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\btnroundsml.resx">
+      <DependentUpon>btnroundsml.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\commandbutton.resx">
+      <DependentUpon>commandbutton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\wsCheckBox.resx">
+      <DependentUpon>wsCheckBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="wscontrols\wsComboBox.resx">
       <DependentUpon>wsComboBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\wslink.resx">
+      <DependentUpon>wslink.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\wsnumbox.resx">
+      <DependentUpon>wsnumbox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\wsoptiongroup.resx">
+      <DependentUpon>wsoptiongroup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="wsforms\DataMenu.resx">
       <DependentUpon>DataMenu.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="wsforms\gMessageBox.resx">
+    <EmbeddedResource Include="forms\gMessageBox.resx">
       <DependentUpon>gMessageBox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="wsforms\Wsmaintform2.resx">
-      <DependentUpon>Wsmaintform2.cs</DependentUpon>
+    <EmbeddedResource Include="wsforms\wsform.resx">
+      <DependentUpon>wsform.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsmaintform2.resx">
+      <DependentUpon>wsmaintform2.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsmaintform4.resx">
+      <DependentUpon>wsmaintform4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsmaintform5.resx">
+      <DependentUpon>wsmaintform5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsSearchForm.resx">
+      <DependentUpon>wsSearchForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -405,9 +573,28 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\DataSources\" />
+    <COMReference Include="barcodet">
+      <Guid>{008F9BE3-4457-418B-A0EA-422A41091272}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="images\BOUT_OFF.png" />
+    <Content Include="images\BOUT_ON1.png" />
+    <Content Include="images\BOUT_ON2.png" />
+    <Content Include="images\BT_GREEN.png" />
+    <Content Include="images\BT_GREY.png" />
+    <Content Include="images\BT_RED.png" />
+    <Content Include="images\Notes.bmp" />
+    <None Include="images\WSBack.jpg" />
+    <None Include="images\SplashTop.jpg" />
+    <None Include="images\show.png" />
+    <None Include="images\hide.png" />
     <Content Include="images\Navback.bmp" />
     <Content Include="images\Navbackx.bmp" />
     <Content Include="images\NavDown.bmp" />
@@ -420,10 +607,19 @@
     <Content Include="images\NavUp.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\EDICommons\EDICommons.csproj">
-      <Project>{891DCFB2-0D8C-4E2D-9F2F-24D15460EBEF}</Project>
+      <Project>{891dcfb2-0d8c-4e2d-9f2f-24d15460ebef}</Project>
       <Name>EDICommons</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="reports\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

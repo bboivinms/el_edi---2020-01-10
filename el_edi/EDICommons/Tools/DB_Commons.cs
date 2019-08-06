@@ -69,7 +69,7 @@ namespace EDI_DB.Data
 
             return TimeSpan.Compare(DateTime.Now.TimeOfDay, DateTime.Parse($"2010/01/01 {hour}:{minute}:00.000").TimeOfDay) > 0;
         }
-        
+
         public static void SetRouting_out_path(string TheType)
         {
             string where = "error";
@@ -258,6 +258,7 @@ namespace EDI_DB.Data
         public MySqlTransaction BeginTransaction() { return conn.BeginTransaction(); }
 
         public MySqlCommand CreateCommand() { return conn.CreateCommand(); }
+        public string GetDatabase() { try { return conn.Database; } catch { } return ""; }
 
         // public void Open() { conn.Open(); }
 
@@ -325,6 +326,49 @@ namespace EDI_DB.Data
 
                 MySqlDataReader rd = cmd.ExecuteReader();
                 sdPCursor = rd.Cast<IDataRecord>().ToList();
+                rd.Close();
+            }
+            catch (Exception ex)
+            {
+                DB_RSS.LogData("ERROR: " + ex.Message + NL + ex.ToString() + NL + "SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL + "Connection: " + conn.ConnectionString + NL);
+                sdPCursor = null;
+            }
+            finally
+            {
+                Status_Queries += "HExecuteSQLQuery: SQL: " + slpMySQLQuery + NL + "Params: " + Parameters + NL;
+                Status_Queries += "Connection: " + conn.ConnectionString + NL;
+                Status_Queries += "HExecuteSQLQuery END" + NL;
+            }
+
+            // WIP
+            return sdPCursor;
+        }
+
+        public DataSet HExecuteSQLQueryDataSet(string slpMySQLQuery, Dictionary<string, string> pParams = null)
+        {
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = slpMySQLQuery;
+
+            string Parameters = "";
+
+            DataSet sdPCursor = new DataSet();
+
+            try
+            {
+                if (pParams != null)
+                {
+                    foreach (KeyValuePair<string, string> pParam in pParams)
+                    {
+                        cmd.Parameters.AddWithValue(pParam.Key, pParam.Value);
+                        Parameters += "Key: " + pParam.Key + " Value: " + pParam.Value + NL;
+                    }
+                }
+
+                MySqlDataReader rd = cmd.ExecuteReader();
+                DataTable dt = new DataTable();
+                dt.Load(rd);
+                sdPCursor.Tables.Add(dt);
                 rd.Close();
             }
             catch (Exception ex)

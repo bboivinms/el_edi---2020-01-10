@@ -36,16 +36,15 @@
             this.lblMessage.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblMessage.AutoSize = true;
             this.lblMessage.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMessage.Location = new System.Drawing.Point(52, 42);
+            this.lblMessage.Location = new System.Drawing.Point(32, 23);
             this.lblMessage.Name = "lblMessage";
             this.lblMessage.Size = new System.Drawing.Size(72, 15);
             this.lblMessage.TabIndex = 1;
             this.lblMessage.Text = "unMessage";
-            this.lblMessage.Resize += new System.EventHandler(this.LblMessage_Resize);
             // 
             // gMessageBox
             // 
-            this.ClientSize = new System.Drawing.Size(186, 109);
+            this.ClientSize = new System.Drawing.Size(141, 67);
             this.Controls.Add(this.lblMessage);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;

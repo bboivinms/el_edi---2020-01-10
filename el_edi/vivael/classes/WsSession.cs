@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Forms;
 using static vivael.Globals;
 using static EDI_DB.Data.Base;
+using vivael.forms;
 
 namespace vivael
 {
@@ -86,7 +87,7 @@ namespace vivael
         public object da_per8f { get; set; }
         public object da_per9d { get; set; }
         public object da_per9f { get; set; }
-        public object date_format { get; set; }
+        public string date_format { get; set; }
         public object DBEXPORT { get; set; }
         public object DBIMPORT { get; set; }
         public object DBWHOUSE { get; set; }
@@ -100,7 +101,7 @@ namespace vivael
         public object eco_on { get; set; }
         public object eco_web { get; set; }
         public object email { get; set; }
-        public int email_bcc_self { get; set; }
+        public bool email_bcc_self { get; set; }
         public object FAXCOVER { get; set; }
         public object faxprefix { get; set; }
         public Color fBackColor { get; set; }
@@ -249,7 +250,7 @@ namespace vivael
         public object[] a91over { get; set; }   //9
         public object[,] a_wsmenu { get; set; } //1,5
         public object[] active_bar { get; set; }   //1
-        public object[,] active_form { get; set; }  //1,2
+        public string[,] active_form { get; set; }  //1,2
         public object[,] asemaine { get; set; } //52,2
         public object[,] aweek { get; set; } //52,2
         public object[] dizainef { get; set; }  //9
@@ -267,7 +268,7 @@ namespace vivael
             a91over = new object[9];
             a_wsmenu = new object[1,5];
             active_bar = new object[1];
-            active_form = new object[1,2];
+            active_form = new string[1,2];
             asemaine = new object[52,2];
             aweek = new object[52,2];
             dizainef = new object[9];
@@ -284,25 +285,22 @@ namespace vivael
         public void Init()
         {
             //Initialisation par defaut des couleurs de champs
-            byte[] values = BitConverter.GetBytes(13565944);
-            fBackColor = Color.FromArgb(values[0], values[1], values[2]);
-            fForeColor = Color.FromArgb(0, 0, 0);
-
-            byte[] Bfdisable = BitConverter.GetBytes(15066597);
-            fdisabledBackColor = Color.FromArgb(Bfdisable[0], Bfdisable[1], Bfdisable[2]);
-            fdisabledForeColor = Color.FromArgb(128, 128, 128);
+            fBackColor = IntToColor(13565944);
+            fForeColor = IntToColor(0);  //Color.FromArgb(0, 0, 0);
+            fdisabledBackColor = IntToColor(15066597);
+            fdisabledForeColor = IntToColor(16711680);
             //* Pour les captions
-            LBackColor = Color.FromArgb(192, 192, 192);
-            LForeColor = Color.FromArgb(0, 0, 0);
-            LdisabledBackColor = Color.FromArgb(192, 192, 192);
-            LdisabledForeColor = Color.FromArgb(128, 128, 128);
+            LBackColor = IntToColor(12632256);
+            LForeColor = IntToColor(0);
+            LdisabledBackColor = IntToColor(12632256);  //Color.FromArgb(192, 192, 192);
+            LdisabledForeColor = IntToColor(8421504); //Color.FromArgb(128, 128, 128);
             //* Pour les formes
-            WBackColor = Color.FromArgb(192, 192, 192);
-            WForeColor = Color.FromArgb(0, 0, 0);
+            WBackColor = IntToColor(12632256); //Color.FromArgb(192, 192, 192);
+            WForeColor = IntToColor(0);//Color.FromArgb(0, 0, 0);
             WPicture = "";
             //* Pour les boutons
-            BForeColor = Color.FromArgb(0, 0, 0);
-            BdisabledForeColor = Color.FromArgb(128, 128, 128);
+            BForeColor = IntToColor(0); //Color.FromArgb(0, 0, 0);
+            BdisabledForeColor = IntToColor(8421504); //Color.FromArgb(128, 128, 128);
             //* Pour l'ecran de fond
             sPicture = "WsBack.jpg";
 
@@ -310,119 +308,118 @@ namespace vivael
             NOBRACELET = 'N';
             UserType = "";
 
-            //string FLine;
+            string FLine;
 
-            ////Read the "CONFIG.WS" file to get default directory
-            //if (!File.Exists("CONFIG.WS"))
-            //{
-            //    MESSAGEBOX("CONFIG.WS missing!", 0, "Impossible to start");
-            //    opened = false;
-            //    return;
-            //}
+            //Read the "CONFIG.WS" file to get default directory
+            if (!File.Exists("CONFIG.WS"))
+            {
+                MESSAGEBOX("CONFIG.WS missing!", 0, "Impossible to start");
+                opened = false;
+                return;
+            }
 
-            //System.IO.StreamReader FHandle = new System.IO.StreamReader("CONFIG.WS");
-            //while ((FLine = FHandle.ReadLine()) != null)
-            //{
-            //    // To set the development mode ON
-            //    if (LEFT(FLine, 6) == "DEV=ON")
-            //        Development = true;
+            System.IO.StreamReader FHandle = new System.IO.StreamReader("CONFIG.WS");
+            while ((FLine = FHandle.ReadLine()) != null)
+            {
+                // To set the development mode ON
+                if (LEFT(FLine, 6) == "DEV=ON")
+                    Development = true;
 
-            //    // To set the Terminal server on ou off
-            //    if (LEFT(FLine, 5) == "TS=ON")
-            //        running_terminal_server = true;
+                // To set the Terminal server on ou off
+                if (LEFT(FLine, 5) == "TS=ON")
+                    running_terminal_server = true;
 
-            //    // Basket (Will overwrite what ever in wscie)
-            //    if (LEFT(FLine, 7) == "BASKET=")
-            //        forcedbasket = SUBSTR(FLine, 8);
+                // Basket (Will overwrite what ever in wscie)
+                if (LEFT(FLine, 7) == "BASKET=")
+                    forcedbasket = SUBSTR(FLine, 8);
 
-            //    // Current directory
-            //    if (LEFT(FLine, 9) == "DATAPATH=")
-            //        ciepath = SUBSTR(FLine, 9);
+                // Current directory
+                if (LEFT(FLine, 9) == "DATAPATH=")
+                    ciepath = SUBSTR(FLine, 9);
 
-            //    // Directory for temporary files
-            //    if (LEFT(FLine, 8) == "TMPPATH=")
-            //        tmppath = SUBSTR(FLine, 8);
+                // Directory for temporary files
+                if (LEFT(FLine, 8) == "TMPPATH=")
+                    tmppath = SUBSTR(FLine, 8);
 
-            //    // 1st HELP SCREEN (html)
-            //    if (LEFT(FLine, 7) == "HELP1=")
-            //        help_start_doc = SUBSTR(FLine, 8);
+                // 1st HELP SCREEN (html)
+                if (LEFT(FLine, 7) == "HELP1=")
+                    help_start_doc = SUBSTR(FLine, 8);
 
-            //    // WEB INTERFACE STARTUP PAGE
-            //    if (LEFT(FLine, 7) == "NEWS=")
-            //        news_startup_page = SUBSTR(FLine, 6);
+                // WEB INTERFACE STARTUP PAGE
+                if (LEFT(FLine, 7) == "NEWS=")
+                    news_startup_page = SUBSTR(FLine, 6);
 
-            //    // What do we use for email
-            //    if (LEFT(FLine, 6) == "EMAIL=")
-            //        wich_email = ALLTRIM(SUBSTR(FLine, 7));
+                // What do we use for email
+                if (LEFT(FLine, 6) == "EMAIL=")
+                    wich_email = ALLTRIM(SUBSTR(FLine, 7));
 
-            //    // What do we use for fax
-            //    if (LEFT(FLine, 4) == "FAX=")
-            //        wich_fax = ALLTRIM(SUBSTR(FLine, 5));
+                // What do we use for fax
+                if (LEFT(FLine, 4) == "FAX=")
+                    wich_fax = ALLTRIM(SUBSTR(FLine, 5));
 
-            //    // What do we use for fax COVER PAGE
-            //    if (LEFT(FLine, 9) == "FAXCOVER=")
-            //        FAXCOVER = ALLTRIM(SUBSTR(FLine, 10));
+                // What do we use for fax COVER PAGE
+                if (LEFT(FLine, 9) == "FAXCOVER=")
+                    FAXCOVER = ALLTRIM(SUBSTR(FLine, 10));
 
-            //    // Were is the data warehouse
-            //    if (LEFT(FLine, 9) == "DBWHOUSE=")
-            //        DBWHOUSE = ALLTRIM(SUBSTR(FLine, 10));
+                // Were is the data warehouse
+                if (LEFT(FLine, 9) == "DBWHOUSE=")
+                    DBWHOUSE = ALLTRIM(SUBSTR(FLine, 10));
 
-            //    // If we are in a region
-            //    if (LEFT(FLine, 7) == "REGION=")
-            //        region = ALLTRIM(SUBSTR(FLine, 8));
+                // If we are in a region
+                if (LEFT(FLine, 7) == "REGION=")
+                    region = ALLTRIM(SUBSTR(FLine, 8));
 
-            //    // Were to export data
-            //    if (LEFT(FLine, 9) == "DBEXPORT=")
-            //        DBEXPORT = ALLTRIM(SUBSTR(FLine, 10));
+                // Were to export data
+                if (LEFT(FLine, 9) == "DBEXPORT=")
+                    DBEXPORT = ALLTRIM(SUBSTR(FLine, 10));
 
-            //    // Were is the data to import
-            //    if (LEFT(FLine, 9) == "DBIMPORT=")
-            //        DBIMPORT = ALLTRIM(SUBSTR(FLine, 10));
+                // Were is the data to import
+                if (LEFT(FLine, 9) == "DBIMPORT=")
+                    DBIMPORT = ALLTRIM(SUBSTR(FLine, 10));
 
-            //    // For report in crystal report
-            //    if (LEFT(FLine, 8) == "CRYSTAL=")
-            //        CRYSTAL = ALLTRIM(SUBSTR(FLine, 9));
+                // For report in crystal report
+                if (LEFT(FLine, 8) == "CRYSTAL=")
+                    CRYSTAL = ALLTRIM(SUBSTR(FLine, 9));
 
-            //    // For THE FORM WITH NEWS
-            //    if (LEFT(FLine, 5) == "NEWS=")
-            //        WSNEWSDIR = ALLTRIM(SUBSTR(FLine, 6));
+                // For THE FORM WITH NEWS
+                if (LEFT(FLine, 5) == "NEWS=")
+                    WSNEWSDIR = ALLTRIM(SUBSTR(FLine, 6));
 
-            //    // For the DEPT NO. OF P.O.S.
-            //    if (LEFT(FLine, 5) == "DEPT=")
-            //        DEPT = INT(VAL(ALLTRIM(SUBSTR(FLine, 6))));
+                // For the DEPT NO. OF P.O.S.
+                if (LEFT(FLine, 5) == "DEPT=")
+                    DEPT = INT(VAL(ALLTRIM(SUBSTR(FLine, 6))));
 
-            //    // For the CAISSE NO. OF P.O.S.
-            //    if (LEFT(FLine, 7) == "CAISSE=")
-            //        NOCAISSE = INT(VAL(ALLTRIM(SUBSTR(FLine, 8))));
+                // For the CAISSE NO. OF P.O.S.
+                if (LEFT(FLine, 7) == "CAISSE=")
+                    NOCAISSE = INT(VAL(ALLTRIM(SUBSTR(FLine, 8))));
 
-            //    // COM OF P.O.S POLE.
-            //    if (LEFT(FLine, 9) == "COMMPORT=")
-            //        COMMPORT = INT(VAL(ALLTRIM(SUBSTR(FLine, 10))));
-                
-            //    // P.O.S. Do not use bracelet scanner
-            //    if (LEFT(FLine,10) == "NOBRACELET=")
-            //        NOBRACELET = ALLTRIM(SUBSTR(FLine, 12));
+                // COM OF P.O.S POLE.
+                if (LEFT(FLine, 9) == "COMMPORT=")
+                    COMMPORT = INT(VAL(ALLTRIM(SUBSTR(FLine, 10))));
 
-            //    // Pour print des cheques
-            //    if (LEFT(FLine, 9) == "CHEQUE=")
-            //        CHEQUE = ALLTRIM(SUBSTR(FLine, 8));
-            //}
+                // P.O.S. Do not use bracelet scanner
+                if (LEFT(FLine, 10) == "NOBRACELET=")
+                    NOBRACELET = ALLTRIM(SUBSTR(FLine, 12));
+
+                // Pour print des cheques
+                if (LEFT(FLine, 9) == "CHEQUE=")
+                    CHEQUE = ALLTRIM(SUBSTR(FLine, 8));
+            }
 
             //FHandle.Close();
 
-            //// Ciepath MUST contains the data directory
-            //if (EMPTY(ciepath))
-            //{
-            //    opened = false; // Session cannot go on
-            //    return;
-            //}
-            //else
-            //    opened = true; // Session properly startup
+            // Ciepath MUST contains the data directory
+            if (EMPTY(ciepath))
+            {
+                opened = false; // Session cannot go on
+                return;
+            }
+            else
+                opened = true; // Session properly startup
 
-            //refresh_param(true);
-	         /* IF THIS.Opened = .F.
-		           RETURN
-	          ENDIF*/
+            refresh_param(true);
+            if (opened == false)
+                  return;
         }
 
         //*********************************Méthode du wsswssion*********************************//
@@ -607,6 +604,8 @@ namespace vivael
 
         public void Logon()
         {
+            wsLogin login = new wsLogin(this);
+            login.ShowDialog();
         }
 
         //public void logonbc()
@@ -666,46 +665,45 @@ namespace vivael
 
         public void refresh_param(bool lWorkPer)
         {
-            //List<IDataRecord> WsCie;
+            data_wscie WsCie = new data_wscie();
 
-            //WsCie = DB_VIVA.HExecuteSQLQuery(@"SELECT * FROM wscie order by cie_id asc;");
+            gQuery("SELECT * FROM wscie order by cie_id asc", WsCie, 0, 0, WsCie.isFoxpro);
+            WsCie.LoadRow();
 
-            //if (WsCie.Count > 0)
-            //{
-            //    cie_id = WsCie[0]["Cie_id"];
-            //    ciename = WsCie[0]["Cie_Name"];
-            //    licence = WsCie[0]["Licence"];
-            //    cie_city = WsCie[0]["cie_city"];
-            //    cie_state = WsCie[0]["cie_state"];
-            //    cie_country = WsCie[0]["cie_country"];
-            //    if (ALLTRIM(UserType) != "Accounting" || lWorkPer == true)
-            //    {
-            //        cur_gl_year = WsCie[0]["gl_year"];
-            //        cur_gl_period = WsCie[0]["gl_period"];
-            //        cur_ar_year = WsCie[0]["ar_year"];
-            //        cur_ar_period = WsCie[0]["ar_period"];
-            //        cur_ap_year = WsCie[0]["ap_year"];
-            //        cur_ap_period = WsCie[0]["ap_period"];
+            if (WsCie.RECCOUNT() > 0)
+            {
+                cie_id      = WsCie.Cie_Id;
+                ciename     = WsCie.Cie_Name;
+                licence     = WsCie.Licence;
+                cie_city    = WsCie.Cie_City;
+                cie_state   = WsCie.Cie_State;
+                cie_country = WsCie.Cie_Country;
 
-            //        if (Lloginop == false)
-            //        {
-            //            cur_op_year = WsCie[0]["op_year"];
-            //            cur_op_period = WsCie[0]["op_period"];
-            //        }
+                if (ALLTRIM(UserType) != "Accounting" || lWorkPer == true)
+                {
+                    cur_gl_year   = WsCie.Gl_Year;
+                    cur_gl_period = WsCie.Gl_Period;
+                    cur_ar_year   = WsCie.Ar_Year;
+                    cur_ar_period = WsCie.Ar_Period;
+                    cur_ap_year   = WsCie.Ap_Year;
+                    cur_ap_period = WsCie.Ap_Period;
 
-            //    }
+                    if (Lloginop == false)
+                    {
+                        cur_op_year   = WsCie.Op_Year;
+                        cur_op_period = WsCie.Op_Period;
+                    }
+                }
+            }
+            else
+            {
+                MESSAGEBOX("Undefined company parameters!", 0, "Major problem");
+                opened = false;
+                return;
+            }
 
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Undefined company parameters!", "Major problem");
-            //    opened = false;
-            //    return;
-            //}
-
-            //cur_year = DateTime.Now.Year;//YEAR(DATE());
-
-            //aci_active = true;
+            cur_year = DateTime.Now.Year;//YEAR(DATE());
+            aci_active = true;
         }
 
         public void releasefoxtoolbars()
@@ -758,7 +756,7 @@ namespace vivael
 
         public void shut_form(int? nInstance)
         {
-
+            //WIP
         }
 
         public void shutdown()

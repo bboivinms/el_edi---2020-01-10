@@ -49,6 +49,5 @@ namespace vivael.wscontrols
             this.Enabled = !this.Enabled;
 
         }
-
     }
 }

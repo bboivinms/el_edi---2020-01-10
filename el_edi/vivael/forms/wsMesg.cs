@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace vivael
 {
-    public partial class WsMesg : Form
+    public partial class wsMesg : Form
     {
-        public WsMesg()
+        public wsMesg()
         {
             InitializeComponent();
         }

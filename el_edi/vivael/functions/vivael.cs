@@ -1,8 +1,12 @@
-﻿using System;
+﻿using EDI_RSS;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using vivael.wscontrols;
 
 namespace vivael
 {
@@ -27,15 +31,16 @@ namespace vivael
         public static string gsUserName;
         public static DataSource gsdWsUser;
         public static string gsDatabase = "vivadata4";
+        //public static Vendor vendor = new EDI_RSS.Vendor();
 
-        public static object no_version;
-        public static bool m0frch;
-        public static object m0flat;
-        public static object m0xp;
-        public static object m0xpxcheme;
-        public static bool m0xpscheme; //ADDED_VARIABLE_KJ_2018_06_05 // KJ: 2018-10-03: Foxpro + GoFish: Never set to true
-        public static object m07to8;
-        public static object m0checkdb;
+        public static object no_version = 2019.00;
+        public static bool m0frch = true;           //True for french and false for English
+        public static object m0flat = false;        //&& Lui, il marche en 3D
+        public static object m0xp = false;
+        public static object m0xpxcheme = false;
+        public static bool m0xpscheme = false;      //ADDED_VARIABLE_KJ_2018_06_05 // KJ: 2018-10-03: Foxpro + GoFish: Never set to true
+        public static bool m07to8 = false;
+        public static object m0checkdb = true;
 
         public static WsSession oSession; // oSession = new wssession // automatically creates new
 
@@ -71,8 +76,42 @@ namespace vivael
         public static object blcouriel;
 
         // gwsfield is array<growth=1> of wsfield // Should no longer be needed, was added in order to add properties to textbox in windev
-
         public static int gIPType = 0;
 
+        /// <summary>
+        /// Returns a Color value from a Integer expression.
+        /// </summary>
+        /// <param name="intColor">Specifies a integer expression of a color.</param>
+        /// <returns>Color. IntToColor() returns a Color.</returns>
+        public static Color IntToColor(int intColor)
+        {
+            byte[] byteColor = BitConverter.GetBytes(intColor);
+            return Color.FromArgb(byteColor[0], byteColor[1], byteColor[2]);
+        }
+
+        public static void TranslateForm(Control aContainer)
+        {
+            foreach (Control ctrl in aContainer.Controls)  //Loop through the control
+            {
+                if(ctrl is wsgroupbox || ctrl is Panel)
+                {
+                    TranslateForm(ctrl);
+                }
+
+                if (ctrl is WsControl)
+                {
+                    WsControl control = (WsControl)ctrl;
+                    if (control.Text_EN != null && control.Text_FR != null)
+                        ctrl.Text = IIF(m0frch, control.Text_FR, control.Text_EN);
+                }
+            }
+
+            if (aContainer is WsControl)
+            {
+                WsControl control = (WsControl)aContainer;
+                if (control.Text_EN != null && control.Text_FR != null)
+                    aContainer.Text = IIF(m0frch, control.Text_FR, control.Text_EN);
+            }
+        }
     }
 }

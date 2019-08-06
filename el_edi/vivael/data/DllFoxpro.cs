@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using barcodet;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -8,11 +9,12 @@ namespace vivael
 {
     class DllFoxpro
     {
-        private dynamic fox;
+        //private dynamic fox;
+        private Main fox;
         public DllFoxpro()
         {
-            fox = ComHelper.CreateObject("Foxpro.Main");
-            Directory.SetCurrentDirectory(@"C:\vivael\data");
+             fox = new Main();
+            //fox = ComHelper.CreateObject("Foxpro.Main");
         }
 
         public void do_init()
@@ -30,11 +32,11 @@ namespace vivael
             return fox.HelloWorld();
         }
 
-        public List<IDataRecord> ExecuteQuery(string query, int noRec = 0, int count = 0)
+        public DataSet ExecuteQuery(string query, int noRec = 0, int count = 0)
         {
             DataSet ds = new DataSet();
             ds.ReadXml(new StringReader(fox.ExecuteQuery(query, noRec, count)));
-            return ds.Tables[0].CreateDataReader().Cast<IDataRecord>().ToList();
+            return ds; //ds.Tables[0].CreateDataReader().Cast<IDataRecord>().ToList();  //List<IDataRecord>
         }
     }
 }

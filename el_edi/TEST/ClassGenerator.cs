@@ -64,7 +64,10 @@ namespace TEST
                     type = ConvertSqlType(data_Fields[i]["data_type"].ToString(), data_Fields[i]["is_nullable"].ToString());
                     column_name = Globals.ToTitleCase(data_Fields[i]["column_name"].ToString().ToLower());
 
-                    if(column_name != "Timestamp" && column_name != "Idhash")
+                    if (data_Fields[i]["column_comment"].ToString().Contains("fox_ai"))
+                        template = template.Replace("~#fox_ai#~", column_name);
+
+                    if (column_name != "Timestamp" && column_name != "Idhash")
                     {
                         properties.AppendLine("\t\tprivate " + type + " _" + column_name + "; public " + type + " " + column_name + " { get { return _" + column_name + "; } set { Set(ref _" + column_name + ", value, " + Globals.Q2(column_name) + "); } }");
                     }
@@ -73,6 +76,7 @@ namespace TEST
                 template = template.Replace("\"~#key1#~\"", "null");
                 template = template.Replace("\"~#key2#~\"", "null");
                 template = template.Replace("\"~#key3#~\"", "null");
+                template = template.Replace("~#fox_ai#~", "");
 
                 template = template.Replace("~#properties#~", properties.ToString());
 

@@ -4,7 +4,7 @@ namespace vivael
 {
 	public class data_wsseq : DataSource
 	{
-		public data_wsseq() { Table_name = i.name = "wsseq"; i.primary_1 = "ident"; i.primary_2 = null; i.primary_3 = null; isFoxpro = true; }
+		public data_wsseq() { Table_name = i.name = "wsseq"; i.primary_1 = "ident"; i.primary_2 = null; i.primary_3 = null; isFoxpro = true; Fox_ai = "Ident";}
 
 		private int _Ident; public int Ident { get { return _Ident; } set { Set(ref _Ident, value, "Ident"); } }
 		private string _Tableid; public string Tableid { get { return _Tableid; } set { Set(ref _Tableid, value, "Tableid"); } }

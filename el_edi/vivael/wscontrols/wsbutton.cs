@@ -10,9 +10,10 @@ using System.Windows.Forms;
 
 namespace vivael.wscontrols
 {
-    public partial class wsbutton : Button
+    public partial class wsbutton : Button, WsControl
     {
-        public string State { get; set; }
+        public string Text_EN { get; set; }
+        public string Text_FR { get; set; }
 
         public wsbutton()
         {

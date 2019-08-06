@@ -32,10 +32,9 @@
             // 
             // wsComboBox
             // 
-            this.Name = "wsComboBox";
-            this.Size = new System.Drawing.Size(144, 50);
+            this.Size = new System.Drawing.Size(144, 21);
             this.ResumeLayout(false);
-            this.HandleCreated += Control1_HandleCreated;
+
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using EDI_RSS;
+using System;
 using System.IO;
 using System.Windows.Forms;
 using static EDI_DB.Data.Base;
@@ -25,18 +26,19 @@ namespace TEST
             if (!vendor.Edi_path_after_Setup()) return; //setup connection DB 
             UseSystem = "test";
 
-
+            ClassGenerator.Generate("wsseq");
+            Console.ReadKey();
             //Email810Writer email810 = new Email810Writer("1559678249,74847");
 
             //email810.Build();
 
             //email810.Send();
 
-            Email855Writer email855 = new Email855Writer("1560286398.67263");
+            //Email855Writer email855 = new Email855Writer("1560286398.67263");
 
-            email855.Build();
+            //email855.Build();
 
-            email855.Send();
+            //email855.Send();
 
             //Email856Writer email856 = new Email856Writer("1560187197.61072");
 

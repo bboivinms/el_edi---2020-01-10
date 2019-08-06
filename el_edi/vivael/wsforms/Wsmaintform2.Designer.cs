@@ -2,7 +2,7 @@
 
 namespace vivael
 {
-    partial class Wsmaintform2
+    partial class wsmaintform2
     {
         /// <summary>
         /// Required designer variable.
@@ -30,23 +30,16 @@ namespace vivael
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panel1
-            // 
-            this.panel1.Location = new System.Drawing.Point(560, 0);
-            // 
-            // Wsmaintform2
+            // wsmaintform2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(669, 408);
-            this.Name = "Wsmaintform2";
-            this.Text = "Wsmaintform2";
+            this.ClientSize = new System.Drawing.Size(602, 408);
+            this.Name = "wsmaintform2";
+            this.Text = "wsmaintform2";
             this.Load += new System.EventHandler(this.Wsmaintform2_Load);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }

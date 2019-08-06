@@ -28,7 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // commandbutton
+            // 
+            this.MouseEnter += new System.EventHandler(this.Commandbutton_MouseEnter);
+            this.MouseLeave += new System.EventHandler(this.Commandbutton_MouseLeave);
+            this.ResumeLayout(false);
+
         }
 
         #endregion

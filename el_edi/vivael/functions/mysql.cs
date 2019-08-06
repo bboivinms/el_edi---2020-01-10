@@ -48,7 +48,7 @@ namespace vivael
         public static bool HReadFirst(DataSource sdPCursor, string sOrderBy = "")
         {
             // WIP
-            if (sdPCursor.noCurrent > 0)
+            if (sdPCursor.noCurrent >= 0)
             {
                 gQuery(sdPCursor.MyQuery, sdPCursor, 0, 1, sdPCursor.isFoxpro);
                 sdPCursor.noCurrent = 0;
@@ -242,6 +242,8 @@ namespace vivael
         public static bool HForward(DataSource sdPCursor, string sPFieldName, int iPJumpValue)
         {
             // WIP
+            gQuery(sdPCursor.MyQuery, sdPCursor, iPJumpValue, 1, sdPCursor.isFoxpro);
+            sdPCursor.noCurrent = iPJumpValue;
             return true;
         }
 
@@ -363,7 +365,7 @@ namespace vivael
 
             string datapath;
             //if we are in Debug, set datapath to a default one
-            if (Directory.GetCurrentDirectory() == @"W:\~Programmeurs\~GIT\repos\Rémi\repos\el_edi\el_edi\vivael\bin\Debug")
+            if (Directory.GetCurrentDirectory() == @"C:\Users\Multi-Service\source\repos\el_edi\el_edi\vivael\bin\Debug")
             {
                 datapath = @"C:\Vivael\Data";
                 Directory.SetCurrentDirectory(datapath);
@@ -407,7 +409,7 @@ namespace vivael
         /// <summary>
         ///  Execute a Sql Select query for mysql or foxpro
         /// </summary>
-        public static bool gQuery(string sPQuery, DataSource sdPCursor, int noRec = 0, int count = 0, bool bFoxpro = false)
+        public static DataSet gQuery(string sPQuery, DataSource sdPCursor, int noRec = 0, int count = 0, bool bFoxpro = false)
         {
             string slpMySQLQuery;
 
@@ -425,20 +427,21 @@ namespace vivael
                 {
                     slpMySQLQuery = slpMySQLQuery + " limit " + noRec + ", " + count;
                 }
-                if ((sdPCursor.result = DB_VIVA.HExecuteSQLQuery(slpMySQLQuery)) == null)
+                if ((sdPCursor.ds = DB_VIVA.HExecuteSQLQueryDataSet(slpMySQLQuery)) == null)
                 {
                     glog_error("ERROR SQL" + "SQL Error" + slpMySQLQuery + "data_syorg.constructor");
-
-                    return false;
+                }
+                else
+                {
+                    sdPCursor.result = sdPCursor.ds.Tables[0].CreateDataReader().Cast<IDataRecord>().ToList();
                 }
             }
             else
             {
-                if (!gFoxproSQL(Replace(sPQuery, "~=", "=="), sdPCursor, noRec, count))
+                if ((sdPCursor.ds = gFoxproSQL(Replace(sPQuery, "~=", "=="), sdPCursor, noRec, count)) == null)
                 {
                     glog_error("ERROR DBF" + "DBF Error" + slpMySQLQuery + "data_syorg.constructor");
 
-                    return false;
                 }
 
                 //mysql_foxpro.mysql_status = "xWAITING";
@@ -456,7 +459,7 @@ namespace vivael
                 }
             }
 
-            return true;
+            return sdPCursor.ds;
         }
 
         /// <summary>
@@ -512,7 +515,7 @@ namespace vivael
         {
             if (sPText2 == "WINDOW NOWAIT")
             {
-                MESSAGEBOX(sPText1, 0, "", 1000);
+                gMessageBox gMessage = new gMessageBox("", sPText1, 500);
             }
             else
             {
@@ -539,20 +542,25 @@ namespace vivael
         /// <summary>
         ///  Execute a Foxpro Sql Select query
         /// </summary>
-        public static bool gFoxproSQL(string sPQuery, DataSource sdPCursor, int noRec = 0, int count = 0)
+        public static DataSet gFoxproSQL(string sPQuery, DataSource sdPCursor, int noRec = 0, int count = 0)
         {
             DllFoxpro foxpro = new DllFoxpro();
             sdPCursor.result = null;
             try
             {
-                sdPCursor.result = foxpro.ExecuteQuery(sPQuery, noRec, count);
+                sdPCursor.ds = new DataSet();
+                sdPCursor.ds = foxpro.ExecuteQuery(sPQuery, noRec, count);
+                foreach (DataTable table in sdPCursor.ds.Tables)
+                {
+                    sdPCursor.result = table.CreateDataReader().Cast<IDataRecord>().ToList();
+                }
             }
-            catch
+            catch(Exception e)
             {
-                return false;
+                Console.WriteLine(e.ToString());
             }
             
-            return true;
+            return sdPCursor.ds;
         }
 
         /// <summary>
@@ -762,9 +770,9 @@ namespace vivael
             return true;
         }
 
-        public static List<data_fields_table> GetFields(DataSource sdPTable)
+        public static List<data_fields_table> GetFields(string sdPTable)
         {
-            string sLSQL = "SELECT `TABLE_NAME`, `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_COMMENT`, `COLUMN_KEY`, IS_NULLABLE, primary_1, primary_2, primary_3 FROM `INFORMATION_SCHEMA`.`COLUMNS` LEFT JOIN mysql_proc ON mysql_proc.tablename = " + gQ1(sdPTable.i.name) + " WHERE `TABLE_SCHEMA`=" + gQ1(gsDatabase) + " AND `TABLE_NAME`=" + gQ1(sdPTable.i.name); //+ " ORDER BY COLUMN_NAME ";
+            string sLSQL = "SELECT `TABLE_NAME`, `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_COMMENT`, `COLUMN_KEY`, IS_NULLABLE, primary_1, primary_2, primary_3 FROM `INFORMATION_SCHEMA`.`COLUMNS` LEFT JOIN mysql_proc ON mysql_proc.tablename = " + gQ1(sdPTable) + " WHERE `TABLE_SCHEMA`=" + gQ1(gsDatabase) + " AND `TABLE_NAME`=" + gQ1(sdPTable); //+ " ORDER BY COLUMN_NAME ";
 
             data_fields_table sdPFieldsTable = new data_fields_table();
             gQuery(sLSQL, sdPFieldsTable);
@@ -783,7 +791,7 @@ namespace vivael
 
         public static bool gNext(DataSource sdPCursor)
         {
-            return HReadNext(sdPCursor);  //IsLast(sdPCursor); //!HOut(sdPCursor);
+            return HReadNext(sdPCursor); 
         }
 
         public static bool IsLast(DataSource sdPCursor)
@@ -985,9 +993,71 @@ namespace vivael
             return "";
         }
 
+        public static string gCreateInsert(DataSource sdPTable)
+        {
+            string tablename = sdPTable.i.name;
+            bool isFoxpro = sdPTable.isFoxpro;
+
+            List<data_fields_table> data_Fields = GetFields(tablename);
+
+            string sLSQL = "INSERT INTO " + tablename + " ";  // + gCR();
+
+            string sLColumnNames = "";
+
+            string sLColumnValues = "";
+
+            foreach (data_fields_table fields_table in data_Fields)
+            {
+                string fieldname = Lower(fields_table.column_name);
+                string comment = Lower(fields_table.column_comment);
+                // do not insert idhash, timestamp and fox_ai
+                if (fieldname != "idhash" &&
+                        fieldname != "timestamp" &&
+                        fieldname != "ident_fox" &&
+                        !Contains(Lower(comment), "fox_ai"))
+                {
+
+                    if (sLColumnNames != "")
+                    {
+                        sLColumnNames += ",  "; // + gCR();
+                        sLColumnValues += ",  "; // + gCR();
+                    }
+
+                    
+                    //à mettre dans fonction séparer
+                    if (isFoxpro)
+                    {
+                        sLColumnNames += Lower(fieldname);
+                        sLColumnValues += gFoxproValue(sdPTable.GetColumn(ToTitleCase(fieldname), ""), fields_table.data_type, tablename + "." + fieldname);
+                    }
+                    else
+                    {
+                        sLColumnNames += sdPTable.i.name + "." + Lower(fieldname);
+
+                        if (sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(int) ||
+                            sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(bool) ||
+                            sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(byte) ||
+                            sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(decimal))
+                        {
+                            sLColumnValues += sdPTable.GetColumn(ToTitleCase(fieldname), "");
+                        }
+                        else
+                        {
+                            sLColumnValues += gQ1(sdPTable.GetColumn(ToTitleCase(fieldname), "").ToString());
+                        }
+                    }
+                    //*****************************//
+                }
+
+            }
+
+            return sLSQL + "(" + sLColumnNames + ") VALUES (" + sLColumnValues + ")";
+
+        }
+
         public static string gCreateUpdate(DataSource sdPTable)
         {
-            List<data_fields_table> data_Fields = GetFields(sdPTable);
+            List<data_fields_table> data_Fields = GetFields(sdPTable.i.name);
 
             string sLSQL = "UPDATE " + sdPTable.i.name + " SET  ";// + gCR();
 
@@ -1014,6 +1084,7 @@ namespace vivael
 
                     sLUpdate += sdPTable.i.name + "." + fieldname + " = ";
 
+                    //à mettre dans fonction séparer
                     if (sdPTable.isFoxpro)
                     {
                         sLUpdate += gFoxproValue(sdPTable.GetColumn(ToTitleCase(fieldname), ""), Data.data_type, sdPTable.i.name + "." + fieldname);
@@ -1032,18 +1103,18 @@ namespace vivael
                             sLUpdate += gQ1(sdPTable.GetColumn(ToTitleCase(fieldname), "").ToString());
                         }
                     }
+                    //************************//
                 }
             }
 
-            if (sdPTable.isFoxpro)
-            {
-                //return Replace(sLSQL + sLUpdate + sLWhere, gCR(), ";" + gCR());
-                return sLSQL + sLUpdate + sLWhere;
-            }
-            else
-            {
-                return sLSQL + sLUpdate + sLWhere;
-            }
+            
+            return sLSQL + sLUpdate + sLWhere;
+
+        }
+
+        public static string gCreateDelete(DataSource sdPTable)
+        {
+            return "DELETE FROM " + sdPTable.i.name + gGetWhere(sdPTable);
         }
 
         public static string gGetWhere(DataSource sdPTable, data_fields_table sdLFieldsTable)
@@ -1295,7 +1366,6 @@ namespace vivael
                     //gQuery("UPDATE mysql_proc SET my_update='" + Test.my_update + "' WHERE tablename='" + vLMyTable + "'");
 
                 }
-
             }
 
             Console.ReadKey();
