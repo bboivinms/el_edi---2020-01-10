@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDI_850", "EDI_850\EDI_850.csproj", "{E458CB57-45E3-44E7-B90E-22695CEC5A5C}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEST", "TEST\TEST.csproj", "{44882871-A348-42BD-ACF6-E37840B5B91F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQL_Dll", "MySQL_Dll\MySQL_Dll\MySQL_Dll.csproj", "{389B7C74-3792-4AF6-B482-2C912F1C1B5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vivael", "vivael\vivael.csproj", "{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{389B7C74-3792-4AF6-B482-2C912F1C1B5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{389B7C74-3792-4AF6-B482-2C912F1C1B5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{389B7C74-3792-4AF6-B482-2C912F1C1B5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

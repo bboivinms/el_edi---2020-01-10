@@ -1,0 +1,625 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>vivael</RootNamespace>
+    <AssemblyName>vivael</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.5\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Windows.Forms, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="FlashControlV71, Version=1.0.3187.32366, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="Google.Protobuf, Version=3.8.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Protobuf.3.8.0\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=8.0.17.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.17\lib\net452\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="OptionGropup, Version=1.1.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\OptionGropup.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Presentation" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="classes\wsreport.cs" />
+    <Compile Include="data\basedata_structures.cs" />
+    <Compile Include="data\basedata_tables.cs" />
+    <Compile Include="data\basedata.cs" />
+    <Compile Include="data\ComHelper.cs" />
+    <Compile Include="data\DllFoxpro.cs" />
+    <Compile Include="data\IDataControls.cs" />
+    <Compile Include="forms\ReportPreview.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\ReportPreview.Designer.cs">
+      <DependentUpon>ReportPreview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\VivaMainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\VivaMainWindow.designer.cs">
+      <DependentUpon>VivaMainWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\wsLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsLogin.designer.cs">
+      <DependentUpon>wsLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\wsmuser2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsmuser2.Designer.cs">
+      <DependentUpon>wsmuser2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="functions\foxpro.cs" />
+    <Compile Include="functions\vivael.cs" />
+    <Compile Include="functions\mysql.cs" />
+    <Compile Include="model\data_aempprod.cs" />
+    <Compile Include="model\data_apdisj.cs" />
+    <Compile Include="model\data_apdisjd.cs" />
+    <Compile Include="model\data_appay.cs" />
+    <Compile Include="model\data_appayd.cs" />
+    <Compile Include="model\data_appaygl.cs" />
+    <Compile Include="model\data_appur.cs" />
+    <Compile Include="model\data_appurd.cs" />
+    <Compile Include="model\data_appuri.cs" />
+    <Compile Include="model\data_appurj.cs" />
+    <Compile Include="model\data_appurjd.cs" />
+    <Compile Include="model\data_apsupp.cs" />
+    <Compile Include="model\data_aptyppay.cs" />
+    <Compile Include="model\data_arcashj.cs" />
+    <Compile Include="model\data_arcashjd.cs" />
+    <Compile Include="model\data_arcliass.cs" />
+    <Compile Include="model\data_arclient.cs" />
+    <Compile Include="model\data_arcode.cs" />
+    <Compile Include="model\data_arinv.cs" />
+    <Compile Include="model\data_arinvd.cs" />
+    <Compile Include="model\data_arinvec.cs" />
+    <Compile Include="model\data_arinvgl.cs" />
+    <Compile Include="model\data_arpay.cs" />
+    <Compile Include="model\data_arpayd.cs" />
+    <Compile Include="model\data_arpaygl.cs" />
+    <Compile Include="model\data_arrbudcli.cs" />
+    <Compile Include="model\data_arrep.cs" />
+    <Compile Include="model\data_arslsj.cs" />
+    <Compile Include="model\data_arslsjd.cs" />
+    <Compile Include="model\data_artyppay.cs" />
+    <Compile Include="model\data_a_foxpro_tables.cs" />
+    <Compile Include="model\data_a_mysql_proc.cs" />
+    <Compile Include="model\data_caaction.cs" />
+    <Compile Include="model\data_casubject.cs" />
+    <Compile Include="model\data_cobil.cs" />
+    <Compile Include="model\data_cobili.cs" />
+    <Compile Include="model\data_cocom.cs" />
+    <Compile Include="model\data_cocomi.cs" />
+    <Compile Include="model\data_ecuser.cs" />
+    <Compile Include="model\data_edi_810.cs" />
+    <Compile Include="model\data_edi_810v.cs" />
+    <Compile Include="model\data_edi_810vd.cs" />
+    <Compile Include="model\data_edi_850.cs" />
+    <Compile Include="model\data_edi_855.cs" />
+    <Compile Include="model\data_edi_855v.cs" />
+    <Compile Include="model\data_edi_855vd.cs" />
+    <Compile Include="model\data_edi_856.cs" />
+    <Compile Include="model\data_edi_856v.cs" />
+    <Compile Include="model\data_edi_856vd.cs" />
+    <Compile Include="model\data_eskit.cs" />
+    <Compile Include="model\data_estima.cs" />
+    <Compile Include="model\data_estimad.cs" />
+    <Compile Include="model\data_ffaddr.cs" />
+    <Compile Include="model\data_ffcarrier.cs" />
+    <Compile Include="model\data_ffcontact.cs" />
+    <Compile Include="model\data_ffequip.cs" />
+    <Compile Include="model\data_fffomach.cs" />
+    <Compile Include="model\data_ffmatrice.cs" />
+    <Compile Include="model\data_ffwindow.cs" />
+    <Compile Include="model\data_fhaut.cs" />
+    <Compile Include="model\data_glaccnt.cs" />
+    <Compile Include="model\data_glbudget.cs" />
+    <Compile Include="model\data_glgroupe.cs" />
+    <Compile Include="model\data_glgrrb.cs" />
+    <Compile Include="model\data_glsgrb.cs" />
+    <Compile Include="model\data_gltrans.cs" />
+    <Compile Include="model\data_gltransd.cs" />
+    <Compile Include="model\data_glxtrans.cs" />
+    <Compile Include="model\data_histo.cs" />
+    <Compile Include="model\data_infodetail.cs" />
+    <Compile Include="model\data_infoepreuve.cs" />
+    <Compile Include="model\data_infoheader.cs" />
+    <Compile Include="model\data_ivbchariot.cs" />
+    <Compile Include="model\data_ivcmbroche.cs" />
+    <Compile Include="model\data_ivcmcotrep.cs" />
+    <Compile Include="model\data_ivcocotrep.cs" />
+    <Compile Include="model\data_ivcofermeture.cs" />
+    <Compile Include="model\data_ivcoflute.cs" />
+    <Compile Include="model\data_ivcondentrepo.cs" />
+    <Compile Include="model\data_ivcostyle.cs" />
+    <Compile Include="model\data_ivcotest.cs" />
+    <Compile Include="model\data_ivcotestqte.cs" />
+    <Compile Include="model\data_ivdemtransp.cs" />
+    <Compile Include="model\data_ivdemtranspd.cs" />
+    <Compile Include="model\data_ivenco.cs" />
+    <Compile Include="model\data_ivencolle.cs" />
+    <Compile Include="model\data_ivenconst.cs" />
+    <Compile Include="model\data_ivencotrep.cs" />
+    <Compile Include="model\data_ivenfenetre.cs" />
+    <Compile Include="model\data_ivenformat.cs" />
+    <Compile Include="model\data_iveninter.cs" />
+    <Compile Include="model\data_ivenlabel.cs" />
+    <Compile Include="model\data_ivenouverture.cs" />
+    <Compile Include="model\data_ivenpapier.cs" />
+    <Compile Include="model\data_ivenpg.cs" />
+    <Compile Include="model\data_ivenplastic.cs" />
+    <Compile Include="model\data_ivenpoids.cs" />
+    <Compile Include="model\data_ivenposenc.cs" />
+    <Compile Include="model\data_ivenrabats.cs" />
+    <Compile Include="model\data_iventyprab.cs" />
+    <Compile Include="model\data_iveqadhesif.cs" />
+    <Compile Include="model\data_iveqcotrep.cs" />
+    <Compile Include="model\data_iveqdcore.cs" />
+    <Compile Include="model\data_iveqfinic.cs" />
+    <Compile Include="model\data_iveqfinition.cs" />
+    <Compile Include="model\data_iveqformat.cs" />
+    <Compile Include="model\data_iveqmateriel.cs" />
+    <Compile Include="model\data_ivfabret.cs" />
+    <Compile Include="model\data_ivfacotrep.cs" />
+    <Compile Include="model\data_ivfadiam.cs" />
+    <Compile Include="model\data_ivfajeucolle.cs" />
+    <Compile Include="model\data_ivfapartie.cs" />
+    <Compile Include="model\data_ivfatype.cs" />
+    <Compile Include="model\data_ivjet_prix.cs" />
+    <Compile Include="model\data_ivkit.cs" />
+    <Compile Include="model\data_ivloc.cs" />
+    <Compile Include="model\data_ivlog.cs" />
+    <Compile Include="model\data_ivpack.cs" />
+    <Compile Include="model\data_ivplainte.cs" />
+    <Compile Include="model\data_ivplencre.cs" />
+    <Compile Include="model\data_ivprice.cs" />
+    <Compile Include="model\data_ivpricei.cs" />
+    <Compile Include="model\data_ivprise.cs" />
+    <Compile Include="model\data_ivprix.cs" />
+    <Compile Include="model\data_ivprixd.cs" />
+    <Compile Include="model\data_ivprixdcli.cs" />
+    <Compile Include="model\data_ivprod.cs" />
+    <Compile Include="model\data_ivprodimage.cs" />
+    <Compile Include="model\data_ivprodpalette.cs" />
+    <Compile Include="model\data_ivqty.cs" />
+    <Compile Include="model\data_ivquote.cs" />
+    <Compile Include="model\data_ivquoted.cs" />
+    <Compile Include="model\data_ivtprixnet.cs" />
+    <Compile Include="model\data_ivtrans.cs" />
+    <Compile Include="model\data_ivtype.cs" />
+    <Compile Include="model\data_ivunit.cs" />
+    <Compile Include="model\data_ivwarh.cs" />
+    <Compile Include="model\data_ivxcmprod.cs" />
+    <Compile Include="model\data_ivxcoprod.cs" />
+    <Compile Include="model\data_ivxcoul.cs" />
+    <Compile Include="model\data_ivxenprod.cs" />
+    <Compile Include="model\data_ivxeqprod.cs" />
+    <Compile Include="model\data_ivxfaprod.cs" />
+    <Compile Include="model\data_ivxplprod.cs" />
+    <Compile Include="model\data_ivxposphy.cs" />
+    <Compile Include="model\data_ivxrecto.cs" />
+    <Compile Include="model\data_ivxverso.cs" />
+    <Compile Include="model\data_messortie.cs" />
+    <Compile Include="model\data_minatt.cs" />
+    <Compile Include="model\data_mysql_foxpro.cs" />
+    <Compile Include="model\data_mysql_log.cs" />
+    <Compile Include="model\data_mysql_operation.cs" />
+    <Compile Include="model\data_mysql_proc.cs" />
+    <Compile Include="model\data_popickup.cs" />
+    <Compile Include="model\data_popo.cs" />
+    <Compile Include="model\data_popod.cs" />
+    <Compile Include="model\data_popoi.cs" />
+    <Compile Include="model\data_popoid.cs" />
+    <Compile Include="model\data_popoit.cs" />
+    <Compile Include="model\data_popot.cs" />
+    <Compile Include="model\data_prcalend.cs" />
+    <Compile Include="model\data_prconversion.cs" />
+    <Compile Include="model\data_prdetprod.cs" />
+    <Compile Include="model\data_prdetsuivi.cs" />
+    <Compile Include="model\data_prfsc.cs" />
+    <Compile Include="model\data_prkit.cs" />
+    <Compile Include="model\data_prkithis.cs" />
+    <Compile Include="model\data_projetinfo.cs" />
+    <Compile Include="model\data_projmodule.cs" />
+    <Compile Include="model\data_projpriorite.cs" />
+    <Compile Include="model\data_projstatut.cs" />
+    <Compile Include="model\data_projtype.cs" />
+    <Compile Include="model\data_prphase.cs" />
+    <Compile Include="model\data_prplanif.cs" />
+    <Compile Include="model\data_prprod.cs" />
+    <Compile Include="model\data_prtemps.cs" />
+    <Compile Include="model\data_teitemcar.cs" />
+    <Compile Include="model\data_teitemeti.cs" />
+    <Compile Include="model\data_trrate.cs" />
+    <Compile Include="model\data_trzip.cs" />
+    <Compile Include="model\data_trzone.cs" />
+    <Compile Include="model\data_valeur.cs" />
+    <Compile Include="model\data_valnbr.cs" />
+    <Compile Include="model\data_vwsseq.cs" />
+    <Compile Include="model\data_wbinspec.cs" />
+    <Compile Include="model\data_wsbasket.cs" />
+    <Compile Include="model\data_wscie.cs" />
+    <Compile Include="model\data_wscity.cs" />
+    <Compile Include="model\data_wscountry.cs" />
+    <Compile Include="model\data_wscurr.cs" />
+    <Compile Include="model\data_wscurrate.cs" />
+    <Compile Include="model\data_wsdisplay.cs" />
+    <Compile Include="model\data_wsdoc.cs" />
+    <Compile Include="model\data_wsemail.cs" />
+    <Compile Include="model\data_wsfax.cs" />
+    <Compile Include="model\data_wsfunction.cs" />
+    <Compile Include="model\data_wsgroup.cs" />
+    <Compile Include="model\data_wsholy.cs" />
+    <Compile Include="model\data_wsjobs.cs" />
+    <Compile Include="model\data_wsjobslog.cs" />
+    <Compile Include="model\data_wskeepscn.cs" />
+    <Compile Include="model\data_wslang.cs" />
+    <Compile Include="model\data_wslastprint.cs" />
+    <Compile Include="model\data_wslog.cs" />
+    <Compile Include="model\data_wslongdistance.cs" />
+    <Compile Include="model\data_wslongdistanced.cs" />
+    <Compile Include="model\data_wsmesg.cs" />
+    <Compile Include="model\data_wsmess.cs" />
+    <Compile Include="model\data_wsnotes.cs" />
+    <Compile Include="model\data_wspermis.cs" />
+    <Compile Include="model\data_wspform.cs" />
+    <Compile Include="model\data_wsschem.cs" />
+    <Compile Include="model\data_wsseq.cs" />
+    <Compile Include="model\data_wstax.cs" />
+    <Compile Include="model\data_wstext.cs" />
+    <Compile Include="model\data_wsuser.cs" />
+    <Compile Include="wscontrols\btnroundlrg.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\btnroundlrg.designer.cs">
+      <DependentUpon>btnroundlrg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\btnroundsml.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\btnroundsml.designer.cs">
+      <DependentUpon>btnroundsml.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\commandbutton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\commandbutton.Designer.cs">
+      <DependentUpon>commandbutton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsCheckBox.Designer.cs">
+      <DependentUpon>wsCheckBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsComboBox.Designer.cs">
+      <DependentUpon>wsComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\WsControl.cs" />
+    <Compile Include="wscontrols\wsGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsGrid.Designer.cs">
+      <DependentUpon>wsGrid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsgroupbox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsgroupbox.Designer.cs">
+      <DependentUpon>wsgroupbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wslabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wslabel.Designer.cs">
+      <DependentUpon>wslabel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wslink.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wslink.Designer.cs">
+      <DependentUpon>wslink.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsnumbox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsnumbox.Designer.cs">
+      <DependentUpon>wsnumbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsoptiongroup.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsoptiongroup.Designer.cs">
+      <DependentUpon>wsoptiongroup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wstextbox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wstextbox.Designer.cs">
+      <DependentUpon>wstextbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsbutton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsbutton.Designer.cs">
+      <DependentUpon>wsbutton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\WsToolStripButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\WsToolStripButton.Designer.cs">
+      <DependentUpon>WsToolStripButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\wsToolStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsToolStripMenuItem.Designer.cs">
+      <DependentUpon>wsToolStripMenuItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wsforms\DataMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\DataMenu.Designer.cs">
+      <DependentUpon>DataMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\gMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\gMessageBox.Designer.cs">
+      <DependentUpon>gMessageBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\wsm1permis.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsm1permis.Designer.cs">
+      <DependentUpon>wsm1permis.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="functions\AutoClosingMessageBox.cs" />
+    <Compile Include="wsforms\wsform.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsform.Designer.cs">
+      <DependentUpon>wsform.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wsforms\wsmaintform2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsmaintform2.Designer.cs">
+      <DependentUpon>wsmaintform2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\wsMesg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsMesg.Designer.cs">
+      <DependentUpon>wsMesg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wsforms\wsmaintform4.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsmaintform4.Designer.cs">
+      <DependentUpon>wsmaintform4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wsforms\wsmaintform5.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsmaintform5.Designer.cs">
+      <DependentUpon>wsmaintform5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wsforms\wsModalForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsModalForm.Designer.cs">
+      <DependentUpon>wsModalForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="classes\WsSession.cs" />
+    <Compile Include="wsforms\wsSearchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsSearchForm.Designer.cs">
+      <DependentUpon>wsSearchForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="forms\ReportPreview.resx">
+      <DependentUpon>ReportPreview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\VivaMainWindow.resx">
+      <DependentUpon>VivaMainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\wsLogin.resx">
+      <DependentUpon>wsLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\wsm1permis.resx">
+      <DependentUpon>wsm1permis.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\wsmuser2.resx">
+      <DependentUpon>wsmuser2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="wscontrols\btnroundlrg.resx">
+      <DependentUpon>btnroundlrg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\btnroundsml.resx">
+      <DependentUpon>btnroundsml.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\commandbutton.resx">
+      <DependentUpon>commandbutton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\wsCheckBox.resx">
+      <DependentUpon>wsCheckBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\wsComboBox.resx">
+      <DependentUpon>wsComboBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\wslink.resx">
+      <DependentUpon>wslink.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\wsnumbox.resx">
+      <DependentUpon>wsnumbox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\wsoptiongroup.resx">
+      <DependentUpon>wsoptiongroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\DataMenu.resx">
+      <DependentUpon>DataMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\gMessageBox.resx">
+      <DependentUpon>gMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsform.resx">
+      <DependentUpon>wsform.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsmaintform2.resx">
+      <DependentUpon>wsmaintform2.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsmaintform4.resx">
+      <DependentUpon>wsmaintform4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsmaintform5.resx">
+      <DependentUpon>wsmaintform5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsSearchForm.resx">
+      <DependentUpon>wsSearchForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="barcodet">
+      <Guid>{008F9BE3-4457-418B-A0EA-422A41091272}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="images\BOUT_OFF.png" />
+    <Content Include="images\BOUT_ON1.png" />
+    <Content Include="images\BOUT_ON2.png" />
+    <Content Include="images\BT_GREEN.png" />
+    <Content Include="images\BT_GREY.png" />
+    <Content Include="images\BT_RED.png" />
+    <Content Include="images\Notes.bmp" />
+    <None Include="images\WSBack.jpg" />
+    <None Include="images\SplashTop.jpg" />
+    <None Include="images\show.png" />
+    <None Include="images\hide.png" />
+    <Content Include="images\Navback.bmp" />
+    <Content Include="images\Navbackx.bmp" />
+    <Content Include="images\NavDown.bmp" />
+    <Content Include="images\Navfirst.bmp" />
+    <Content Include="images\Navfirstx.bmp" />
+    <Content Include="images\Navlast.bmp" />
+    <Content Include="images\Navlastx.bmp" />
+    <Content Include="images\Navnext.bmp" />
+    <Content Include="images\Navnextx.bmp" />
+    <Content Include="images\NavUp.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EDICommons\EDICommons.csproj">
+      <Project>{891dcfb2-0d8c-4e2d-9f2f-24d15460ebef}</Project>
+      <Name>EDICommons</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="reports\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
