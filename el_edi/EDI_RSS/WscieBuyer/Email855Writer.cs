@@ -87,12 +87,12 @@ namespace EDI_RSS
                          apsupp.NAME AS apsupp_name, apsupp.ADDR1 AS apsupp_addr1, apsupp.ADDR2 AS apsupp_addr2,
                          apsupp.CITY AS apsupp_city, apsupp.STATE AS apsupp_state, apsupp.ZIP AS apsupp_zip 
                          FROM popo 
-                         INNER JOIN apsupp 
-                         ON apsupp.ident = popo.IDVENDOR
+                         INNER JOIN apsupp ON apsupp.ident = popo.IDVENDOR
                          WHERE popo.ident = ?popo_ident
                         ", Params);
 
-            Htmldoc = Htmldoc.Replace("~#po#~", Data["popo_pono"].ToString());
+            Htmldoc = Htmldoc.Replace("~#popo_pono#~", Data["popo_pono"].ToString());
+            Htmldoc = Htmldoc.Replace("~#popo_clientpo#~", Data["popo_clientpo"].ToString());
 
             if (result.Count > 0)
             {
@@ -151,7 +151,7 @@ namespace EDI_RSS
 
             if (UseSystem == "live" && IDE_status == "send")
             {
-                // msg.To.Add(new MailAddress("emilie@multi-services.org"));
+                msg.To.Add(new MailAddress("emilie@multi-services.org"));
             }
 
             msg.Body = Htmldoc.ToString();

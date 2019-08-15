@@ -44,8 +44,8 @@ namespace EDI_RSS
                 Params.Add("?idvendor", IDvendor.ToString());
                 Params.Add("?filename", filepath);
                 Params.Add("?arinv_invdte", IIF_NULL(XMLNode, "//BIG//BIG01"));
-                Params.Add("?arinv_invno", IIF_NULL(XMLNode, "//BIG//BIG02"));
-                Params.Add("?arinv_po", IIF_NULL(XMLNode, "//BIG//BIG04"));
+                Params.Add("?arinv_invno", IIF_NULL(XMLNode, "//BIG//BIG04"));
+                Params.Add("?arinv_po", IIF_NULL(XMLNode, "//BIG//BIG02"));
                 Params.Add("?arinv_idbil", IIF_NULL(XMLNode, "//TX-00403-810//REF//REF02"));
                 Params.Add("?STname", IIF_NULL(N1Loop1ST, ".//N102"));
                 Params.Add("?STiddel_addr", IIF_NULL(N1Loop1ST, ".//N104"));
@@ -58,6 +58,8 @@ namespace EDI_RSS
                 Params.Add("?arinv_inv_mnt", arinv_inv_mnt.ToString());
                 Params.Add("?programId", program810Id);
                 Params.Add("?Xml810Raw", XMLNode.InnerXml);      //Xml810Raw original
+
+                Fileidentifier = "-INVNO-" + IIF_NULL(XMLNode, "//BIG//BIG04") + "-PO-" + IIF_NULL(XMLNode, "//BIG//BIG02");
 
                 lastInsertedId = DB_VIVA.HExecuteSQLNonQuery(@"
                     INSERT INTO edi_810v (idvendor, filename, arinv_invdte, arinv_invno, arinv_po, arinv_idbil, STname, STiddel_addr, STaddr1, STaddr2, STcity, STstate, STzip, arinv_inv_mnt, programId, Xml810Raw)

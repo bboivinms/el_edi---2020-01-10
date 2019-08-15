@@ -1,4 +1,5 @@
 ﻿using static vivael.Globals;
+using MySQL_Dll;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +18,21 @@ namespace vivael
 {
     static class Program
     {
+        private static MySQL_Dll.Main pMySQL_Dll = new MySQL_Dll.Main();
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            gConnect(); //Connect to DB with datapath
+            pMySQL_Dll.Load_DB("", @"D:\Vivael\Data");
+            gCreateFoxMysql_proc();
+            // StartFoxproForm();
+        }
+
+        static public void StartFoxproForm()
+        {
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

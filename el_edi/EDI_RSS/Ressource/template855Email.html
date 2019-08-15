@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+﻿<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
 <html xmlns='http://www.w3.org/1999/xhtml'>
 	<head>
 		<meta http-equiv='Content-Type' content='text/html; charset=utf-8'><meta http-equiv='Content-Language' content='fr-ca'>
@@ -28,13 +28,14 @@
 			.message { Margin: 0; text-align: center; width: 100%;}
 			.right { text-align: right;}
 		</style>
-		<table cellpadding="0" cellspacing="0" border="0"> 
+		<table width='730px' cellpadding="0" cellspacing="0" border="0"> 
 		<tr> 
 			<table width='730px' cellpadding="0" cellspacing="0" border="0">
-				<tr>
-					<td width='64%' align='left'>~#vendorAddress#~</td>
-					<td><b> CONFIRMATION DE COMMANDE /<br>ORDER CONFIRMATION</b></td>
-				</tr>
+                <tr>
+                    <td width='55%' align='left'>~#vendorAddress#~</td>
+                    <td width='35%' ><b> CONFIRMATION DE COMMANDE /<br />ORDER CONFIRMATION</b></td>
+                    <td width='10%' align='right'><b> # ~#popo_pono#~</b></td>
+                </tr>
 			</table>
 
 			<table>
@@ -44,7 +45,7 @@
 				
 				<tr>
 					<td class='notes' width='232px'>
-						<b>Votre # de comm. / Your Order #</b><p class='numberNote'>~#po#~</p>
+						<b>Votre # de comm. / Your Order #</b><p class='numberNote'>~#popo_clientpo#~</p>
 					</td>
 					<td class='notes' width='280px'>
 						<b>Date Commande / Purchase order Date</b><p class='numberNote'>~#orderDate#~</p>

@@ -25,8 +25,9 @@ namespace MySQL_Dll
         // Should be loaded with datapath upon declaration
         public void Load_DB(string datapath, string default_value = "")
         {
-            Get_DB_VIVA(datapath, default_value);
+            if(datapath == ""){ datapath = Directory.GetCurrentDirectory(); }
 
+            Get_DB_VIVA(datapath, default_value);
 
             Startup = true;
         }
@@ -234,10 +235,17 @@ namespace MySQL_Dll
             DB_RSS = new CDB_RSS(vendor.SetupRSS("rss_bus"));
 
             //avec le datapath, on connect avec la bonne DB
-            gIDataEdi_path = GetIDedi_path(gRss_datapath);
+            if ((gIDataEdi_path = GetIDedi_path(gRss_datapath)) == null)
+            {
+                // Update gRss_datapath to default value, and try again
+                gIDataEdi_path = GetIDedi_path(gRss_datapath = default_value);
+                
+                Status += $"MySQL_DLL: Main: datapath: default_value used: {gRss_datapath + NL}";
+            }
 
             if (gIDataEdi_path == null) return default_value; //setup connection DB 
 
+            Directory.SetCurrentDirectory(gRss_datapath);
             vendor.After_Setup();
 
             return gIDataEdi_path["edi_db_viva"].ToString(); 

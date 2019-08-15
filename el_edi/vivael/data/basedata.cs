@@ -75,14 +75,18 @@ namespace vivael
         public bool SetProperty(string PropertyName, object PropertyValue)
         {
             try   {
+                object test = GetType().GetProperty(PropertyName);
+
                 Type type = GetType().GetProperty(PropertyName).PropertyType;
 
                 if (type == typeof(int) || type == typeof(int?))
                 {
+                    if (PropertyValue == DBNull.Value) PropertyValue = 0;
                     PropertyValue = int.Parse(PropertyValue.ToString());
                 }
                 else if (type == typeof(decimal) || type == typeof(decimal?))
                 {
+                    if (PropertyValue == DBNull.Value) PropertyValue = 0;
                     PropertyValue = decimal.Parse(PropertyValue.ToString());
                 }
                 else if (type == typeof(byte) || type == typeof(byte?))
@@ -91,12 +95,23 @@ namespace vivael
                 }
                 else if (type == typeof(bool) || type == typeof(bool?))
                 {
+                    if (PropertyValue == DBNull.Value) PropertyValue = false;
                     PropertyValue = Convert.ToBoolean(PropertyValue);
+                }
+                else if (type == typeof(string))
+                {
+                    if(PropertyValue == DBNull.Value) PropertyValue = "";
                 }
 
                 GetType().GetProperty(PropertyName).SetValue(this, PropertyValue);
             }
-            catch { return false; } return true;
+            catch (Exception ex)
+            {
+                string msg = ex.ToString();
+                return false;
+
+            }
+            return true;
         }
 
         public void Set<T>(ref T field, T value, string propertyName)
@@ -141,7 +156,7 @@ namespace vivael
 
                 for (int i = 0; i < count; i++)
                 {
-                    name = DataRecord.GetName(i).ToLower();
+                    name = ToTitleCase(DataRecord.GetName(i).ToLower());
                     this[name] = DataRecord[name];
                 }
             }

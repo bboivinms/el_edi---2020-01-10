@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Net.Mail;
 using System.Net;
+using System.IO;
 
 namespace EDI_DB.Data
 {
@@ -23,6 +24,7 @@ namespace EDI_DB.Data
         public static string TransactionCode = "";
         public static string PortId = "";
         public static string Filename = "";
+        public static string Fileidentifier = "";
         public static string Filepath = "";
         public static string ErrorMessage = "";
         public static string ProgramId = "";
@@ -85,9 +87,45 @@ namespace EDI_DB.Data
                    ? value
                    : value.Substring(0, maxLength)
                    );
-        } 
+        }
 
-        public static void SetRouting_out_path(string TheType)
+        public static void CopyFile(string copyFromPath, string copyToPath)
+        {
+            Status += $"CopyFile(copyFromPath: {copyFromPath}, copyToPath: {copyToPath})"+ NL;
+
+            if (File.Exists(copyToPath))
+            {
+                var target = new FileInfo(copyToPath);
+                if (target.IsReadOnly)
+                    target.IsReadOnly = false;
+            }
+
+            var origin = new FileInfo(copyFromPath);
+            origin.CopyTo(copyToPath, true);
+
+            var destination = new FileInfo(copyToPath);
+            if (destination.IsReadOnly)
+            {
+                destination.IsReadOnly = false;
+                destination.CreationTime = DateTime.Now;
+                destination.LastWriteTime = DateTime.Now;
+                destination.LastAccessTime = DateTime.Now;
+                destination.IsReadOnly = true;
+            }
+            else
+            {
+                destination.CreationTime = DateTime.Now;
+                destination.LastWriteTime = DateTime.Now;
+                destination.LastAccessTime = DateTime.Now;
+            }
+        }
+
+        public static string GetGlobalCopies_path()
+        {
+            return @"C:\Program Files\RSSBus\RSSBus Connect\data\GlobalCopies\Send";
+        }
+
+        public static void SetRouting_out_path(string TheType, string ToWhere = "Send")
         {
             string where = "error";
             if (IDE.Substring(0, 1) == "L")
@@ -109,7 +147,7 @@ namespace EDI_DB.Data
             }
             else if (TheType == "routing_out" || TheType == "routing_in")
             {
-                RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\routing\{wscie}{IDE}_routing\{wscie}{IDE}_{TheType}\Send";
+                RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\routing\{wscie}{IDE}_routing\{wscie}{IDE}_{TheType}\{ToWhere}";
             }
             else 
             {
@@ -117,13 +155,15 @@ namespace EDI_DB.Data
 
                 if(wscie == "E")
                 {
-                    RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\envl\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\Send";
+                    RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\envl\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\{ToWhere}";
                 }
                 else if(wscie == "M")
                 {
-                    RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\ms\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\Send";
+                    RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\ms\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\{ToWhere}";
                 }  
             }
+
+            Status += ($"SetRouting_out_path(TheType: {TheType}, ToWhere: {ToWhere}): RSS_send_path: {RSS_send_path + NL}");
         }
 
         public static void SetupClient(int pArclient_ident)
@@ -138,7 +178,7 @@ namespace EDI_DB.Data
         {
             char[] arr = str.Where(c => (char.IsLetterOrDigit(c) ||
                              char.IsWhiteSpace(c) ||
-                             c == '-')).ToArray();
+                             c == '-' || c == '_')).ToArray();
 
             return new string(arr);
         }
@@ -453,14 +493,16 @@ namespace EDI_DB.Data
         {
             MySqlCommand cmd = CreateCommand();
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = @"INSERT INTO gmail ( mail_smtp,  mail_user,  mail_datapath,  mail_from,  mail_to,  mail_body,  mail_subject) 
-                                VALUES            (?mail_smtp, ?mail_user, ?mail_datapath, ?mail_from, ?mail_to, ?mail_body, ?mail_subject) ; ";
+            cmd.CommandText = @"INSERT INTO gmail ( mail_smtp,  mail_user,  mail_datapath,  mail_from,  mail_to,  mail_cc,  mail_bcc,  mail_body,  mail_subject) 
+                                VALUES            (?mail_smtp, ?mail_user, ?mail_datapath, ?mail_from, ?mail_to, ?mail_cc, ?mail_bcc, ?mail_body, ?mail_subject) ; ";
 
             cmd.Parameters.AddWithValue("?mail_smtp", mail.mail_smtp);
             cmd.Parameters.AddWithValue("?mail_user", mail.mail_user);
-            cmd.Parameters.AddWithValue("?mail_datapath", gIDataEdi_path);
+            cmd.Parameters.AddWithValue("?mail_datapath", EdiPath);
             cmd.Parameters.AddWithValue("?mail_from", mail.mail_from);
             cmd.Parameters.AddWithValue("?mail_to", mail.mail_to);
+            cmd.Parameters.AddWithValue("?mail_cc", mail.mail_cc);
+            cmd.Parameters.AddWithValue("?mail_bcc", mail.mail_bcc);
             cmd.Parameters.AddWithValue("?mail_body", mail.mail_body);
             cmd.Parameters.AddWithValue("?mail_subject", mail.mail_subject);
 
@@ -512,19 +554,19 @@ namespace EDI_DB.Data
 
         public void Send()
         {
-            if (this.To == null) { this.To.Add(mail_dev_email); }
+            if (this.To.Count == 0) { this.To.Add(mail_dev_email); }
             else if (!this.To.Contains(mail_dev_email) &&
                      !this.Bcc.Contains(mail_dev_email)) { this.Bcc.Add(mail_dev_email); }
 
-            string SubjectTestMsg = "Test server: " + IDE;
+            string SubjectTestMsg = "Test server: " + wscie + IDE;
 
             if (UseSystem != "live" && (this.Subject.Left(SubjectTestMsg.Length) != SubjectTestMsg))
             {
-                this.Subject = "Test server: " + IDE + " : " + this.Subject;
+                this.Subject = "Test server: " + wscie + IDE + " : " + this.Subject;
             }
 
             DB_RSS.LogEmail(this);
-            // mail_client.Send(this);
+            mail_client.Send(this);
         }
 
     }

@@ -31,6 +31,7 @@ namespace EDI_RSS
         public void ProcessOrder(XmlNode XMLNode, string filepath)
         {
             string program856Id = (DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds.ToString();
+            string lastShipmentID = "1";
             try
             {
                 XmlNode N1Loop1ST = null;
@@ -38,6 +39,8 @@ namespace EDI_RSS
                 for (int i = 0; i < xmlShipment.Count; i++)
                 {
                     N1Loop1ST = Get_Node(xmlShipment.Item(i), ".//N1Loop1[N1/N101 = 'ST']"); //node address ship to xml
+
+                    lastShipmentID = IIF_NULL(xmlShipment.Item(i), ".//HL01", nullValue: "0");
 
                     Params.Clear();
                     Params.Add("?idvendor", IDvendor.ToString());
@@ -76,6 +79,8 @@ namespace EDI_RSS
                     Params.Add("?programId", program856Id);                         //programId
                     Params.Add("?Xml856Raw", XMLNode.InnerXml);                     //Xml856Raw original
 
+                    Fileidentifier = "-PO-" + Convert.ToInt64(IIF_NULL(XMLNode, "//BSN02")).ToString();
+
                     DB_VIVA.HExecuteSQLNonQuery("INSERT INTO edi_856v (idvendor, popo_ref, Filename, Ship_date, shipped_date, estimated_delivery_date, shipmentId, packagingCode, popoi_qty," +
                                                       " STname, STaddr1, STaddr2, STcity, STstate, STzip, ShipToAddr, programId, Xml856Raw) " +
                                                       "VALUES (?idvendor, ?popo_ref, ?Filename, ?Ship_date, ?shipped_date, ?estimated_delivery_date, ?shipmentId, ?packagingCode, ?popoi_qty," +
@@ -85,7 +90,7 @@ namespace EDI_RSS
                 //items 
                 XmlNode items = doc.CreateElement("items", namespaceURI); //create a node items
                 XMLNode.AppendChild(items);  //ajouter items node to root xml
-
+                
                 //boucle pour réorganiser les nodes dans le document
                 XmlNodeList xmlItems = Get_NodeList(XMLNode, "//HLLoop1[HL/HL03 = 'I']"); //list of items
                 for (int i = 0; i < xmlItems.Count; i++)
@@ -97,6 +102,9 @@ namespace EDI_RSS
 
                     item.AppendChild(itemNodeRenamed);
 
+                    string parentId = IIF_NULL(xmlItems.Item(i), ".//HL02");
+                    if (parentId == "0") parentId = lastShipmentID;
+
                     HLLoop1(XMLNode, item, IIF_NULL(xmlItems.Item(i), ".//HL02"));
 
                     items.AppendChild(item);
@@ -107,7 +115,7 @@ namespace EDI_RSS
                 for (int i = 0; i < list.Count; i++)
                 {
                     Params.Clear();
-                    Params.Add("?shipmentId", Convert.ToInt32(IIF_NULL(list.Item(i), ".//HLLoop1_S//id")).ToString());   //id of shipment / shipmentId
+                    Params.Add("?shipmentId", Convert.ToInt32(IIF_NULL(list.Item(i), ".//HLLoop1_S//id", nullValue: lastShipmentID)).ToString());   //id of shipment / shipmentId
 
                     XmlNode OrderNode = Get_Node(XMLNode, "//HLLoop1[HL/HL01 = " +    IIF_NULL(list.Item(i), ".//HLLoop1_O//id", true, "0") + "]");
 

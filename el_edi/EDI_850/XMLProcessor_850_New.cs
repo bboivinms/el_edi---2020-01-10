@@ -247,6 +247,8 @@ namespace EDI_850
 
                         cmd.Parameters.AddWithValue("?edi_email_internal", eb.InternalEmailBody);
 
+                        Fileidentifier = "-PO-" + r.Order.Number;
+
                         if (cmd.ExecuteNonQuery() != 1)
                         {
                             tr.Rollback();

@@ -51,9 +51,8 @@
     <Reference Include="MySql.Data, Version=8.0.17.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.8.0.17\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="OptionGropup, Version=1.1.0.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\OptionGropup.dll</HintPath>
+    <Reference Include="OptionGropup">
+      <HintPath>..\bin\Debug\OptionGropup.dll</HintPath>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
@@ -573,17 +572,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="barcodet">
-      <Guid>{008F9BE3-4457-418B-A0EA-422A41091272}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="images\BOUT_OFF.png" />
     <Content Include="images\BOUT_ON1.png" />
     <Content Include="images\BOUT_ON2.png" />
@@ -617,9 +605,24 @@
       <Project>{891dcfb2-0d8c-4e2d-9f2f-24d15460ebef}</Project>
       <Name>EDICommons</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MySQL_Dll\MySQL_Dll\MySQL_Dll.csproj">
+      <Project>{389b7c74-3792-4af6-b482-2c912f1c1b5a}</Project>
+      <Name>MySQL_Dll</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="reports\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="barcodet">
+      <Guid>{008F9BE3-4457-418B-A0EA-422A41091272}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

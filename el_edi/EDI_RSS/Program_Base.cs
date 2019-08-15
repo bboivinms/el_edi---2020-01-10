@@ -297,6 +297,14 @@ namespace EDI_RSS
                     proc856.ProcessOrder(root, Filepath);
                 }
 
+                Filename = $"{wscie}{IDE}-Routing-IN-{IDpartner.ToString().PadLeft(5, '0')}-{edi_doc_number}-{ToAlphaNumeric(Fileidentifier)}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}.xml";
+
+                Status += "Filename: " + Filename + NL;
+                
+                CopyFile(Filepath, Path.Combine(GetGlobalCopies_path(), Filename));
+
+                // File.Copy(Filepath, Path.Combine(RSS_send_path, Filename));
+
             } //if send or create
 
             return true;

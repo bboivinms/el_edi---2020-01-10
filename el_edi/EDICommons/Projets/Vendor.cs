@@ -78,10 +78,12 @@ namespace EDI_RSS
             wscie = PortId_code.Substring(0, 1);
             IDE = PortId_code.Substring(1, 2);
 
+            UseSystem = IDE == "LE" ? "live" :
+                       (IDE == "TL" ? "local" : "test");
+
             if (gIDataEdi_path["edi_code"].ToString().Substring(0, 1).ToUpper() == "E") vendor.SubVendor = new Vendor_EL();
             if (gIDataEdi_path["edi_code"].ToString().Substring(0, 1).ToUpper() == "M") vendor.SubVendor = new Vendor_MS();
 
-            
             EdiPath = gIDataEdi_path["edi_path"].ToString();
 
             vendor.SetupViva(DB_VIVA_name);
