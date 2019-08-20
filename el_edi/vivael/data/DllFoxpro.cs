@@ -32,6 +32,11 @@ namespace vivael
             return fox.HelloWorld();
         }
 
+        public void WsInit(string pTable)
+        {
+            fox.WsInit(pTable);
+        }
+
         public DataSet ExecuteQuery(string query, int noRec = 0, int count = 0)
         {
             DataSet ds = new DataSet();

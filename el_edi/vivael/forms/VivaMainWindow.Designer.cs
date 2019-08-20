@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VivaMainWindow));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
+            this.HiddenLink = new System.Windows.Forms.LinkLabel();
             this.toolStripButton1 = new vivael.wscontrols.WsToolStripButton();
             this.toolStripButton2 = new vivael.wscontrols.WsToolStripButton();
             this.toolStripButton3 = new vivael.wscontrols.WsToolStripButton();
@@ -41,7 +42,7 @@
             this.toolStripButton4 = new vivael.wscontrols.WsToolStripButton();
             this.toolStripButton10 = new vivael.wscontrols.WsToolStripButton();
             this.toolStripButton9 = new vivael.wscontrols.WsToolStripButton();
-            this.wsToolStripButton1 = new vivael.wscontrols.WsToolStripButton();
+            this.btnTest = new vivael.wscontrols.WsToolStripButton();
             this.fileMenu = new vivael.wscontrols.wsToolStripMenuItem();
             this.btn_rechercheRapide = new vivael.wscontrols.wsToolStripMenuItem();
             this.btn_exportDesProduits = new vivael.wscontrols.wsToolStripMenuItem();
@@ -60,6 +61,11 @@
             this.systemesMenu = new vivael.wscontrols.wsToolStripMenuItem();
             this.administrationMenu = new vivael.wscontrols.wsToolStripMenuItem();
             this.btn_utilisateurs = new vivael.wscontrols.wsToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.messageStandardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.employéProductionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.représentantsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.typeDePaiementpayableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aideMenu = new vivael.wscontrols.wsToolStripMenuItem();
             this.btn_aPropos = new vivael.wscontrols.wsToolStripMenuItem();
             this.menuStrip.SuspendLayout();
@@ -101,12 +107,19 @@
             this.toolStripButton4,
             this.toolStripButton10,
             this.toolStripButton9,
-            this.wsToolStripButton1});
+            this.btnTest});
             this.toolStrip.Location = new System.Drawing.Point(0, 24);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(1127, 25);
             this.toolStrip.TabIndex = 1;
             this.toolStrip.Text = "ToolStrip";
+            // 
+            // HiddenLink
+            // 
+            this.HiddenLink.Location = new System.Drawing.Point(0, 0);
+            this.HiddenLink.Name = "HiddenLink";
+            this.HiddenLink.Size = new System.Drawing.Size(100, 23);
+            this.HiddenLink.TabIndex = 0;
             // 
             // toolStripButton1
             // 
@@ -218,17 +231,17 @@
             this.toolStripButton9.Text_EN = "Transport request";
             this.toolStripButton9.Text_FR = "Dem. transport";
             // 
-            // wsToolStripButton1
+            // btnTest
             // 
-            this.wsToolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.wsToolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("wsToolStripButton1.Image")));
-            this.wsToolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.wsToolStripButton1.Name = "wsToolStripButton1";
-            this.wsToolStripButton1.Size = new System.Drawing.Size(63, 22);
-            this.wsToolStripButton1.Text = "Test Form";
-            this.wsToolStripButton1.Text_EN = "Test Form";
-            this.wsToolStripButton1.Text_FR = "Test Form";
-            this.wsToolStripButton1.Click += new System.EventHandler(this.WsToolStripButton1_Click);
+            this.btnTest.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnTest.Image = ((System.Drawing.Image)(resources.GetObject("btnTest.Image")));
+            this.btnTest.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(61, 22);
+            this.btnTest.Text = "Test form";
+            this.btnTest.Text_EN = "Test form";
+            this.btnTest.Text_FR = "Test form";
+            this.btnTest.Click += new System.EventHandler(this.BtnTest_Click);
             // 
             // fileMenu
             // 
@@ -357,7 +370,12 @@
             // systemesMenu
             // 
             this.systemesMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.administrationMenu});
+            this.administrationMenu,
+            this.toolStripSeparator1,
+            this.messageStandardToolStripMenuItem,
+            this.employéProductionToolStripMenuItem,
+            this.représentantsToolStripMenuItem,
+            this.typeDePaiementpayableToolStripMenuItem});
             this.systemesMenu.Name = "systemesMenu";
             this.systemesMenu.Size = new System.Drawing.Size(63, 20);
             this.systemesMenu.Text = "Système";
@@ -369,7 +387,7 @@
             this.administrationMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btn_utilisateurs});
             this.administrationMenu.Name = "administrationMenu";
-            this.administrationMenu.Size = new System.Drawing.Size(153, 22);
+            this.administrationMenu.Size = new System.Drawing.Size(225, 22);
             this.administrationMenu.Text = "&Administration";
             this.administrationMenu.Text_EN = "&Administration";
             this.administrationMenu.Text_FR = "&Administration";
@@ -382,6 +400,36 @@
             this.btn_utilisateurs.Text_EN = "Users";
             this.btn_utilisateurs.Text_FR = "Utilisateurs";
             this.btn_utilisateurs.Click += new System.EventHandler(this.Btn_utilisateurs_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(222, 6);
+            // 
+            // messageStandardToolStripMenuItem
+            // 
+            this.messageStandardToolStripMenuItem.Name = "messageStandardToolStripMenuItem";
+            this.messageStandardToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.messageStandardToolStripMenuItem.Text = "Message standard";
+            // 
+            // employéProductionToolStripMenuItem
+            // 
+            this.employéProductionToolStripMenuItem.Name = "employéProductionToolStripMenuItem";
+            this.employéProductionToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.employéProductionToolStripMenuItem.Text = "Employé production";
+            // 
+            // représentantsToolStripMenuItem
+            // 
+            this.représentantsToolStripMenuItem.Name = "représentantsToolStripMenuItem";
+            this.représentantsToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.représentantsToolStripMenuItem.Text = "Représentants";
+            this.représentantsToolStripMenuItem.Click += new System.EventHandler(this.ReprésentantsToolStripMenuItem_Click);
+            // 
+            // typeDePaiementpayableToolStripMenuItem
+            // 
+            this.typeDePaiementpayableToolStripMenuItem.Name = "typeDePaiementpayableToolStripMenuItem";
+            this.typeDePaiementpayableToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.typeDePaiementpayableToolStripMenuItem.Text = "Type de paiement (payables)";
             // 
             // aideMenu
             // 
@@ -411,11 +459,13 @@
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip;
             this.Name = "VivaMainWindow";
-            this.Text = "VIVA ENVELOPPE LAURENTIDE";
+            this.Text = "C# VIVA ENVELOPPE LAURENTIDE";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.VivaMainWindow_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.VivaMainWindow_KeyDown);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
@@ -459,7 +509,12 @@
         private wscontrols.wsToolStripMenuItem administrationMenu;
         private wscontrols.wsToolStripMenuItem btn_utilisateurs;
         private wscontrols.wsToolStripMenuItem btn_aPropos;
-        private wscontrols.WsToolStripButton wsToolStripButton1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem représentantsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem messageStandardToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem employéProductionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem typeDePaiementpayableToolStripMenuItem;
+        private wscontrols.WsToolStripButton btnTest;
     }
 }
 

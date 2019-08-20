@@ -10,12 +10,15 @@ using System.Windows.Forms;
 
 namespace vivael.wscontrols
 {
-    public partial class commandbutton : Button
+    public partial class Commandbutton : Button, WsControl
     {
+        public string Text_EN { get; set; }
+        public string Text_FR { get; set; }
+
         public string ToolTipText { get; set; }
         ToolTip btn_toolTip;
 
-        public commandbutton()
+        public Commandbutton()
         {
             InitializeComponent();
             btn_toolTip = new ToolTip();

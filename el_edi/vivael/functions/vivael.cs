@@ -3,9 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using vivael.classes;
+using vivael.forms;
 using vivael.wscontrols;
 
 namespace vivael
@@ -40,40 +43,51 @@ namespace vivael
         public static object m0xpxcheme = false;
         public static bool m0xpscheme = false;      //ADDED_VARIABLE_KJ_2018_06_05 // KJ: 2018-10-03: Foxpro + GoFish: Never set to true
         public static bool m07to8 = false;
-        public static object m0checkdb = true;
+        public static bool m0checkdb = false;
 
         public static WsSession oSession; // oSession = new wssession // automatically creates new
+        public static wsPrintForm oPrintForm;
+        public static VivaMainWindow menu;
 
         public static object oReindexer;
         public static object oVivaSoft;
         public static object MySQL_lnHandle;
         public static object gidclient;
-        public static object gmd5;
-        public static object tv;
-        public static object trfval;
-        public static object loc;
+        public static object gmd5; //CREATEOBJECT("MD5")
         public static object idproduit;
 
-        public static object wMyLog;
-        public static object wMyErrorLog;
-        public static object MySQLError;
-        public static object MySQLExpectedCount;
-        public static object mySQLActualCount;
+        //mysql
+        public static object wMyLog = "";
+        public static object wMyErrorLog = "";
+        public static object MySQLError = "";
+        public static object MySQLExpectedCount = 0;
+        public static object mySQLActualCount = 0;
+        public static object iswebemail = false;
 
-        public static object wMyLog2;
-        public static object wMyErrorLog2;
-        public static object MySQLError2;
-        public static object MySQLExpectedCount2;
-        public static object mySQLActualCount2;
-        public static object MySQL_lnHandle2;
+        public static object MySQL_lnHandle2 = 0;
+        public static object wMyLog2 = "";
+        public static object wMyErrorLog2 = "";
+        public static object MySQLError2 = "";
+        public static object MySQLExpectedCount2 = 0;
+        public static object mySQLActualCount2 = 0;
+        public static object MYSQL_LNHANDLE_IS_BOOL2 = false;
+        public static object tv = false;
+        public static object trfval = 0;
+        public static object loc = "";
+        public static object vmaint = "";
+
         public static object glastattempt;
-        public static object MYSQL_LNHANDLE_IS_BOOL2;
-        public static object pArRep;
-        public static object pArLimited;
+        public static int pArRep = 0; //&& For users that are rep, this is their rep id
+        public static object pArLimited = false; //&& The user is limited to his own accounts
+        public static object lset_menu = false;
         public static object lcDatabase;
-        public static object iswebemail;
+
+        public static SmtpClient loSmtp = new SmtpClient("smtp-mail.outlook.com");
         public static object lcimp;
         public static object blcouriel;
+        public static object lastInsertId;
+        public static bool isPompoThere = false;
+        public static bool gCancelEmail = true;
 
         // gwsfield is array<growth=1> of wsfield // Should no longer be needed, was added in order to add properties to textbox in windev
         public static int gIPType = 0;
@@ -112,6 +126,61 @@ namespace vivael
                 if (control.Text_EN != null && control.Text_FR != null)
                     aContainer.Text = IIF(m0frch, control.Text_FR, control.Text_EN);
             }
+        }
+
+        public static object GetForm(string FormName)
+        {
+            var _formName = (from t in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
+                             where t.Name.Equals(FormName)
+                             select t.FullName).Single();
+            object _form = Activator.CreateInstance(Type.GetType(_formName));
+
+            return _form;
+        }
+
+        /// <summary>
+        ///  Called by ALT-F1 everywhere                 
+        /// </summary>
+        public static void XXALTF1()
+        {
+            WAIT("You pressed ALT-F1", "WINDOW NOWAIT");
+            return;
+        }
+
+        /// <summary>
+        ///  Standard function to use instead of messagebox for simple message                                       
+        /// </summary>
+        /// <param name="pmessage">Message to display</param>
+        /// <param name="ptitle">Title to display</param>
+        public static int XMessage(string pmessage, string ptitle)
+        {
+            return MESSAGEBOX(pmessage, 0 + 64, ptitle);
+        }
+
+        /// <summary>
+        ///  Standard function to use instead of messagebox for simple error message                                       
+        /// </summary>
+        /// <param name="pmessage">Message to display</param>
+        /// <param name="ptitle">Title to display</param>
+        public static int XError(string pmessage, string ptitle)
+        {
+            return MESSAGEBOX(pmessage, 0 + 16, ptitle);
+        }
+
+        /// <summary>
+        ///  Standard function to use instead of messagebox for simple message 
+        /// </summary>
+        /// <param name="pmessage">Message to display</param>
+        /// <param name="ptitle">Title to display</param>
+        /// <returns>true = Yes</returns>
+        public static bool XYesNo(string pmessage, string ptitle)
+        {
+            int theanswer;
+            theanswer = MESSAGEBOX(pmessage, 4 + 32 + 256, ptitle);
+            if (theanswer == 6)
+                return true; // && Yes
+            else
+                return false; // && No
         }
     }
 }

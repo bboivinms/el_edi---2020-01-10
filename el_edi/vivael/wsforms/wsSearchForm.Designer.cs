@@ -30,8 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(wsSearchForm));
             this.wsGrid1 = new vivael.wscontrols.wsGrid();
-            this.Btn_Ok = new vivael.wscontrols.commandbutton();
-            this.Btn_cancel = new vivael.wscontrols.commandbutton();
+            this.Btn_Ok = new vivael.wscontrols.Commandbutton();
+            this.Btn_cancel = new vivael.wscontrols.Commandbutton();
             ((System.ComponentModel.ISupportInitialize)(this.wsGrid1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -57,6 +57,8 @@
             this.Btn_Ok.Size = new System.Drawing.Size(73, 25);
             this.Btn_Ok.TabIndex = 2;
             this.Btn_Ok.Text = "&Ok";
+            this.Btn_Ok.Text_EN = null;
+            this.Btn_Ok.Text_FR = null;
             this.Btn_Ok.ToolTipText = "Get the entry";
             this.Btn_Ok.UseVisualStyleBackColor = true;
             this.Btn_Ok.Click += new System.EventHandler(this.Btn_Ok_Click);
@@ -69,6 +71,8 @@
             this.Btn_cancel.Size = new System.Drawing.Size(73, 25);
             this.Btn_cancel.TabIndex = 3;
             this.Btn_cancel.Text = "&Cancel";
+            this.Btn_cancel.Text_EN = null;
+            this.Btn_cancel.Text_FR = null;
             this.Btn_cancel.ToolTipText = "Return to previous entry";
             this.Btn_cancel.UseVisualStyleBackColor = true;
             this.Btn_cancel.Click += new System.EventHandler(this.Btn_cancel_Click);
@@ -93,7 +97,7 @@
         #endregion
 
         private wscontrols.wsGrid wsGrid1;
-        private wscontrols.commandbutton Btn_Ok;
-        private wscontrols.commandbutton Btn_cancel;
+        private wscontrols.Commandbutton Btn_Ok;
+        private wscontrols.Commandbutton Btn_cancel;
     }
 }

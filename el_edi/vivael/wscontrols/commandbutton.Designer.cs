@@ -1,6 +1,6 @@
 ﻿namespace vivael.wscontrols
 {
-    partial class commandbutton
+    partial class Commandbutton
     {
         /// <summary>
         /// Required designer variable.

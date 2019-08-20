@@ -24,7 +24,7 @@ namespace vivael
             this.Text = titlebar;
             this.lblMessage.Text = message;
             vNTimeout = timeout;
-            this.Show();
+            this.ShowDialog();
         }
 
         private void GMessageBox_Load(object sender, EventArgs e)

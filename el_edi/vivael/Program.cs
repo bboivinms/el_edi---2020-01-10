@@ -12,9 +12,25 @@ using vivael.wsforms;
 using CrystalDecisions.CrystalReports.Engine;
 using CrystalDecisions.Shared;
 using MySql.Data.MySqlClient;
+using vivael.classes;
 
 namespace vivael
 {
+    /*******************************************************************************
+     *******************************************************************************
+     **                                                                           **
+     ** (c) Copyright 2019 Multi-Services GSTJ inc.                               **
+     **                                                                           **
+     *******************************************************************************
+     *******************************************************************************
+     *******************************************************************************
+     ** Pgm   : Vivael                                                            **
+     ** Desc. : Main program for VIVASoft Envl project                            **
+     *******************************************************************************
+     *  To remove when live or when test report mysql
+     *  reportDocument.DataSourceConnections.Clear(); 
+     *  reportDocument.DataSourceConnections[0].SetConnection(@"C:\vivael\data", "", false); 
+     *******************************************************************************/
     static class Program
     {
         /// <summary>
@@ -25,53 +41,51 @@ namespace vivael
         {
             gConnect(); //Connect to DB with datapath
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new wsmaintform5());
-
             oSession = new WsSession();
 
-            if (oSession.opened == true)
-            {
-                oSession.Logon();
-                if (oSession.UserCode == null)
-                {
-                    oSession.opened = false;
-                }
-            }
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            wsemailinfo wsemailinfo = new wsemailinfo();
+            wsemailinfo.Init(204);
+            //if (oSession.opened == true)
+            //{
+            //    oSession.Logon();
+            //    if (EMPTY(oSession.UserCode))
+            //    {
+            //        oSession.opened = false;
+            //    }
+            //}
 
-            if (oSession.opened == true)
-            {
-                oSession.curapplication = "VIVASoft2.0";
-                oSession.nocheckcredit = false;
+            ////*oSession.wich_email = "CDOSYS"
 
-                if (oSession.date_format == "DMY")
-                {
-                    //SET DATE DMY
-                }
-                else
-                {
-                    //SET DATE MDY
-                }
+            //if (oSession.opened == true)
+            //{
+            //    oSession.curapplication = "VIVASoft2.0";
+            //    oSession.nocheckcredit = false;
 
-                VivaMainWindow menu = new VivaMainWindow();
-                menu.SetSession(oSession);
-                Application.Run(menu);
-            }
+            //    if (oSession.date_format == "DMY")
+            //    {
+            //        //SET DATE DMY
+            //    }
+            //    else
+            //    {
+            //        //SET DATE MDY
+            //    }
 
-            //wsmuser2 form = new wsmuser2();
-            //Application.Run(form);
-            //form.Init("wsmuser2", " ");
+            //    oPrintForm = new wsPrintForm();
+            //    oPrintForm.cFormCode = "LISTIMPRIM";
 
-            //ReportDocument reportDocument = new ReportDocument();
-            ////reportDocument.Load(@"\\Kkpg\e\programmation\Kevin\Liste de prix par client rev2.3 pour préavis augmentation-2.rpt");
-            //reportDocument.Load(@"\\Kkpg\e\programmation\Remi\Liste des imprimeurs avec code FSC.rpt");
+            //    menu = new VivaMainWindow();
+            //    menu.SetSession(oSession);
+            //    Application.Run(menu);
+            //}
 
-            //reportDocument.DataSourceConnections.Clear();
-            //reportDocument.DataSourceConnections[0].SetConnection(@"C:\vivael\data", "", false);
+        }
 
-            //ReportPreview preview = new ReportPreview(reportDocument);
-            //Application.Run(preview);
+        private static void ConsolePrint(string message)
+        {
+            Console.WriteLine(message);
+            Console.ReadKey();
         }
     }
 }

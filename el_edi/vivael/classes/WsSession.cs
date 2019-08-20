@@ -9,6 +9,10 @@ using System.Windows.Forms;
 using static vivael.Globals;
 using static EDI_DB.Data.Base;
 using vivael.forms;
+using System.Reflection;
+using vivael.wsforms;
+using System.Net.Mail;
+using System.Net;
 
 namespace vivael
 {
@@ -25,8 +29,8 @@ namespace vivael
         public object auth_passwd { get; set; }
         public object auth_username { get; set; }
         public object auto_alert_on { get; set; }
-        public object basket_active { get; set; }
-        public object basket_folder { get; set; }
+        public bool basket_active { get; set; }
+        public string basket_folder { get; set; }
         public object basket_overwrite { get; set; }
         public Color BdisabledForeColor { get; set; }
         public Color BForeColor { get; set; }
@@ -92,7 +96,7 @@ namespace vivael
         public object DBIMPORT { get; set; }
         public object DBWHOUSE { get; set; }
         public object def_tel_int { get; set; }
-        public object demo { get; set; }
+        public bool demo { get; set; } = false;
         public object DEPT { get; set; }
         public bool Development { get; set; }
         public object ecclicode { get; set; }
@@ -100,7 +104,7 @@ namespace vivael
         public object ecname { get; set; }
         public object eco_on { get; set; }
         public object eco_web { get; set; }
-        public object email { get; set; }
+        public string email { get; set; }
         public bool email_bcc_self { get; set; }
         public object FAXCOVER { get; set; }
         public object faxprefix { get; set; }
@@ -139,7 +143,7 @@ namespace vivael
         public object lineout { get; set; }
         public bool Lloginop { get; set; }
         public bool log_user { get; set; }
-        public object loginscreen { get; set; }
+        public string loginscreen { get; set; } 
         public object lpstongst { get; set; }
         public object lshortcutmenu { get; set; }
         public object mail_attached { get; set; }
@@ -178,7 +182,7 @@ namespace vivael
         public object nogl_tvq_vte { get; set; }
         public object notps { get; set; }
         public object notvq { get; set; }
-        public object office_no { get; set; }
+        public byte? office_no { get; set; }
         public bool on_error_quit { get; set; }
         public bool opened { get; set; }
         public object owinfax { get; set; }
@@ -197,19 +201,19 @@ namespace vivael
         public object search_ret_param1 { get; set; }
         public int searchid { get; set; }
         public object sendmailsync { get; set; }
-        public object sessionid { get; set; }
+        public int sessionid { get; set; }
         public object shipmentnostyle { get; set; }
         public object shortcutmenu { get; set; }
         public object show_op_msg { get; set; }
         public object shutdown_count { get; set; }
         public object sPicture { get; set; }
         public object tactisoft { get; set; }
-        public object tmppath { get; set; }
+        public string tmppath { get; set; }
         public object tvh_rate { get; set; }
         public object usdcad { get; set; }
         public object use { get; set; }
         public object use_longd { get; set; }
-        public object use_office { get; set; }
+        public bool use_office { get; set; }
         public object use_po { get; set; }
         public object UserArrep { get; set; }
         public object userbasket { get; set; }
@@ -217,14 +221,14 @@ namespace vivael
         public object usercie { get; set; }
         public string UserCode { get; set; }
         public string UserEmail { get; set; }
-        public object UserEmail2 { get; set; }
+        public string UserEmail2 { get; set; }
         public object UserEmailSignature { get; set; }
         public object UserGroup { get; set; }
         public object UserName { get; set; }
         public object userphone { get; set; }
         public object UserTimer { get; set; }
         public object usertitle { get; set; }
-        public string UserType { get; set; }
+        public string UserType { get; set; } = "";
         public object vabandon { get; set; }
         public object valid_accnt { get; set; }
         public object verif_crlimit_lastid { get; set; }
@@ -232,7 +236,7 @@ namespace vivael
         public Color WBackColor { get; set; }
         public object webpage { get; set; }
         public Color WForeColor { get; set; }
-        public object wich_email { get; set; }
+        public string wich_email { get; set; }
         public object wich_fax { get; set; }
         public object winfreight { get; set; }
         public object WPicture { get; set; }
@@ -240,85 +244,95 @@ namespace vivael
         public object wsmenu_nb { get; set; }
         public object WSNEWSDIR { get; set; }
         public object wssession_table { get; set; }
-        public object zart { get; set; }
+        public string zart { get; set; }
         public object zebra { get; set; }
         public object zebra_active { get; set; }
         public object zebra_contrat_auto { get; set; }
 
         /***************Wssession Array property*************/
-        public object[] a71over { get; set; }   //9
-        public object[] a91over { get; set; }   //9
         public object[,] a_wsmenu { get; set; } //1,5
         public object[] active_bar { get; set; }   //1
-        public string[,] active_form { get; set; }  //1,2
-        public object[,] asemaine { get; set; } //52,2
-        public object[,] aweek { get; set; } //52,2
-        public object[] dizainef { get; set; }  //9
-        public object[] dizainea { get; set; }  //9
+        public object[,] active_form { get; set; }  //1,2
         public object[] jourtxt { get; set; }
         public object[] moistxt { get; set; }
-        public object[] nbjrsmois { get; set; } //1
+        public object[,] asemaine { get; set; } //52,2
+        public object[,] aweek { get; set; } //52,2
+        public object[] unitef { get; set; }
         public object[] unitea { get; set; }   //19
-        public object[] unitef { get; set; }  
+        public object[] dizainef { get; set; } 
+        public object[] dizainea { get; set; }
+        public object[] a71over { get; set; }   //9
+        public object[] a91over { get; set; }   //9
+        public object[] nbjrsmois { get; set; } //1
+
 
 
         public WsSession()
         {
-            a71over = new object[9];
-            a91over = new object[9];
             a_wsmenu = new object[1,5];
             active_bar = new object[1];
-            active_form = new string[1,2];
-            asemaine = new object[52,2];
-            aweek = new object[52,2];
-            dizainef = new object[9];
-            dizainea = new object[9];
+            active_form = new object[1,2];
             jourtxt = new object[7];
             moistxt = new object[12];
+            asemaine = new object[52,2];
+            aweek = new object[52,2];
+            unitef = new object[20];
+            unitea = new object[20];
+            dizainef = new object[9];
+            dizainea = new object[9];
+            a71over = new object[9];
+            a91over = new object[9];
             nbjrsmois = new object[12];
-            unitea = new object[19];
-            unitef = new object[19];
 
             Init();
         }
 
         public void Init()
         {
+            StreamReader FHandle;
+            string FLine;
+
+            if (TYPE(m0frch) != typeof(bool) || ISNULL(m0frch))
+                m0frch = true;
+
+            tmppath = Path.GetTempPath();  //&& TMPFILES as defined in CONFIG.FPW (Can be changed in CONFIG.WS)  //SYS(2023);
+
             //Initialisation par defaut des couleurs de champs
             fBackColor = IntToColor(13565944);
-            fForeColor = IntToColor(0);  //Color.FromArgb(0, 0, 0);
+            fForeColor = IntToColor(0);
             fdisabledBackColor = IntToColor(15066597);
             fdisabledForeColor = IntToColor(16711680);
+
             //* Pour les captions
             LBackColor = IntToColor(12632256);
             LForeColor = IntToColor(0);
-            LdisabledBackColor = IntToColor(12632256);  //Color.FromArgb(192, 192, 192);
-            LdisabledForeColor = IntToColor(8421504); //Color.FromArgb(128, 128, 128);
+            LdisabledBackColor = IntToColor(12632256); 
+            LdisabledForeColor = IntToColor(8421504); 
+
             //* Pour les formes
-            WBackColor = IntToColor(12632256); //Color.FromArgb(192, 192, 192);
-            WForeColor = IntToColor(0);//Color.FromArgb(0, 0, 0);
+            WBackColor = IntToColor(12632256); 
+            WForeColor = IntToColor(0);
             WPicture = "";
+
             //* Pour les boutons
-            BForeColor = IntToColor(0); //Color.FromArgb(0, 0, 0);
-            BdisabledForeColor = IntToColor(8421504); //Color.FromArgb(128, 128, 128);
+            BForeColor = IntToColor(0); 
+            BdisabledForeColor = IntToColor(8421504); 
+
             //* Pour l'ecran de fond
             sPicture = "WsBack.jpg";
 
-            tmppath = Path.GetTempPath();   //SYS(2023);
+            tmppath = Path.GetTempPath();
             NOBRACELET = 'N';
-            UserType = "";
-
-            string FLine;
 
             //Read the "CONFIG.WS" file to get default directory
-            if (!File.Exists("CONFIG.WS"))
+            if (!FILE("CONFIG.WS"))
             {
-                MESSAGEBOX("CONFIG.WS missing!", 0, "Impossible to start");
+                MESSAGEBOX("CONFIG.WS missing!", 0+16, "Impossible to start");
                 opened = false;
                 return;
             }
 
-            System.IO.StreamReader FHandle = new System.IO.StreamReader("CONFIG.WS");
+            FHandle = new System.IO.StreamReader("CONFIG.WS");
             while ((FLine = FHandle.ReadLine()) != null)
             {
                 // To set the development mode ON
@@ -406,7 +420,7 @@ namespace vivael
                     CHEQUE = ALLTRIM(SUBSTR(FLine, 8));
             }
 
-            //FHandle.Close();
+            FHandle.Close();
 
             // Ciepath MUST contains the data directory
             if (EMPTY(ciepath))
@@ -417,9 +431,26 @@ namespace vivael
             else
                 opened = true; // Session properly startup
 
-            refresh_param(true);
-            if (opened == false)
-                  return;
+
+            bool lOk = false;
+
+            if (m0checkdb == false)
+            {
+                lOk = true;
+            }
+
+
+            if (lOk)
+            {
+                this.refresh_param(true);
+                if (this.opened == false)
+                    return;
+            }
+            else
+            {
+                this.opened = false;
+                return;
+            }
         }
 
         //*********************************Méthode du wsswssion*********************************//
@@ -489,7 +520,49 @@ namespace vivael
 
         public void Check_mesg(string cShow)
         {
-           
+            int nAnswer;
+
+            //STORE SELECT() TO cur_area
+            //SELECT * FROM wsmesg WHERE Wsmesg.msgtype != 'D' AND ALLTRIM(Wsmesg.dest_user) = ALLTRIM(this.UserCode) AND Wsmesg.read_yes = .F.
+            //SELECT 0
+            //USE Wsmesg ORDER touser
+            //SET FILTER TO Wsmesg.msgtype != 'D' AND ALLTRIM(Wsmesg.dest_user) = ALLTRIM(this.UserCode) AND Wsmesg.read_yes = .F.
+            //go top
+            this.nb_new_mesg = 0;
+            //do while !eof()
+            //   this.nb_new_mesg = this.nb_new_mesg + 1
+            //   skip
+            ////ENDDO
+            //SELECT * FROM wsmesg WHERE Wsmesg.msgtype = 'D' AND Wsmesg.read_yes = .F. AND ALLTRIM(Wsmesg.dest_user) = ALLTRIM(this.UserCode)
+            //go top
+            //do while !eof()
+            //This.Dispatch(ALLTRIM(Wsmesg.subject))
+            //SELECT Wsmesg
+            //REPLACE Wsmesg.read_yes WITH .T.
+            //skip
+            //ENDDO
+            //SET FILTER TO
+            //USE
+            //SELECT(cur_area)
+
+            if(Upper(cShow) == "SHOW" && this.nb_new_mesg > 0)
+            {
+                nAnswer = MESSAGEBOX("You have " + ALLTRIM(STR(this.nb_new_mesg)) + " new message.  Do you want to see them ?", 4 + 32, "Internal messages", 10000);
+
+                if (nAnswer == 6)
+                {
+                    //oSession.launch_form("WSREADMSG", "");
+                    //* DO FORM wsreadmsg NAME FReadMesg LINKED
+                }
+            }
+            else
+            {
+                if (Upper(cShow) != "SHOW")
+                {
+                   // oSession.launch_form("WSREADMSG", "");
+                   //* DO FORM wsreadmsg NAME FReadMesg LINKED
+                }
+            }
         }
 
         public void Check_shutdown()
@@ -547,9 +620,95 @@ namespace vivael
 
         }
 
-        public int get_next_id(object ltable, object loption = null)
+        public int? get_next_id(string ltable, object loption = null)
         {
-            return 0;
+
+            //** Get the next id number in WsSeq
+            //** And increase the table
+            //*** NEW loption: If D, reset to 1 if date has change; If M, reset to 1 if month has change
+            //***              If O, put office number first 
+
+            int? the_id;
+
+            the_id = 0;
+
+            data_wsseq WsSeq = new data_wsseq();
+            gQuery($"SELECT * FROM wsseq where tableid = '{ltable}'", WsSeq, 0, 0, WsSeq.isFoxpro);
+
+            if (WsSeq.RECCOUNT() > 0)
+            {
+                //* No option
+                if(TYPE("loption") == typeof(bool))
+                {
+                    the_id = WsSeq.Next_Id;
+                    WsSeq.Next_Id += 1;
+
+                    if (this.use_office && ALLTRIM(ltable) != "SEQCONSOL" && ALLTRIM(ltable) != "INVOICE")
+                    {
+                        the_id = (100000000 * oSession.office_no) + the_id;
+                    }
+                }
+                else
+                {
+                    //* Specific option
+                    switch (loption)
+                    {
+                        case "D":
+                            if(WsSeq.Datelast != null)
+                            {
+                                if (DAY(DATE()) != DAY((DateTime)WsSeq.Datelast))
+                                {
+                                    the_id = 1;
+                                    WsSeq.Next_Id = 2;
+                                }
+                                else
+                                {
+                                    the_id = WsSeq.Next_Id;
+                                    WsSeq.Next_Id += 1;
+                                }
+                            }
+                            break;
+
+                        case "M":
+                            if (WsSeq.Datelast != null)
+                            {
+                                if (MONTH(DATE()) != MONTH((DateTime)WsSeq.Datelast))
+                                {
+                                    the_id = 1;
+                                    WsSeq.Next_Id = 2;
+                                }
+                                else
+                                {
+                                    the_id = WsSeq.Next_Id;
+                                    WsSeq.Next_Id += 1;
+                                }
+                            }
+                        break;
+                        default:
+
+                        break;
+                    }
+                    WsSeq.Datelast = DATE();
+                }
+                if (WsSeq.Datelast != null)
+                {
+                    DateTime aDate = (DateTime)WsSeq.Datelast;
+                    string strDate = "{^" + aDate.ToString("yyyy-MM-dd") + "}";
+                    gQuery($"UPDATE wsseq SET next_id = {WsSeq.Next_Id}, datelast = {strDate} where tableid = '{ltable}'", true);
+                }
+                
+            }
+            else
+            {
+                the_id = 1;
+
+                if (TYPE(loption) == typeof(bool))
+                {
+                    gQuery($"INSERT INTO WsSeq(tableid, next_id, tmp_id, datelast) VALUES({ltable}, {2}, {0}, {"{^" + DATE().ToString("yyyy-MM-dd") + "}"}) ");
+                }
+            }
+
+            return the_id;
         }
 
         public void get_period_from_date()
@@ -574,17 +733,47 @@ namespace vivael
 
         public int get_temp_id(string tablename)
         {
-            return 0;
+            //** Get the next temp id number in WsSeq
+            //** And increase the table
+
+            int the_id = -1;
+
+            //SELECT * FROM WsSeq WHERE TableId = tablename order by tableid //one record
+          
+            if (SEEK(ALLTRIM(Upper(tablename))))      //if count != 0
+            {
+                //the_id = WsSeq.tmp_Id; 
+                //WsSeq.tmp_Id = WsSeq.tmp_Id - 1; //update wsseq tmp_id with  WsSeq.tmp_Id - 1
+            }
+            else
+            {
+                the_id = -1;
+                //INSERT INTO WsSeq(tableid, next_id, tmp_id) VALUES(ltable, 1, -1)
+            }
+
+            return the_id;
         }
 
-        public void get_unique_file_name()
+        public string get_unique_file_name(string pLong)
         {
-           
+            //*Parameter : "Long" get a file name with the temporary directory
+            //*"Short" get a file name without the temporary directory
+            //C:\Users\Multi-Service\AppData\Local\Temp\  tmp6103.tmp
+
+            string lFileName = "";
+
+            lFileName = ALLTRIM(SUBSTR(Path.GetTempFileName(), 42));
+            if (pLong == "Long")
+                lFileName = ALLTRIM(oSession.tmppath) +"\\" + ALLTRIM(lFileName);
+
+            File.Create(ALLTRIM(oSession.tmppath) + "\\" + ALLTRIM(lFileName));
+
+            return lFileName;
         }
 
         public void hide_bar()
         {
-
+            
         }
 
         public void launch_bar(object lBarobjet)
@@ -592,25 +781,241 @@ namespace vivael
             
         }
 
-        public object launch_form(object lFormName, string lAction, int lRecId, string cParamPlus)
+        public object Launch_Form(object lFormName, object lAction, object lRecId = null, object cParamPlus = null)
         {
-            return "";
+            //***
+            //***LAUCH THE FORM(AND KEEP THE HANDLE IN ACTIVE_FORM[]
+            //***
+            object lAjout, lModif, lSupp, lImp, lfire, lFormType, lValeurRetour;
+            int i, nInstance;
+
+            if( TYPE(lRecId) != typeof(int) || ISNULL(lRecId)) // ISBLANK : not possible in c#
+            {
+                lRecId = 0; 
+            }
+
+            lValeurRetour = 0;
+
+            if (this.opened == false)
+            {
+                MESSAGEBOX(IIF(m0frch, "Aucun utilisateur en cours", "No current user"), 0 + 16, IIF(m0frch, "Accès refusé", "Access not allowed"));
+	            return null;
+            }
+            bool lfound = false;
+
+            data_wspermis WsPermis = new data_wspermis();
+            data_wsfunction WsFunction = new data_wsfunction();
+
+            gQuery("SELECT * FROM WSPERMIS WHERE WSPERMIS.group = 'ALL' AND function = '" + ALLTRIM(lFormName.ToString()) +"' ORDER BY IDENT_AI ASC", WsPermis, 0, 0, WsPermis.isFoxpro);
+            WsPermis.LoadRow();
+
+            if(WsPermis.RECCOUNT() > 0)
+            {
+                lfound = true;
+            }
+            else
+            {
+                gQuery("SELECT * FROM WSPERMIS WHERE WSPERMIS.group = '" + ALLTRIM(this.UserGroup.ToString())+"' AND function = '" + ALLTRIM(lFormName.ToString()).ToUpper() + "' ORDER BY IDENT_AI ASC", WsPermis, 0, 0, WsPermis.isFoxpro);
+                WsPermis.LoadRow();
+                if (WsPermis.RECCOUNT() > 0)
+                    lfound = true;
+            }
+            string tmpfunc, lFunctionDescr;
+            if (lfound)
+            {
+                tmpfunc = WsPermis.Function;
+                lAjout = WsPermis.Ajout;
+                lModif = WsPermis.Modif;
+                lSupp = WsPermis.Supp;
+                lImp = WsPermis.Imp;
+
+                gQuery("SELECT * FROM WSFUNCTION WHERE function = '" + tmpfunc + "' ORDER BY IDENT ASC", WsFunction, 0, 0, WsFunction.isFoxpro);
+                WsFunction.LoadRow();
+                if (WsFunction.RECCOUNT() > 0)
+                {
+                    lFormName = ALLTRIM(WsFunction.Pgm);
+                    lFormType = WsFunction.Type;
+                    lfire = true;
+                    lFunctionDescr = WsFunction.Descr;
+
+                    /*-------------- Log --------------*/
+                    if (this.log_user)
+                    {
+                        gQuery("INSERT INTO wslog(date, heure, user, module, type, desc) VALUES(DATE(), TIME(), "+oSession.UserCode+", "+tmpfunc+", 'l', "+lFunctionDescr+")", true);
+                    }
+
+                    /*---- Function to fire only once -----*/
+                    if (lFormType.ToString() == "1")
+                    {
+                        //* Verify if already in the active forms
+                        nInstance = this.active_form.Length;
+
+                        lfire = true;  //&& We have to fire it
+
+                        for (i = 1; i < nInstance; i++)
+                        {
+                            if(TYPE(this.active_form[i,2]) == typeof(string))
+                            {
+                                if (this.active_form[i, 2].ToString() == tmpfunc)
+                                {
+                                    //* We got it already, so just raise it
+                                    lfire = false;
+                                    //&& THIS.Active_form[i, 1].zorder(0) && Raise it on top
+                                    //this.active_form[i, 1].Show();
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        lfire = false; // && IF lFormType IS NOT 1 DO NOT FIRE IT.
+                    }
+
+                    /*------------------------------------*/
+                    /* Form                               */
+                    /*------------------------------------*/
+                    if (lFormType.ToString() == "F" || lFormType.ToString() == " " || (bool)lfire == true)
+                    {
+                        nInstance = this.active_form.Length-2;
+
+                        this.active_form[nInstance, 0] = ALLTRIM(lFormName + ALLTRIM(STR(nInstance)));
+                        this.active_form[nInstance, 1] = tmpfunc;
+
+
+                        // Call the form
+                        string name = lFormName.ToString().Split('.')[0];
+
+                        var _form = (DataMenu)GetForm(name);
+                        if (_form != null)
+                        {
+                            _form.MdiParent = menu;
+                            _form.Init(lFormName.ToString(), lAction.ToString(), nInstance, (int)lRecId, cParamPlus, (bool)lAjout,(bool)lModif, (bool)lSupp, (bool)lImp);
+                            _form.Show();
+                        }
+                    }
+
+                    /*------------------------------------*/
+                    /* Modal form                         */
+                    /*------------------------------------*/
+                    if (lFormType.ToString() == "M")
+                    {
+                        nInstance = this.active_form.Length-2;
+
+                        this.active_form[nInstance, 0] = ALLTRIM(lFormName + ALLTRIM(STR(nInstance)));
+                        this.active_form[nInstance, 1] = tmpfunc;
+
+                        //Call the form 
+                        //DO FORM(lFormName) NAME THIS.Active_form[nInstance, 1];
+                        //WITH lFormName, lAction, nInstance, lRecId, cParamPlus, ;
+                        //lAjout, lModif, lSupp, lImp;
+                        //LINKED TO lValeurRetour
+                    }
+
+                    /*------------------------------------*/
+                    /* S form                             */
+                    /*------------------------------------*/
+                    if (lFormType.ToString() == "S")
+                    {
+                         //WIP
+                    }
+
+                    /*------------------------------------*/
+                    /* Plain form                         */
+                    /*------------------------------------*/
+                    if (lFormType.ToString() == "X")
+                    {
+                        nInstance = this.active_form.Length;
+
+                        this.active_form[nInstance, 1] = ALLTRIM(lFormName + ALLTRIM(STR(nInstance)));
+                        this.active_form[nInstance, 2] = tmpfunc;
+                        //DIMENSION THIS.Active_form[(nInstance + 1),2]
+
+
+                        //* Call the form
+                        string name = lFormName.ToString().Split('.')[0];
+                        var _form = (Form)GetForm(name);
+                        if (_form != null)
+                        {
+                            _form.MdiParent = menu;
+                            _form.Show();
+                        }
+                    }
+
+                    /*------------------------------------*/
+                    /* ...or call a program               */
+                    /*------------------------------------*/
+                    if (lFormType.ToString() == "P")
+                    {
+                       //DO (lFormName)    //WIP
+                    }
+
+                    /*------------------------------------*/
+                    /* ...or call a windows program       */
+                    /*------------------------------------*/
+                    if (lFormType.ToString() == "!")
+                    {
+                        this.Shellexec(lFormName.ToString());
+                    }  
+                }
+                else
+                {
+                    if (m0frch)
+                        MESSAGEBOX("Fonction inexistante", 16, "Contacter l'administrateur du système");
+                    else
+                        MESSAGEBOX("Function not found", 16, "Contact the system administrator");
+                }
+            }
+            else
+            {
+                if (m0frch)
+                    MESSAGEBOX("Accès refusé à cette fonction", 16, "Contacter l'administrateur du système");
+                else
+                    MESSAGEBOX("Access not allowed", 16, "Contact the system administrator");
+            }
+
+            return lValeurRetour;
         }
 
-        public void logmsg()
+        public bool Logmsg(object pModule, object ptype, object pmessage, object pnotes)
         {
+            //*Sauvegarde d'un message
 
+            if(TYPE(pnotes) == typeof(bool))
+            {
+                //* IF ISNULL(pnotes)
+                pnotes = ""; 
+            }
+
+            gQuery("INSERT INTO wslog(date, heure, user, module, type, desc) VALUES(DATE(), TIME(), " + this.UserCode + ", " + pModule + ", " + ptype + "," + pmessage + "," + pnotes + ")", true);
+
+            return true;
         }
 
         public void Logon()
         {
-            wsLogin login = new wsLogin(this);
-            login.ShowDialog();
+            //*Logon process
+
+            if (EMPTY(this.loginscreen))
+            {
+                wsLogin login = new wsLogin(this);
+                login.ShowDialog();
+                //DO FORM wslogin.scx NAME login
+            }
+            else
+            {
+                string llogin = this.loginscreen.ToString();
+                Form form = (Form)GetForm(llogin);
+                form.ShowDialog();
+                //DO FORM & llogin NAME login
+            }
+
+            //if (EMPTY(this.UserCode))
+            //    this.Shutdown();
         }
 
         //public void logonbc()
         //{
-        //Not use
+            //Not use
         //}
 
         public void long_distance()
@@ -618,19 +1023,194 @@ namespace vivael
 
         }
 
-        public void mail_get_info()
+        /// <summary>
+        /// Open a form for send an email
+        /// </summary>
+        /// <param name="pIdent">wsmesg.ident TO go to the right message</param>
+        /// <returns>
+        /// 1 If user has selected SEND NOW on the email screen 
+        /// 2 if user has selected SEND LATER on the email screen 
+        /// 3 if user has deleted the email(CANCEL EMAIL)
+        /// </returns>
+        public int? mail_get_info(int? pIdent)
         {
+            int? lresult = null;
 
+            //GetForm("wsemailinfo");
+            //DO FORM wsemailinfo NAME emailinfo;
+            //            WITH pIdent;
+            //            TO lresult;
+            //            LINKED
+
+            return lresult;
         }
 
-        public void mail_queue()
+        /// <summary>
+        /// Create an email message in the queue (wsemail table) and Optionnaly send it right away
+        /// Returns the ident of the create message (0 if failed)
+        /// </summary>
+        /// <param name="pAction">Action ("Ask" to call email screen, Else silence (if all info supplied in other prams)</param>
+        /// <param name="pWhen">When   ("Now" to send immediately, Else, just put there to send later</param>
+        /// <param name="pMailTo">MailTo (Email address(es) ex.: eric@vivasoft;benr@generation.net can have cc: or bcc: before each)</param>
+        /// <param name="pCc">Carbon copy</param>
+        /// <param name="pBcc">Blind Carbon copy</param>
+        /// <param name="pSubject">Subject </param>
+        /// <param name="pNotes">Notes</param>
+        /// <param name="pAttachments">Attachments (Separated by ;)</param>
+        /// <param name="pHtml">True, To send in html format (optional)</param>
+        /// <param name="pSender">Sender name (optional)</param>
+        public int? Mail_queue(string pAction, string pWhen, string pMailTo, string pCc, string pBcc, string pSubject, string pNotes, string pAttachments, bool pHtml = false, string pSender = "")
         {
+            data_wsemail wsemail = new data_wsemail();
+            int? lident, luseraction;
+            bool lok;
+            object cMailFrom;
+            lident = 0;
+            gCancelEmail = true;
 
+            if(oSession.wich_email != "NONE")
+            {
+                // * If Action = "Ask", let's call the email screen
+                if (pAction != "Ask" && EMPTY(pMailTo))
+                {
+                    MESSAGEBOX("Aucune adresse email!", 0 + 16, "Envoi impossible");
+                    return 0;
+                }
+
+                //* 1) Put in queueue
+                lident = this.get_next_id("WSEMAIL"); //---
+                if (EMPTY(pMailTo))
+                    pMailTo = "";
+
+                if (EMPTY(pSubject))
+                    pSubject = "";
+
+                if (EMPTY(pNotes))
+                    pNotes = "";
+
+                if (EMPTY(pAttachments))
+                    pAttachments = "";
+
+                if (EMPTY(pCc))
+                    pCc = "";
+
+                if (EMPTY(pBcc))
+                    pBcc = "";
+
+                cMailFrom = "";
+                if (TYPE(pSender) == typeof(string))
+                {
+                    if (!EMPTY(pSender))
+                    {
+                        cMailFrom = pSender; 
+                    }
+                }
+                if(EMPTY(cMailFrom))
+                {
+                    if (EMPTY(this.UserEmail))
+                    {
+                        cMailFrom = ALLTRIM(oSession.email); 
+                    }
+                    else
+                    {
+                        cMailFrom = ALLTRIM(this.UserEmail);
+                   }
+                }
+                string lEmailType;
+                if (pHtml == true)
+                {
+                    lEmailType = "H";
+                }
+                else
+                {
+                    lEmailType = "E";
+                }
+
+                if(lident != null)
+                {
+                    string query =
+                    $"INSERT INTO wsemail(ident, msgtype, dest_adr, subject, notes, attached, from_user, cr_by, cr_dtime, sent, cc, bcc, sender) " +
+                    $"VALUES({lident}, {lEmailType}, {pMailTo}, {pSubject}, {pNotes}, {pAttachments}, {this.UserCode}, {this.UserCode}, DATETIME(), .F., {pCc}, {pBcc}, {cMailFrom})";
+                    gQuery(query, wsemail.isFoxpro); //insert in db;
+                }
+
+                //*2) If pAction = "Ask", email screen
+                if (pAction == "Ask")
+                {
+                    luseraction = this.mail_get_info(lident);  // 1 = send now 2 = send later 3 = email cancelled
+                }
+                else
+                {
+                    luseraction = 1; 
+                }
+
+                //*3) If pWhen = "Now", send right now
+                if (pWhen == "Now" && luseraction == 1)
+                {
+                    gCancelEmail = false;
+
+                    lok = this.mail_send(lident); 
+ 
+                   if(lok == false)
+                        lident = 0; 
+                }
+            }
+            return lident;
         }
 
-        public void mail_send()
+        /// <summary>
+        ///     Send the specified queued message
+        /// </summary>
+        /// <param name="l_Queue_id"></param>
+        /// <returns>Returns true or false</returns>
+        public bool mail_send(int? l_Queue_id)
         {
+            object cur_area, lok, lreturn;
+            string[] la_mesg = new string[8] { "", "", "", "", "", "", "", "" };
 
+            //WAIT(IIF(m0frch, "Envoi message...", "Sending message..."), "WINDOW NOWAIT");
+
+            //STORE SELECT() TO cur_area
+            //#define WWIPSTUFF_SHAREWARE false
+
+            if (TYPE(loSmtp) != typeof(object)) // Ne pas recreer pour rien(EC30)
+                loSmtp = new SmtpClient("smtp-mail.outlook.com");
+
+            //SELECT msgtype, dest_adr, subject, notes, attached, cc, bcc, sender;
+            //FROM wsemail;
+            //WHERE wsemail.ident = l_Queue_id;
+            //INTO ARRAY la_mesg
+
+            loSmtp.Credentials = new NetworkCredential(ALLTRIM(this.UserEmail2), ALLTRIM(this.zart));
+            loSmtp.EnableSsl = true;
+
+            //la_mesg[2] : Subject in wsemail
+            if (SUBSTR(la_mesg[2], 1, 6) == "FACTUR" || SUBSTR(la_mesg[2], 1, 6) == "CREDIT") {
+                //*STORE "payables@envl.ca" TO la_mesg(8) 
+                la_mesg[7] = "payable@envl.ca"; //sender in wsemail
+                loSmtp.Credentials = new NetworkCredential("payable@envl.ca", "Yow643171");
+                la_mesg[4] = "Bonjour, voici votre facture en attachement, Merci ";
+            }
+            if (SUBSTR(la_mesg[2], 1, 7) == "DEMANDE")
+            { 
+                la_mesg[7] = "arolland@envl.ca"; //sender in wsemail
+                loSmtp.Credentials = new NetworkCredential("arolland@envl.ca", "Puq95627");
+                //* STORE "Bonjour, voici votre facture en attachement, Merci " TO la_mesg(4) 
+            }
+            if(SUBSTR(la_mesg[2],1,10) == "Commande #")
+            {
+                la_mesg[7] = "achat@envl.ca"; //sender in wsemail
+                loSmtp.Credentials = new NetworkCredential("arolland@envl.ca", "Puq95627");
+                //* STORE "Bonjour, voici votre facture en attachement, Merci " TO la_mesg(4) 
+            }
+            if (SUBSTR(la_mesg[2], 1, 7) == "#Erreur")
+            {
+                la_mesg[7] = "web2@envl.ca"; //sender in wsemail
+                loSmtp.Credentials = new NetworkCredential("noreply@multi-services.org", "Cuz813911");
+                //* STORE "Bonjour, voici votre facture en attachement, Merci " TO la_mesg(4) 
+            }
+
+            return true;
         }
 
         public void mmerge()
@@ -663,47 +1243,387 @@ namespace vivael
 
         }
 
-        public void refresh_param(bool lWorkPer)
+        public void refresh_param(object lWorkPer)
         {
+            /******Refresh oSession.(company parameters) from wscie******/
+                    /****To be called before using them to have them uptodate****/
+
+                    if (TYPE(lWorkPer) != typeof(bool) || ISNULL(lWorkPer))
+                lWorkPer = false;
+
             data_wscie WsCie = new data_wscie();
 
             gQuery("SELECT * FROM wscie order by cie_id asc", WsCie, 0, 0, WsCie.isFoxpro);
             WsCie.LoadRow();
 
-            if (WsCie.RECCOUNT() > 0)
+            if (WsCie.RECCOUNT() <= 0)
             {
-                cie_id      = WsCie.Cie_Id;
-                ciename     = WsCie.Cie_Name;
-                licence     = WsCie.Licence;
-                cie_city    = WsCie.Cie_City;
-                cie_state   = WsCie.Cie_State;
-                cie_country = WsCie.Cie_Country;
-
-                if (ALLTRIM(UserType) != "Accounting" || lWorkPer == true)
-                {
-                    cur_gl_year   = WsCie.Gl_Year;
-                    cur_gl_period = WsCie.Gl_Period;
-                    cur_ar_year   = WsCie.Ar_Year;
-                    cur_ar_period = WsCie.Ar_Period;
-                    cur_ap_year   = WsCie.Ap_Year;
-                    cur_ap_period = WsCie.Ap_Period;
-
-                    if (Lloginop == false)
-                    {
-                        cur_op_year   = WsCie.Op_Year;
-                        cur_op_period = WsCie.Op_Period;
-                    }
-                }
-            }
-            else
-            {
-                MESSAGEBOX("Undefined company parameters!", 0, "Major problem");
+                MESSAGEBOX("Undefined company parameters!", 0 + 16, "Major problem");
                 opened = false;
                 return;
             }
 
+            //* Not seek right now since there is only one cie
+            cie_id = WsCie.Cie_Id;
+            ciename = WsCie.Cie_Name;
+            licence = WsCie.Licence;
+            cie_city = WsCie.Cie_City;
+            cie_state = WsCie.Cie_State;
+            cie_country = WsCie.Cie_Country;
+
+            if (ALLTRIM(UserType) != "Accounting" || (bool)lWorkPer == true)
+            {
+                cur_gl_year = WsCie.Gl_Year;
+                cur_gl_period = WsCie.Gl_Period;
+                cur_ar_year = WsCie.Ar_Year;
+                cur_ar_period = WsCie.Ar_Period;
+                cur_ap_year = WsCie.Ap_Year;
+                cur_ap_period = WsCie.Ap_Period;
+
+                if (Lloginop == false)
+                {
+                    cur_op_year = WsCie.Op_Year;
+                    cur_op_period = WsCie.Op_Period;
+                }
+            }
+
             cur_year = DateTime.Now.Year;//YEAR(DATE());
-            aci_active = true;
+            //bool m0synchro = false;
+
+            basket_overwrite = true;
+
+            if (!ISNULL(WsCie.Valid_Accnt) && TYPE(WsCie.Valid_Accnt) == typeof(bool?))
+                this.valid_accnt = WsCie.Valid_Accnt;
+            else
+                this.valid_accnt = true;
+
+            if (TYPE(WsCie.Office_No) == typeof(byte?))
+            {
+                this.office_no = WsCie.Office_No;
+                this.use_office = true;
+            }
+            else
+            {
+                this.office_no = 1;
+                this.use_office = false;
+            }
+
+            if (TYPE(WsCie.Use_Longd) == typeof(bool?))
+                this.use_longd = WsCie.Use_Longd;
+            else
+                this.use_longd = false;
+
+            if (TYPE(WsCie.Use_Po) == typeof(bool?))
+                this.use_po = WsCie.Use_Po;
+            else
+                this.use_po = false;
+
+            if (TYPE(WsCie.Proxyname) == typeof(string))
+                this.proxyname = WsCie.Proxyname;
+            else
+                this.proxyname = "";
+
+            if (TYPE(WsCie.Proxyuser) == typeof(string))
+                this.proxyuser = WsCie.Proxyuser;
+            else
+                this.proxyuser = "";
+
+            if (TYPE(WsCie.Proxypass) == typeof(string))
+                this.proxypass = WsCie.Proxypass;
+            else
+                this.proxypass = "";
+
+            if (TYPE(WsCie.Glpermonth) == typeof(bool?))
+                this.glpermonth = WsCie.Glpermonth;
+
+            if (TYPE(WsCie.Glmonthone) == typeof(int?))
+                this.glmonthone = WsCie.Glmonthone;
+
+            this.webpage = WsCie.Website;
+            this.gst_rate = WsCie.Gst_Rate;
+            this.pst_rate = WsCie.Pst_Rate;
+            this.tvh_rate = WsCie.Tvh_Rate;
+            this.nogl_error = WsCie.Nogl_Error;
+            this.nogl_ap = WsCie.Nogl_Ap;
+            this.nogl_ap_re = WsCie.Nogl_Ap_Re;
+            this.nogl_ar = WsCie.Nogl_Ar;
+            this.nogl_bq = WsCie.Nogl_Bq;
+            this.nogl_bq_re = WsCie.Nogl_Bq_Re;
+            this.nogl_ap_disc = WsCie.Nogl_Ap_Disc;
+            this.nogl_ar_disc = WsCie.Nogl_Ar_Disc;
+            this.nogl_tps_ach = WsCie.Nogl_Tps_Ach;
+            this.nogl_tvq_ach = WsCie.Nogl_Tvq_Ach;
+            this.nogl_tvh_ach = WsCie.Nogl_Tvh_Ach;
+            this.nogl_tps_vte = WsCie.Nogl_Tps_Vte;
+            this.nogl_tvq_vte = WsCie.Nogl_Tvq_Vte;
+            this.nogl_tvh_vte = WsCie.Nogl_Tvh_Vte;
+            this.nogl_bnr = WsCie.Nogl_Bnr;
+            this.nogl_contra = WsCie.Nogl_Contra;
+            this.notps = WsCie.Notps;
+            this.notvq = WsCie.Notvq;
+            this.nb_per_aux = WsCie.Nb_Per_Aux;
+            this.nb_per_gl = WsCie.Nb_Per_Gl;
+            //*this.mailserver = WsCie.Mailserver;
+            this.mailserver = "smtp-mail.outlook.com";
+            //*this.auth_username = "noreply@multi-services.org";
+            //*this.auth_passwd = "Cuz813911";
+            this.faxprefix = WsCie.Faxprefix;
+            this.currency = WsCie.Currency;
+            this.lineout = WsCie.Lineout;
+            this.int_activity = WsCie.Int_Activity;
+            this.int_code = WsCie.Int_Code;
+            this.prix_est_do = WsCie.Prix_Est_Do;
+            this.marge_est_glo = WsCie.Marge_Est_Glo;
+            this.cout_vente = WsCie.Cout_Vente;
+            this.cout_fixe = WsCie.Cout_Fixe;
+            this.cout_int = WsCie.Cout_Int;
+            this.cout_s_rack = WsCie.Cout_S_Rack;
+            this.cout_a_rack = WsCie.Cout_A_Rack;
+            if (!EMPTY(WsCie.Rep_Inv)) //&& If empty, keep the default
+            {
+                this.rep_inv = WsCie.Rep_Inv;
+            }
+            this.wscustom = WsCie.Wscustom;
+            this.email = WsCie.Email;
+            this.eco_on = WsCie.Eco_On;
+            this.eco_web = WsCie.Eco_Web;
+            //*****************************
+            this.da_per1d = WsCie.Da_Per1d;
+            this.da_per1f = WsCie.Da_Per1f;
+            this.da_per2d = WsCie.Da_Per2d;
+            this.da_per2f = WsCie.Da_Per2f;
+            this.da_per3d = WsCie.Da_Per3d;
+            this.da_per3f = WsCie.Da_Per3f;
+            this.da_per4d = WsCie.Da_Per4d;
+            this.da_per4f = WsCie.Da_Per4f;
+            this.da_per5d = WsCie.Da_Per5d;
+            this.da_per5f = WsCie.Da_Per5f;
+            this.da_per6d = WsCie.Da_Per6d;
+            this.da_per6f = WsCie.Da_Per6f;
+            this.da_per7d = WsCie.Da_Per7d;
+            this.da_per7f = WsCie.Da_Per7f;
+            this.da_per8d = WsCie.Da_Per8d;
+            this.da_per8f = WsCie.Da_Per8f;
+            this.da_per9d = WsCie.Da_Per9d;
+            this.da_per9f = WsCie.Da_Per9f;
+            this.da_per10d = WsCie.Da_Per10d;
+            this.da_per10f = WsCie.Da_Per10f;
+            this.da_per11d = WsCie.Da_Per11d;
+            this.da_per11f = WsCie.Da_Per11f;
+            this.da_per12d = WsCie.Da_Per12d;
+            this.da_per12f = WsCie.Da_Per12f;
+            //*******************************
+            //&& Mois en Français
+            this.moistxt[0] = "Janvier";
+            this.moistxt[1] = "Février";
+            this.moistxt[2] = "Mars";
+            this.moistxt[3] = "Avril";
+            this.moistxt[4] = "Mai";
+            this.moistxt[5] = "Juin";
+            this.moistxt[6] = "Juillet";
+            this.moistxt[7] = "Août";
+            this.moistxt[8] = "Septembre";
+            this.moistxt[9] = "Octobre";
+            this.moistxt[10] = "Novembre";
+            this.moistxt[11] = "Décembre";
+            //Jour en Français
+            this.jourtxt[0] = "Dimanche";
+            this.jourtxt[1] = "Lundi";
+            this.jourtxt[2] = "Mardi";
+            this.jourtxt[3] = "Mercredi";
+            this.jourtxt[4] = "Jeudi";
+            this.jourtxt[5] = "Vendredi";
+            this.jourtxt[6] = "Samedi";
+
+            for (int i = 0; i < 52; i++)
+            {
+                this.asemaine[i, 0] = "Semaine " + (i + 1);
+                this.asemaine[i, 1] = i + 1;
+            }
+
+            for (int i = 0; i < 52; i++)
+            {
+                this.aweek[i, 0] = "Week " + (i + 1);
+                this.aweek[i, 1] = i + 1;
+            }
+
+            this.unitef[0] = "ZERO";
+            this.unitef[1] = "UN";
+            this.unitef[2] = "DEUX";
+            this.unitef[3] = "TROIS";
+            this.unitef[4] = "QUATRE";
+            this.unitef[5] = "CINQ";
+            this.unitef[6] = "SIX";
+            this.unitef[7] = "SEPT";
+            this.unitef[8] = "HUIT";
+            this.unitef[9] = "NEUF";
+            this.unitef[10] = "DIX";
+            this.unitef[11] = "ONZE";
+            this.unitef[12] = "DOUZE";
+            this.unitef[13] = "TREIZE";
+            this.unitef[14] = "QUATORZE";
+            this.unitef[15] = "QUINZE";
+            this.unitef[16] = "SEIZE";
+            this.unitef[17] = "DIX-SEPT";
+            this.unitef[18] = "DIX-HUIT";
+            this.unitef[19] = "DIX-NEUF";
+
+            this.unitea[0] = "ZERO";
+            this.unitea[1] = "ONE";
+            this.unitea[2] = "TWO";
+            this.unitea[3] = "THREE";
+            this.unitea[4] = "FOUR";
+            this.unitea[5] = "FIVE";
+            this.unitea[6] = "SIX";
+            this.unitea[7] = "SEVEN";
+            this.unitea[8] = "EIGHT";
+            this.unitea[9] = "NINE";
+            this.unitea[10] = "TEN";
+            this.unitea[11] = "ELEVEN";
+            this.unitea[12] = "TWELVE";
+            this.unitea[13] = "THIRTEEN";
+            this.unitea[14] = "FOURTEEN";
+            this.unitea[15] = "FIFTEEN";
+            this.unitea[16] = "SIXTEEN";
+            this.unitea[17] = "SEVENTEEN";
+            this.unitea[18] = "EIGHTEEN";
+            this.unitea[19] = "NINETEEN";
+
+
+            this.dizainef[0] = "DIX";
+            this.dizainef[1] = "VINGT";
+            this.dizainef[2] = "TRENTE";
+            this.dizainef[3] = "QUARANTE";
+            this.dizainef[4] = "CINQUANTE";
+            this.dizainef[5] = "SOIXANTE";
+            this.dizainef[6] = "SOIXANTE-DIX";
+            this.dizainef[7] = "QUATRE-VINGTS";
+            this.dizainef[8] = "QUATRE-VINGT-DIX";
+
+            this.dizainea[0] = "TEN";
+            this.dizainea[1] = "TWENTY";
+            this.dizainea[2] = "THIRTY";
+            this.dizainea[3] = "FORTY";
+            this.dizainea[4] = "FIFTY";
+            this.dizainea[5] = "SIXTY";
+            this.dizainea[6] = "SEVENTY";
+            this.dizainea[7] = "EIGHTY";
+            this.dizainea[8] = "NINETY";
+
+            this.a71over[0] = "SOIXANTE ET ONZE";
+            this.a71over[1] = "SOIXANTE-DOUZE";
+            this.a71over[2] = "SOIXANTE-TREIZE";
+            this.a71over[3] = "SOIXANTE-QUATORZE";
+            this.a71over[4] = "SOIXANTE-QUINZE";
+            this.a71over[5] = "SOIXANTE-SEIZE";
+            this.a71over[6] = "SOIXANTE-DIX-SEPT";
+            this.a71over[7] = "SOIXANTE-DIX-HUIT";
+            this.a71over[8] = "SOIXANTE-DIX-NEUF";
+
+            this.a91over[0] = "QUATRE-VINGT-ONZE";
+            this.a91over[1] = "QUATRE-VINGT-DOUZE";
+            this.a91over[2] = "QUATRE-VINGT-TREIZE";
+            this.a91over[3] = "QUATRE-VINGT-QUATORZE";
+            this.a91over[4] = "QUATRE-VINGT-QUINZE";
+            this.a91over[5] = "QUATRE-VINGT-SEIZE";
+            this.a91over[6] = "QUATRE-VINGT-DIX-SEPT";
+            this.a91over[7] = "QUATRE-VINGT-DIX-HUIT";
+            this.a91over[8] = "QUATRE-VINGT-DIX-NEUF";
+
+            //&& Nb de jour par mois
+            nbjrsmois[0] = 31;
+            nbjrsmois[1] = IIF(MOD(YEAR(DATE()), 4) == 0, 29, 28);
+            nbjrsmois[2] = 31;
+            nbjrsmois[3] = 30;
+            nbjrsmois[4] = 31;
+            nbjrsmois[5] = 30;
+            nbjrsmois[6] = 31;
+            nbjrsmois[7] = 31;
+            nbjrsmois[8] = 30;
+            nbjrsmois[9] = 31;
+            nbjrsmois[10] = 30;
+            nbjrsmois[11] = 31;
+
+            //&& SIGNIFICATION DU NO. DE LICENCE
+            //&& EX: GOUDREAU
+            //&& X--->GO = 71 + 79 = 150, DONC PRENDRE 0(Compliqué mais servira a vérifier avec nom cie)
+            //&& X = DÉMO
+            //&& X--->C pour CAD
+            //&& X--->W->WINFREIGHT, T->TACTISOFT, Z->ZEBRA, A->WINFREIGHT + ZEBRA, B->WINFREIGHT + TACTISOFT, C->ALL
+            //&& 9--->Pour 2000
+            //&& XX-- > Nbr de users
+            //&& 0001->Premier
+
+            //&& DONC NO LICENCE = 0CC0120001 && GOUDREAU LE BON
+
+            //&& DONC NO LICENCE = 9CC0020002 && ZEN LE BON
+            //&& DONC NO LICENCE = 0UB9150001 && ITS LE BON
+            //&& DONC NO LICENCE = 2CB0060001 && MAISLINER LE BON
+            //&& DONC NO LICENCE = 1UB9030001 && NORVIK LE BON
+            //&& DONC NO LICENCE = 2CB4050001 && CAC
+            //&& DONC NO LICENCE = 7CC4050002 && NOVA CARGO
+            //&& DONC NO LICENCE = 8CW4050003 && GMX
+            //&& DONC NO LICENCE = 7CB4100001 && NORTHERN ARROW
+            //&& DONC NO LICENCE = 9CLDI && TRANSPOLLDI
+            //&& DONC NO LICENCE = 3WAY0705 && 3 WAY
+            //&& NO LICENCE = 5FP610001 && FREIGHT PARTNERS
+
+
+            //&& DONC NO LICENCE = 5PCPLUS && PC PLUS
+
+            //&& DONC NO LICENCE = 2CC9060001 && MULTI - SERVICE GSTJ LE BON
+            //&& DONC NO LICENCE = 6CC9990001 && ACCES CREDIT LE BON
+            //&& DONC NO LICENCE = 4CC9990001 && GEOLAB
+
+            if (this.demo == false)
+            {
+                if (SUBSTR(WsCie.Licence, 2, 1) == "C")
+                    this.usdcad = "CAD";
+                else
+                    this.usdcad = "USD";
+            }
+
+            if (AT(SUBSTR(WsCie.Licence, 1, 1), "0123456789") != 0)
+                this.demo = false; // && Normal
+            else
+            {
+                if (SUBSTR(WsCie.Licence, 1, 1) == "X")
+                    this.demo = true; //&& Démonstration system
+                else
+                    this.licence = "ERROR"; //&& Invalid licence
+            }
+
+            switch (SUBSTR(WsCie.Licence, 3, 1))
+            {
+                case "W":
+                    this.winfreight = true;
+                    break;
+                case "T":
+                    //*this.tactisoft = true; //&& KM1
+                    break;
+                case "Z":
+                    this.zebra = true;
+                    break;
+                case "A":
+                    this.winfreight = true;
+                    this.zebra = true;
+                    break;
+                case "B":
+                    this.winfreight = true;
+                    //*this.tactisoft = true; //&& KM1
+                    this.zebra = false;
+                    break;
+                case "C":
+                    this.winfreight = true;
+                    //*this.tactisoft = true; //&& KM1
+                    this.zebra = true;
+                    break;
+            }
+
+            if (ALLTRIM(this.licence.ToString()) == "1UB9030001")
+                this.pdfmessage = ""; 
+            else
+                this.pdfmessage = "You will need a pdf reader program to read the attachment.  If you don't have one installed, you can download a free version at http://www.adobe.com/products/acrobat/readstep2.html."; 
         }
 
         public void releasefoxtoolbars()
@@ -759,9 +1679,25 @@ namespace vivael
             //WIP
         }
 
-        public void shutdown()
+        public void Shutdown()
         {
+            //*** shutdown the application
+            if (sessionid != 0)
+            {
+                //DELETE FROM(THIS.wssession_table) WHERE ident = THIS.Sessionid
+            }
 
+            //int i, isize;
+            //isize = ALEN(this.active_form);
+            //for (i = isize; i >= 0; i--)
+            //{
+            //    if (TYPE(this.active_form[0,i]) != typeof(bool) && !ISNULL(this.active_form[0,i]) && TYPE(this.active_form[0,i]) != typeof(string))
+            //    {
+            //        //active_form[0,i].QueryUnload();
+            //        //active_form[0,i].Release();
+            //    }
+            //}
+            //CLEAR EVENTS
         }
 
         public void synchro()

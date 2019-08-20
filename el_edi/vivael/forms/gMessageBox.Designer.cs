@@ -36,7 +36,7 @@
             this.lblMessage.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblMessage.AutoSize = true;
             this.lblMessage.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMessage.Location = new System.Drawing.Point(32, 23);
+            this.lblMessage.Location = new System.Drawing.Point(46, 34);
             this.lblMessage.Name = "lblMessage";
             this.lblMessage.Size = new System.Drawing.Size(72, 15);
             this.lblMessage.TabIndex = 1;
@@ -44,7 +44,8 @@
             // 
             // gMessageBox
             // 
-            this.ClientSize = new System.Drawing.Size(141, 67);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(168, 86);
             this.Controls.Add(this.lblMessage);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;

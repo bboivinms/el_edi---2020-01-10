@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQL_Dll", "MySQL_Dll\MySQ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vivael", "vivael\vivael.csproj", "{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoquilleViva", "CoquilleViva\CoquilleViva.csproj", "{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

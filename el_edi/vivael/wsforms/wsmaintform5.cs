@@ -19,51 +19,66 @@ namespace vivael.wsforms
         int BufferMode = 2;
         bool AutoCenter = true;
 
-        /*-- Name of the associated search form*/
-        string search_form = "";
-
         //*-- Main key 1 for the note. Ex.:"CLIENT"
         string notekey1_entity = "";
 
         //* --Main key 2 for the note (Used to be more specific), usually blank.
         string notekey2_context = "";
 
-        //* --Instance in the Session.Active_form
-        int? sessioninstance = 0;
 
         //* --If there is a unique sequencial id to fill in the main key, put the name of the field here
-        string uniqueid = "";
+        //string uniqueid = "";
         //* --For a header-detail program, put the name of the view (in the grid) here.
         string detailviewname = "";
         //*-- Put to false to avoid checking changes in the parent class.
         bool detailviewcheckchanges = true;
 
-        //* --Type < F > oxpor or<C> rystal of the attached report
-        string report_type = "F";
-
         string search_form_param = "";
-        bool proportional_resize = true;
         bool use_transaction = true;
-        bool init_ok = true;
 
         //* --Record before performing an add
         bool nrecordbeforeadd = false;
 
-        //*-- Used to keep an additionnal parameter when calling the form
-        bool paramplus = false;
         bool start_on_last = false;
         bool lreturnrec = false;
-        bool o_left = false;
-        bool o_top = false;
-        bool o_height = false;
-        bool o_width = false;
-        bool is_resizable = false;
+      
         bool is_fixed = false;
-        bool cfunction = false;
 
         public wsmaintform5()
         {
             InitializeComponent();
+            wsGrid1.AutoGenerateColumns = false;
+        }
+
+        private void OnLoad(object sender, EventArgs e)
+        {
+            try
+            {
+                FileToScreen();
+                bindControls(sdPTable, this);
+
+            }
+            catch (Exception ex) { string x = ex.ToString(); }
+        }
+
+        public override void FileToScreen()
+        {
+            sdPTable.LoadRow();
+        }
+
+        private void SelectionChange(object sender, EventArgs e)
+        {
+            SelectionChange();
+        }
+
+        public void SelectionChange()
+        {
+            if (wsGrid1.CurrentCell != null)
+            {
+                gQuery(sdPTable.MyQuery, sdPTable, wsGrid1.CurrentCell.RowIndex, 1, sdPTable.isFoxpro);
+                sdPTable.noCurrent = wsGrid1.CurrentCell.RowIndex;
+                FileToScreen();
+            }
         }
 
         public override void RefreshBar()
@@ -124,7 +139,7 @@ namespace vivael.wsforms
                     // *--------------------------------*
                     // * Regular                        *
                     // *--------------------------------*
-                    if (lajout)
+                    if (lAjout)
                     { //	&&VERIFIE SI L'USAGER PEUT FAIRE DE L'AJOUT
                         BtnNew.Visible = true;
                     }
@@ -142,7 +157,7 @@ namespace vivael.wsforms
                     }
                     else
                     {
-                        if (lmodif)
+                        if (lModif)
                         { // &&VERIFIE SI L'USAGER PEUT FAIRE de LA MODIFICATION
 
                             BtnModify.Visible = true;
@@ -152,7 +167,7 @@ namespace vivael.wsforms
                             BtnModify.Visible = false;
                         }
 
-                        if (lsupp)
+                        if (lSupp)
                         { // &&VERIFIE SI L'USAGER PEUT FAIRE de LA DESTRUCTION
                             BtnDelete.Visible = true;
                         }
@@ -169,7 +184,7 @@ namespace vivael.wsforms
                     }
                     else
                     {
-                        if (limp)
+                        if (lImp)
                         {
                             if (bof && eof)
                             {
@@ -194,7 +209,6 @@ namespace vivael.wsforms
             }
 
         }
-
 
     }
 }

@@ -30,14 +30,14 @@
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.BtnPrint = new vivael.wscontrols.wsbutton();
-            this.BtnFirst = new vivael.wscontrols.commandbutton();
-            this.BtnPrev = new vivael.wscontrols.commandbutton();
+            this.BtnFirst = new vivael.wscontrols.Commandbutton();
+            this.BtnPrev = new vivael.wscontrols.Commandbutton();
             this.BtnSearch = new vivael.wscontrols.wsbutton();
             this.BtnModify = new vivael.wscontrols.wsbutton();
             this.BtnDelete = new vivael.wscontrols.wsbutton();
             this.BtnNew = new vivael.wscontrols.wsbutton();
-            this.BtnLast = new vivael.wscontrols.commandbutton();
-            this.BtnNext = new vivael.wscontrols.commandbutton();
+            this.BtnLast = new vivael.wscontrols.Commandbutton();
+            this.BtnNext = new vivael.wscontrols.Commandbutton();
             this.BtnQuit = new vivael.wscontrols.wsbutton();
             this.BtnSave = new vivael.wscontrols.wsbutton();
             this.BtnUndo = new vivael.wscontrols.wsbutton();
@@ -244,14 +244,14 @@
 
         public System.Windows.Forms.Panel panel1;
         protected wscontrols.wsbutton BtnPrint;
-        protected wscontrols.commandbutton BtnFirst;
-        protected wscontrols.commandbutton BtnPrev;
+        protected wscontrols.Commandbutton BtnFirst;
+        protected wscontrols.Commandbutton BtnPrev;
         protected wscontrols.wsbutton BtnSearch;
         protected wscontrols.wsbutton BtnModify;
         protected wscontrols.wsbutton BtnDelete;
         protected wscontrols.wsbutton BtnNew;
-        protected wscontrols.commandbutton BtnLast;
-        protected wscontrols.commandbutton BtnNext;
+        protected wscontrols.Commandbutton BtnLast;
+        protected wscontrols.Commandbutton BtnNext;
         protected wscontrols.wsbutton BtnQuit;
         protected wscontrols.wsbutton BtnSave;
         protected wscontrols.wsbutton BtnUndo;

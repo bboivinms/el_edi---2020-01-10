@@ -15,8 +15,24 @@ using static vivael.Globals;
 
 namespace vivael.wsforms
 {
-    public partial class DataMenu : Form
+    public partial class DataMenu : Form, WsControl
     {
+        [
+        Category("Translation"),
+        TypeConverter(typeof(WsControl)),
+        Editor(typeof(WsControl), typeof(string)),
+        Description("The english text of the title form.  You can enter an english text here.")
+        ]
+        public string Text_EN { get; set; }
+
+        [
+        Category("Translation"),
+        TypeConverter(typeof(WsControl)),
+        Editor(typeof(WsControl), typeof(string)),
+        Description("The french text of the title form.  You can enter an french text here.")
+        ]
+        public string Text_FR { get; set; }
+
         public DataMenu()
         {
             InitializeComponent();
@@ -26,61 +42,61 @@ namespace vivael.wsforms
 
         public object parameters;
         public DataSource sdPTable = new DataSource();
-        public bool bTableIsSet = false; //ADDED_VARIABLE_KJ_2018_10_30 // used to see if SetTable was called and Data Source manipulation is needed
+        public bool bTableIsSet = false;   //ADDED_VARIABLE_KJ_2018_10_30 // used to see if SetTable was called and Data Source manipulation is needed
 
-        string search_form = ""; // *-- Name of the associated search form
-        string notekey1_entity = ""; // *-- Main key 1 for the note. Ex.:"CLIENT"
-        string notekey2_context = ""; // *-- Main key 2 for the note (Used to be more specific), usually blank.
-        protected string formaction = ""; // *-- Action given when called by the menu (Usually blank)
-        int? sessioninstance = 0; // *-- Instance in the Session.Active_form
-        int uniqueid = 0; // *-- if there is a unique sequencial id to fill in the main key, put the name of the field here
+        protected string search_form = "";           // *-- Name of the associated search form
+        string notekey1_entity = "";       // *-- Main key 1 for the note. Ex.:"CLIENT"
+        string notekey2_context = "";      // *-- Main key 2 for the note (Used to be more specific), usually blank.
+        protected string formaction = "";  // *-- Action given when called by the menu (Usually blank)
+        protected object SessionInstance = 0;           // *-- Instance in the Session.Active_form
+        protected object uniqueid = 0;     // *-- if there is a unique sequencial id to fill in the main key, put the name of the field here
         protected string report_name = ""; // *-- Name of the attached report
-        string report_type = "F"; // *-- Type <F>oxpor or <C>rystal of the attached report
-        protected int newrecord = 0; // *-- Used to bring back the saved record
-        protected bool lajout = true;
-        protected bool lmodif = true;
-        protected bool lsupp = true;
-        protected bool limp = true;
-        //string search_form_param = "";
-        //bool proportional_resize = true;
+        protected string report_type = "F";          // *-- Type <F>oxpro or <C>rystal of the attached report
+        protected int newrecord = 0;       // *-- Used to bring back the saved record
+        protected bool lAjout = true;
+        protected bool lModif = true;
+        protected bool lSupp = true;
+        protected bool lImp = true;
+        string search_form_param = "";
+        protected object proportional_resize = true;
         bool use_transaction = false;
         int temp_id = 0;
-        bool search_modal = true; // KJ: 2018-10-03: Foxpro + Go Fish: Value is always true for vivasoft.pjx + only used in wsmaintform2
-        bool init_ok = true;
+        bool search_modal = true;           // KJ: 2018-10-03: Foxpro + Go Fish: Value is always true for vivasoft.pjx + only used in wsmaintform2
+        protected bool init_ok = true;
 
-        protected bool eof = false; // *-- Currently on last record
-        protected bool bof = false; // *-- Currently on first record
-        protected bool editing = false; // *-- Currently in edition
-        int nrecordbeforeadd = 0; // *-- Record before performing an add
-        string formname; // *-- Name of the form when called from the menu.
-        protected bool adding = false; // *-- .T. if we are in adding mode (new rec option)
-        protected int formrecno = 0;
-        bool? paramplus = false; // *-- Used to keep an additionnal parameter when calling the form
+        protected bool eof = false;         // *-- Currently on last record
+        protected bool bof = false;         // *-- Currently on first record
+        protected bool editing = false;     // *-- Currently in edition
+        int nrecordbeforeadd = 0;           // *-- Record before performing an add
+        protected string formname;                    // *-- Name of the form when called from the menu.
+        protected bool adding = false;      // *-- .T. if we are in adding mode (new rec option)
+        protected int FormRecno = 0;
+        public object ParamPlus = false;    // *-- Used to keep an additionnal parameter when calling the form
         bool start_on_last = false;
-        //bool lreturnrec = false;
-        //bool o_left = false;
-        //bool o_top = false;
-        //bool o_height = false;
-        //bool o_width = false;
-        //bool is_resizable = false;
-        //bool ldemo = false;
+        bool lreturnrec = false;
+        protected object o_left = 0;
+        protected object o_top = 0;
+        protected object o_height = 0;
+        protected object o_width = 0;
+        protected bool is_resizable = false;
+        protected object Picture;
+        bool ldemo = false;
         bool search_form_lident = true;
-        //string search_form_order = "";
-        string cfunction = "";
+        string search_form_order = "";
+        protected string cFunction = "";
 
         wsreport WsReport1;
 
-        int WindowType = 0; //NULL_INT; // ADDED_VARIABLE_KJ_2018_06_05
-        int record_position = -1; // ADDED_VARIABLE_KJ_2018_06_05
-        //Nullable<int> search_form_variant = null; // ADDED_VARIABLE_KJ_2018_06_12
-        protected bool Closable; //ADDED_VARIABLE_KJ_2018_06_18
+        protected int WindowType = 0;       // ADDED_VARIABLE_KJ_2018_06_05
+        int record_position = -1;           // ADDED_VARIABLE_KJ_2018_06_05
+        int? search_form_variant = null;    // ADDED_VARIABLE_KJ_2018_06_12
+        protected bool Closable;            //ADDED_VARIABLE_KJ_2018_06_18
 
-        string sMyOrder = ""; //ADDED_VARIABLE_KJ_2018_09_11 // used in navfirst to set order
+        string sMyOrder = "";               //ADDED_VARIABLE_KJ_2018_09_11 // used in navfirst to set order
         bool Modified { get; set; } //WIP
 
         public void doBefore_nav()
         {
-
             // -- Nothing in it. To use into the form. Called before moving the cursor.
         }
 
@@ -116,18 +132,18 @@ namespace vivael.wsforms
         public void SetTable(string sLMyTable, string sPMyOrder = "")
         {
             bTableIsSet = true;
-            
+
             sdPTable = GetObject(sLMyTable) as DataSource;
             SetOrder(sPMyOrder);
 
-            //	ExecuteProcess(BtnFirst, trtClick)
+            //ExecuteProcess(BtnFirst, trtClick)
         }
 
         public void SetPrimaryKey(DataSource sdPCursor, string primaryKey1, string primaryKey2 = "", string primaryKey3 = "")
         {
             sdPCursor.i.primary_1 = primaryKey1;
 
-            if(primaryKey2 != "")
+            if (primaryKey2 != "")
             {
                 sdPCursor.i.primary_2 = primaryKey2;
             }
@@ -150,14 +166,14 @@ namespace vivael.wsforms
 
         public void Destroy()
         {
-            if (sessioninstance > 0)
+            if ((int)SessionInstance > 0)
             {
-                oSession.shut_form(sessioninstance);
+                oSession.shut_form((int)SessionInstance);
             }
         }
 
-        public bool Init(string cFormName, string cAction = "", Nullable<int> nInstance = null, int nRecno = 0, Boolean? cParamPlus = null,
-                         bool blajout = true, bool blmodif = true, bool blsupp = true, bool blimp = true)
+        public virtual bool Init(string cFormName, string cAction = "", object nInstance = null, int nRecno = 0, object cParamPlus = null,
+                         bool lajout = true, bool lmodif = true, bool lsupp = true, bool limp = true)
         {
             // *
             // * Paramètres Action : ADD ---> Directement en ajout
@@ -176,10 +192,10 @@ namespace vivael.wsforms
             if (ISNULL(cFormName))
             {
                 m0frch = false;
-                blajout = true;
-                blmodif = true;
-                blsupp = true;
-                blimp = true;
+                lajout = true;
+                lmodif = true;
+                lsupp = true;
+                limp = true;
             }
 
             // * Si modal on désactive tout les tools bars.
@@ -188,32 +204,33 @@ namespace vivael.wsforms
                 oSession.Disabled_bar(0);
             }
 
-            //UNKNOWN_KJ_2018_07_30// if not EMPTY(nInstance)
-            //UNKNOWN_KJ_2018_07_30//	cfunction       = oSession.Active_form[nInstance,2]
-            //UNKNOWN_KJ_2018_07_30//} else { 
-            cfunction = "";
-            //UNKNOWN_KJ_2018_07_30//}
+            if(ISNULL(nInstance) || TYPE(nInstance) != typeof(int))
+            {
+                cFunction = "";
+                nInstance = 0;
+            }
+            else
+            {
+                cFunction = oSession.active_form[(int)nInstance, 1].ToString(); 
+            }
 
             formname = cFormName;
             formaction = Upper(cAction);
-            formrecno = nRecno;
-            sessioninstance = nInstance;
-
-            formrecno = nRecno;
-
-            paramplus = cParamPlus;
+            SessionInstance = (int)nInstance;
+            FormRecno = nRecno; 
+            ParamPlus = cParamPlus;
 
             if (!m0xpscheme)
             {
                 BackColor = oSession.WBackColor;
                 ForeColor = oSession.WForeColor;
-                //UNKNOWN_KJ_2018_06_05 Picture             = oSession.WPicture
+                Picture = oSession.WPicture;
             }
 
-            lajout = blajout;
-            lmodif = blmodif;
-            lsupp = blsupp;
-            limp = blimp;
+            this.lAjout = lajout;
+            this.lModif = lmodif;
+            this.lSupp =  lsupp;
+            this.lImp =   limp;
 
             // * Disable print button if not needed
             if (EMPTY(report_name))
@@ -248,7 +265,7 @@ namespace vivael.wsforms
             }
 
             // * Disable the fields
-            EnableDisable_fields("D");
+            EnableDisable_fields(this, "D");
 
             // *---> if the form was called in Add mode
             if (ALLTRIM(formaction) == "ADD" || ALLTRIM(formaction) == "ADDMODAL" || ALLTRIM(formaction) == "ADDMODALFILTER")
@@ -264,7 +281,7 @@ namespace vivael.wsforms
             else if (bTableIsSet)
             {
                 // *---> if we called it with a specific record
-                if (formrecno != 0)
+                if (FormRecno != 0)
                 {
                     if (nRecno <= RECCOUNT(sdPTable))
                     {
@@ -307,8 +324,7 @@ namespace vivael.wsforms
                 ActionModify();
             }
 
-            //Application.Run(this);
-            this.Show();
+           
             return true;
         }
 
@@ -322,7 +338,7 @@ namespace vivael.wsforms
                 if (oSession.on_error_quit == false)
                 { // && Only if we are not quitting because of an error
 
-                    MESSAGEBOX( IIF(m0frch, "Terminer l'édition (Sauvegarde ou abandon)", "Current edition must be saved or cancelled)"), 0 + 16,
+                    MESSAGEBOX(IIF(m0frch, "Terminer l'édition (Sauvegarde ou abandon)", "Current edition must be saved or cancelled)"), 0 + 16,
                                 IIF(m0frch, "Sortie impossible", "Exit not allowed now"));
 
                     NODEFAULT();
@@ -425,7 +441,7 @@ namespace vivael.wsforms
                 doAfter_delete();
 
                 // *---> if we called it with a specific record (=NO NAVIGATION)
-                if (formrecno != 0)
+                if (FormRecno != 0)
                 {
                     RELEASE();
                 }
@@ -464,7 +480,7 @@ namespace vivael.wsforms
             editing = true; // && We are in editing mode
 
             // * Enable the fields
-            EnableDisable_fields("E");
+            EnableDisable_fields(this, "E");
 
 
             //* Used for special processes in the form (empty here)
@@ -517,7 +533,7 @@ namespace vivael.wsforms
             adding = true; // We are in adding mode
 
             // * Enable the fields
-            EnableDisable_fields("E");
+            EnableDisable_fields(this, "E");
 
             //* Used for special processes in the form (empty here)
             doBefore_new();
@@ -539,9 +555,10 @@ namespace vivael.wsforms
 
             temp_id = 0;
 
-            //if (EMPTY(uniqueid))  //sdPTable.i.primary_1
+            //if (EMPTY(uniqueid))  //= field name in a table
             //{
             //    //UNKNOWN_KJ_2018_05_24// APPEND BLANK
+            //    //peut-etre alternative : INSERT INTO sdtable.tablename (+ primary key +) VALUES ( max primary key + 1 )
             //}
             //else
             //{
@@ -616,7 +633,7 @@ namespace vivael.wsforms
             //**** PERFORM THE SAVE if VALIDATION OK  ****
             //**** return .T. if SAVED, .F. if FAILED ****
 
-            int id_key;
+            //int id_key;
             string sError_message;
 
             //* Do the save only if valid_say returns .T.
@@ -630,32 +647,32 @@ namespace vivael.wsforms
             // * Used for special processes in the form (empty here)
             doBefore_sav();
 
-            // * if there is a main sequential key (INTEGER) to update
-            if (adding && !EMPTY(uniqueid))
-            {
-                id_key = oSession.get_next_id(Upper(sdPTable.Table_name));
+            //// * if there is a main sequential key (INTEGER) to update
+            //if (adding && !EMPTY(uniqueid))
+            //{
+            //    id_key = oSession.get_next_id(Upper(sdPTable.Table_name));
 
-                if (id_key != 0)
-                {
-                    uniqueid = id_key;
-                }
+            //    if (id_key != 0)
+            //    {
+            //        uniqueid = id_key;
+            //    }
 
-                //* Next situation should only append when testing without the menu (and oSession)
-                if (id_key == 0)
-                {
-                    id_key = CINT(RAND() * 100000);
-                    {
-                        uniqueid = id_key;
+            //    //* Next situation should only append when testing without the menu (and oSession)
+            //    if (id_key == 0)
+            //    {
+            //        id_key = CINT(RAND() * 100000);
+            //        {
+            //            uniqueid = id_key;
 
-                        WAIT("Uniqueid = " + STR(id_key), "WINDOW NOWAIT");
-                    }
-                }
-            }
-           
+            //            WAIT("Uniqueid = " + STR(id_key), "WINDOW NOWAIT");
+            //        }
+            //    }
+            //}
+
             // * Save the data (main table only)
             ScreenToFile();
 
-            if(adding)
+            if (adding)
                 sdPTable.SaveRow("insert");
             else
                 sdPTable.SaveRow("update");
@@ -686,7 +703,7 @@ namespace vivael.wsforms
             EnableButtons();
 
             // * Disable the fields
-            EnableDisable_fields("D");
+            EnableDisable_fields(this, "D");
             Refresh();
             WAIT(IIF(m0frch, "Sauvegardé...", "Saved..."), "WINDOW NOWAIT");
             return true;
@@ -723,7 +740,7 @@ namespace vivael.wsforms
                 }
 
                 //* Disable the fields
-                EnableDisable_fields("D");
+                EnableDisable_fields(this, "D");
 
                 Refresh();
 
@@ -742,7 +759,7 @@ namespace vivael.wsforms
         {
         }
 
-        public void EnableDisable_fields(string vPEnableDisable = "") // , vPStartObject = null) // removed start object
+        public void EnableDisable_fields(Control aContainer, string vPEnableDisable = "") // , vPStartObject = null) // removed start object
         {
             if (!bTableIsSet)
             {
@@ -750,57 +767,63 @@ namespace vivael.wsforms
             }
 
             //Loop through the form and find groupbox with children and enable / disable fields
-            foreach (Control control in this.Controls) 
+            foreach (Control ctrl in aContainer.Controls)
             {
-                if (control is GroupBox && control.HasChildren)
+                if (ctrl is wsgroupbox || ctrl is Panel)
                 {
-                    foreach (Control ctrl in control.Controls) //loop through controls within the groupbox
+                    EnableDisable_fields(ctrl, vPEnableDisable);
+                }
+
+                if (ctrl is wstextbox || ctrl is wsComboBox || ctrl is wsnumbox)
+                {
+                    ctrl.Enabled = vPEnableDisable == "E";
+
+                    if (!ctrl.Enabled)
                     {
-                        if (ctrl is wstextbox || ctrl is wsComboBox || ctrl is wsnumbox)
-                        {
-                            ctrl.Enabled = vPEnableDisable == "E";
-
-                            if (!ctrl.Enabled)
-                            {
-                                ctrl.BackColor = oSession.fdisabledBackColor;
-                                ctrl.ForeColor = oSession.fdisabledForeColor;
-                            }
-                            else
-                            {
-                                ctrl.BackColor = oSession.fBackColor;
-                                ctrl.ForeColor = oSession.fForeColor;
-                            }
-                        }
-                        if (ctrl is wsCheckBox || ctrl is wsoptiongroup)
-                        {
-                            ctrl.Enabled = vPEnableDisable == "E";
-
-                            if (!ctrl.Enabled)
-                            {
-                                ctrl.ForeColor = oSession.fdisabledForeColor;
-                            }
-                            else
-                            {
-                                ctrl.ForeColor = oSession.fForeColor;
-                            }
-                        }
-                        if (ctrl is Label)
-                        {
-                            ctrl.Enabled = vPEnableDisable == "E";
-
-                            if (!ctrl.Enabled)
-                            {
-                                ctrl.ForeColor = oSession.LdisabledForeColor;
-                                ctrl.BackColor = oSession.LdisabledBackColor;
-
-                            }
-                            else
-                            {
-                                ctrl.ForeColor = oSession.LForeColor;
-                                ctrl.BackColor = oSession.LBackColor;
-                            }
-                        }
+                        ctrl.BackColor = oSession.fdisabledBackColor;
+                        ctrl.ForeColor = oSession.fdisabledForeColor;
                     }
+                    else
+                    {
+                        ctrl.BackColor = oSession.fBackColor;
+                        ctrl.ForeColor = oSession.fForeColor;
+                    }
+                }
+
+                if (ctrl is wsCheckBox || ctrl is wsoptiongroup)
+                {
+                    ctrl.Enabled = vPEnableDisable == "E";
+
+                    if (!ctrl.Enabled)
+                    {
+                        ctrl.ForeColor = oSession.fdisabledForeColor;
+                    }
+                    else
+                    {
+                        ctrl.ForeColor = oSession.fForeColor;
+                    }
+                }
+
+                if (ctrl is Label)
+                {
+                    ctrl.Enabled = vPEnableDisable == "E";
+
+                    if (!ctrl.Enabled)
+                    {
+                        ctrl.ForeColor = oSession.LdisabledForeColor;
+                        ctrl.BackColor = oSession.LdisabledBackColor;
+
+                    }
+                    else
+                    {
+                        ctrl.ForeColor = oSession.LForeColor;
+                        ctrl.BackColor = oSession.LBackColor;
+                    }
+                }
+
+                if(ctrl is wsGrid)
+                {
+                    ctrl.Enabled = vPEnableDisable == "D";
                 }
             }
 
@@ -823,27 +846,20 @@ namespace vivael.wsforms
             /*
             while (EnumControl(MyWindow, i) != "")
             {
-
                 if (!ISNULL(gAP({ EnumControl(MyWindow, i)}))) 
                 {
                     if (gAP({ EnumControl(MyWindow, i)}).lEnableDisable) 
                     {
-
                         { EnumControl(MyWindow, i)}..InputEnabled = vPEnableDisable = "E";
                     }
 
                     if (vPEnableDisable = "E")
                     {
-
                         { EnumControl(MyWindow, i)}..Color = oSession.lforecolor;
-
                     }
                     else
                     {
-
                         { EnumControl(MyWindow, i)}..Color = oSession.ldisabledforecolor;
-
-
                     }
                 }
                 i++;
@@ -857,9 +873,9 @@ namespace vivael.wsforms
             {
                 if (oSession.administrator)
                 {
-                    if (!EMPTY(cfunction))
+                    if (!EMPTY(cFunction))
                     {
-                        OpenSister(new wsm1permis(), cfunction, Text, "");
+                        OpenSister(new wsm1permis(), cFunction, Text, "");
                     }
                 }
                 else
@@ -1057,14 +1073,11 @@ namespace vivael.wsforms
             wsSearchForm wsSearch = new wsSearchForm(sdPTable);
             DialogResult dr = wsSearch.ShowDialog();
 
-            if (dr == DialogResult.Cancel)
+            if (dr == DialogResult.OK || dr == DialogResult.Cancel)
             {
                 NavGo(wsSearch.RecordId);
             }
-            else if (dr == DialogResult.OK)
-            {
-                NavGo(wsSearch.RecordId);
-            }
+
             FileToScreen();
             EnableButtons();
             ////WIP: TO CHECK WHERE THE IFS ARE SITUATED
@@ -1273,7 +1286,7 @@ namespace vivael.wsforms
                         // *--------------------------------*
                         // * Regular                        *
                         // *--------------------------------*
-                        if (lajout && ALLTRIM(formaction) != "J1")
+                        if (lAjout && ALLTRIM(formaction) != "J1")
                         { //	&&VERIFIE SI L'USAGER PEUT FAIRE DE L'AJOUT
                             BtnNew.Visible = true;
                         }
@@ -1299,7 +1312,7 @@ namespace vivael.wsforms
                         else
                         {
                             // *---> if we called it WITH À specific record (=No NAVIGATION)
-                            if (formrecno != 0)
+                            if (FormRecno != 0)
                             {
                                 BtnFirst.Visible = false;
                                 BtnPrev.Visible = false;
@@ -1318,7 +1331,7 @@ namespace vivael.wsforms
                             }
 
 
-                            if (lmodif)
+                            if (lModif)
                             { // &&VERIFIE SI L'USAGER PEUT FAIRE de LA MODIFICATION
 
                                 BtnModify.Visible = true;
@@ -1329,7 +1342,7 @@ namespace vivael.wsforms
                             }
 
 
-                            if (lsupp && ALLTRIM(formaction) != "J1")
+                            if (lSupp && ALLTRIM(formaction) != "J1")
                             { // &&VERIFIE SI L'USAGER PEUT FAIRE de LA DESTRUCTION
                                 BtnDelete.Visible = true;
                             }
@@ -1349,7 +1362,7 @@ namespace vivael.wsforms
                         else
                         {
 
-                            if (limp)
+                            if (lImp)
                             {
                                 if (bof && eof)
                                 {
@@ -1524,10 +1537,10 @@ namespace vivael.wsforms
         {
           //*-- Nothing in it. To use into the form. Called after saving the current record.
         }
-        public void doAfter_undo()
+        public virtual void doAfter_undo()
         {
         }
-        public void doAfter_delete()
+        public virtual void doAfter_delete()
         {
         }
         public void doBefore_delete()
@@ -1686,67 +1699,66 @@ namespace vivael.wsforms
             NavFirst();
         }
 
-        public void bindControls(DataSource source)
+        public void bindControls(DataSource source, Control aContainer)
         {
             string propertyName = "";
             string[] dataMember;
 
-            foreach (Control control in this.Controls)
+            foreach (Control ctrl in aContainer.Controls)
             {
-                if (control is GroupBox && control.HasChildren)
+                if (ctrl is GroupBox)
                 {
-                    foreach (Control ctrl in control.Controls)
+                    bindControls(source, ctrl);
+                } 
+
+                if (ctrl.GetType().GetInterface("IDataControls") == typeof(IDataControls))
+                {
+                    IDataControls iControl = (IDataControls)ctrl;
+                    dataMember = iControl.apControlSource.Split('.');
+
+                    if (iControl is TextBox)
                     {
-                        if (ctrl.GetType().GetInterface("IDataControls") == typeof(IDataControls))
+                        propertyName = "Text";
+                    }
+
+                    if (iControl is CheckBox)
+                    {
+                        propertyName = "Checked";
+                    }
+
+                    if (iControl is wsoptiongroup || iControl is wsnumbox)
+                    {
+                        propertyName = "Value";
+                    }
+
+                    if (iControl is ComboBox)
+                    {
+                        propertyName = "SelectedValue";
+
+                        if (dataMember[1] == "type")
                         {
-                            IDataControls iControl = (IDataControls)ctrl;
-                            dataMember = iControl.apControlSource.Split('.');
-
-                            if (iControl is TextBox)
-                            {
-                                propertyName = "Text";
-                            }
-
-                            if (iControl is CheckBox)
-                            {
-                                propertyName = "Checked";
-                            }
-
-                            if (iControl is wsoptiongroup || iControl is wsnumbox)
-                            {
-                                propertyName = "Value";
-                            }
-
-                            if (iControl is ComboBox)
-                            {
-                                propertyName = "SelectedValue";
-
-                                if (dataMember[1] == "type")
-                                {
-                                    propertyName = "Text";
-                                }
-                            }
-
-                            if (dataMember.Count() != 2)
-                            {
-                                return;
-                            }
-
-                            if (dataMember[0] == source.Table_name)
-                            {
-                                if (dataMember[1] == "")
-                                {
-                                    return;
-                                }
-                                ctrl.DataBindings.Clear();
-                                
-                                ctrl.DataBindings.Add(propertyName, source, ToTitleCase(dataMember[1]), false, DataSourceUpdateMode.OnPropertyChanged);
-                            }
-
+                            propertyName = "Text";
                         }
+                    }
 
-                    }   //end foreach control
-                }   //end if groupbox control
+                    if (dataMember.Count() != 2)
+                    {
+                        return;
+                    }
+
+                    if (dataMember[0] == source.Table_name)
+                    {
+                        if (dataMember[1] == "")
+                        {
+                            return;
+                        }
+                        ctrl.DataBindings.Clear();
+
+                        ctrl.DataBindings.Add(propertyName, source, ToTitleCase(dataMember[1]), false, DataSourceUpdateMode.OnPropertyChanged);
+                    }
+
+                }
+
             } //end foreach form control
             
         }

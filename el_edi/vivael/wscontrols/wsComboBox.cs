@@ -13,7 +13,6 @@ namespace vivael.wscontrols
     public partial class wsComboBox : ComboBox, IDataControls
     {
         private const int WM_ENABLE = 0x000A;
-        private const string WM_EnabledChanged = "&HA";
 
         public string apControlSource { get; set; }
         public string apType { get; set; }

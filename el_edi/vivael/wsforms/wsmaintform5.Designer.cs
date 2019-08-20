@@ -63,9 +63,9 @@ namespace vivael.wsforms
             // 
             // Wsshape1
             // 
-            this.Wsshape1.Location = new System.Drawing.Point(5, 228);
+            this.Wsshape1.Location = new System.Drawing.Point(5, 243);
             this.Wsshape1.Name = "Wsshape1";
-            this.Wsshape1.Size = new System.Drawing.Size(499, 171);
+            this.Wsshape1.Size = new System.Drawing.Size(499, 153);
             this.Wsshape1.TabIndex = 0;
             this.Wsshape1.TabStop = false;
             this.Wsshape1.Text_EN = null;
@@ -73,12 +73,15 @@ namespace vivael.wsforms
             // 
             // wsGrid1
             // 
-            this.wsGrid1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.wsGrid1.Location = new System.Drawing.Point(5, 6);
+            this.wsGrid1.MultiSelect = false;
             this.wsGrid1.Name = "wsGrid1";
+            this.wsGrid1.ReadOnly = true;
+            this.wsGrid1.RowTemplate.Height = 15;
             this.wsGrid1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.wsGrid1.Size = new System.Drawing.Size(499, 220);
-            this.wsGrid1.TabIndex = 4;
+            this.wsGrid1.Size = new System.Drawing.Size(499, 231);
+            this.wsGrid1.TabIndex = 0;
+            this.wsGrid1.SelectionChanged += new System.EventHandler(this.SelectionChange);
             // 
             // wsmaintform5
             // 
@@ -90,9 +93,10 @@ namespace vivael.wsforms
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "wsmaintform5";
             this.Text = "Title";
+            this.Load += new System.EventHandler(this.OnLoad);
             this.Controls.SetChildIndex(this.Wsshape1, 0);
-            this.Controls.SetChildIndex(this.panel1, 0);
             this.Controls.SetChildIndex(this.wsGrid1, 0);
+            this.Controls.SetChildIndex(this.panel1, 0);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wsGrid1)).EndInit();
@@ -101,8 +105,7 @@ namespace vivael.wsforms
         }
 
         #endregion
-
-        private wscontrols.wsgroupbox Wsshape1;
-        private wscontrols.wsGrid wsGrid1;
+        public wscontrols.wsgroupbox Wsshape1;
+        protected wscontrols.wsGrid wsGrid1;
     }
 }

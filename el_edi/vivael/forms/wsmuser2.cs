@@ -47,7 +47,7 @@ namespace vivael.forms
                 FillComboBoxWithData(wslang, wsComboBox3, "DESCR", "CODE"); //fill combobox3 with the wslang table data
                 wsComboBox2.Items.AddRange(new string[] { "", "Accounting", "Management", "Operation", "Sales" });
 
-                bindControls(wsuser);
+                bindControls(wsuser, this);
 
             }
             catch (Exception ex) { string x = ex.ToString(); }

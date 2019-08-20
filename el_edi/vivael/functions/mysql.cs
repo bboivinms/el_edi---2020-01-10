@@ -517,6 +517,11 @@ namespace vivael
             {
                 gMessageBox gMessage = new gMessageBox("", sPText1, 500);
             }
+            else if(Contains(sPText2, "TIME"))
+            {
+                int second = Convert.ToInt32(sPText2.Split(' ')[1].ToString()) * 1000;
+                gMessageBox gMessage = new gMessageBox("", sPText1, second);
+            }
             else
             {
                 MESSAGEBOX(sPText1, 0, "");
@@ -870,7 +875,7 @@ namespace vivael
                     }
                     else
                     {
-                        if (Contains(sPFieldType, "int") || sPFieldType == "decimal")
+                        if (Contains(sPFieldType, "int") || sPFieldType == "decimal" || sPFieldType == "bigint")
                         {
                             if (PFieldValue == null)
                             {
@@ -1016,6 +1021,13 @@ namespace vivael
                         fieldname != "ident_fox" &&
                         !Contains(Lower(comment), "fox_ai"))
                 {
+                    if(!Contains(Lower(comment), "fox_ai"))
+                    {
+                        DataSource NextId = new DataSource();
+                        gQuery("SELECT MAX("+sdPTable.i.primary_1+")+1 AS next_id FROM "+sdPTable.i.name, NextId, 0, 0, sdPTable.isFoxpro);
+                        lastInsertId = NextId.result[0]["next_id"];
+                        sdPTable.SetProperty(ToTitleCase(sdPTable.i.primary_1), lastInsertId);
+                    }
 
                     if (sLColumnNames != "")
                     {
@@ -1037,7 +1049,8 @@ namespace vivael
                         if (sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(int) ||
                             sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(bool) ||
                             sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(byte) ||
-                            sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(decimal))
+                            sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(decimal)||
+                            sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(long))
                         {
                             sLColumnValues += sdPTable.GetColumn(ToTitleCase(fieldname), "");
                         }
@@ -1094,7 +1107,8 @@ namespace vivael
                         if (sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(int) ||
                             sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(bool) ||
                             sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(byte) ||
-                            sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(decimal))
+                            sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(decimal)||
+                             sdPTable.GetColumn(ToTitleCase(fieldname), "").GetType() == typeof(long))
                         {
                             sLUpdate += sdPTable.GetColumn(ToTitleCase(fieldname), "");
                         }

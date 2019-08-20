@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace vivael.wscontrols
 {
+    [Designer(typeof(System.Windows.Forms.Design.ControlDesigner))]
     public partial class wsGrid : DataGridView
     {
         public int HighlightStyle = 1;

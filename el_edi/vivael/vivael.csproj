@@ -82,13 +82,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="classes\wsPrintForm.cs" />
     <Compile Include="classes\wsreport.cs" />
+    <Compile Include="classes\WsVivaSoft.cs" />
     <Compile Include="data\basedata_structures.cs" />
     <Compile Include="data\basedata_tables.cs" />
     <Compile Include="data\basedata.cs" />
     <Compile Include="data\ComHelper.cs" />
     <Compile Include="data\DllFoxpro.cs" />
     <Compile Include="data\IDataControls.cs" />
+    <Compile Include="forms\armrep.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\armrep.Designer.cs">
+      <DependentUpon>armrep.cs</DependentUpon>
+    </Compile>
     <Compile Include="forms\ReportPreview.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,6 +109,12 @@
     <Compile Include="forms\VivaMainWindow.designer.cs">
       <DependentUpon>VivaMainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="forms\wsemailinfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsemailinfo.Designer.cs">
+      <DependentUpon>wsemailinfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="forms\wsLogin.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,6 +126,12 @@
     </Compile>
     <Compile Include="forms\wsmuser2.Designer.cs">
       <DependentUpon>wsmuser2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\wsprintform.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsprintform.Designer.cs">
+      <DependentUpon>wsprintform.cs</DependentUpon>
     </Compile>
     <Compile Include="functions\foxpro.cs" />
     <Compile Include="functions\vivael.cs" />
@@ -344,11 +364,23 @@
     <Compile Include="wscontrols\btnroundsml.designer.cs">
       <DependentUpon>btnroundsml.cs</DependentUpon>
     </Compile>
-    <Compile Include="wscontrols\commandbutton.cs">
+    <Compile Include="wscontrols\cntprintform2.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="wscontrols\cntprintform2.Designer.cs">
+      <DependentUpon>cntprintform2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\Commandbutton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="wscontrols\commandbutton.Designer.cs">
-      <DependentUpon>commandbutton.cs</DependentUpon>
+    <Compile Include="wscontrols\Commandbutton.Designer.cs">
+      <DependentUpon>Commandbutton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\Wsbtnsearch.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\Wsbtnsearch.Designer.cs">
+      <DependentUpon>Wsbtnsearch.cs</DependentUpon>
     </Compile>
     <Compile Include="wscontrols\wsCheckBox.cs">
       <SubType>Component</SubType>
@@ -361,6 +393,12 @@
     </Compile>
     <Compile Include="wscontrols\wsComboBox.Designer.cs">
       <DependentUpon>wsComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wscontrols\Wscommandbutton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\Wscommandbutton.Designer.cs">
+      <DependentUpon>Wscommandbutton.cs</DependentUpon>
     </Compile>
     <Compile Include="wscontrols\WsControl.cs" />
     <Compile Include="wscontrols\wsGrid.cs">
@@ -474,24 +512,36 @@
     <Compile Include="wsforms\wsmaintform5.Designer.cs">
       <DependentUpon>wsmaintform5.cs</DependentUpon>
     </Compile>
+    <Compile Include="classes\WsSession.cs" />
     <Compile Include="wsforms\wsModalForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="wsforms\wsModalForm.Designer.cs">
       <DependentUpon>wsModalForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="classes\WsSession.cs" />
+    <Compile Include="wsforms\wsPrint.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsPrint.Designer.cs">
+      <DependentUpon>wsPrint.cs</DependentUpon>
+    </Compile>
     <Compile Include="wsforms\wsSearchForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="wsforms\wsSearchForm.Designer.cs">
       <DependentUpon>wsSearchForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="forms\armrep.resx">
+      <DependentUpon>armrep.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="forms\ReportPreview.resx">
       <DependentUpon>ReportPreview.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\VivaMainWindow.resx">
       <DependentUpon>VivaMainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\wsemailinfo.resx">
+      <DependentUpon>wsemailinfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\wsLogin.resx">
       <DependentUpon>wsLogin.cs</DependentUpon>
@@ -501,6 +551,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="forms\wsmuser2.resx">
       <DependentUpon>wsmuser2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\wsprintform.resx">
+      <DependentUpon>wsprintform.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -518,8 +571,14 @@
     <EmbeddedResource Include="wscontrols\btnroundsml.resx">
       <DependentUpon>btnroundsml.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="wscontrols\commandbutton.resx">
-      <DependentUpon>commandbutton.cs</DependentUpon>
+    <EmbeddedResource Include="wscontrols\cntprintform2.resx">
+      <DependentUpon>cntprintform2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\Commandbutton.resx">
+      <DependentUpon>Commandbutton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wscontrols\Wsbtnsearch.resx">
+      <DependentUpon>Wsbtnsearch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="wscontrols\wsCheckBox.resx">
       <DependentUpon>wsCheckBox.cs</DependentUpon>
@@ -555,6 +614,9 @@
     <EmbeddedResource Include="wsforms\wsmaintform5.resx">
       <DependentUpon>wsmaintform5.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsPrint.resx">
+      <DependentUpon>wsPrint.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="wsforms\wsSearchForm.resx">
       <DependentUpon>wsSearchForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -573,24 +635,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="barcodet">
-      <Guid>{008F9BE3-4457-418B-A0EA-422A41091272}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="images\BOUT_OFF.png" />
     <Content Include="images\BOUT_ON1.png" />
     <Content Include="images\BOUT_ON2.png" />
     <Content Include="images\BT_GREEN.png" />
     <Content Include="images\BT_GREY.png" />
     <Content Include="images\BT_RED.png" />
+    <None Include="images\coupole.jpg" />
+    <None Include="images\Lookx.bmp" />
+    <None Include="images\LOOK.BMP" />
     <Content Include="images\Notes.bmp" />
+    <Content Include="images\Printer.ico" />
+    <None Include="images\rapport_i.bmp" />
     <None Include="images\WSBack.jpg" />
     <None Include="images\SplashTop.jpg" />
     <None Include="images\show.png" />
@@ -620,6 +676,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="reports\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="barcodet">
+      <Guid>{008F9BE3-4457-418B-A0EA-422A41091272}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

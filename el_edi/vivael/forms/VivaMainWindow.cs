@@ -10,7 +10,9 @@ namespace vivael.forms
 {
     public partial class VivaMainWindow : Form
     {
+        private System.Windows.Forms.LinkLabel HiddenLink;
         private WsSession Session;
+
         public VivaMainWindow()
         {
             InitializeComponent();
@@ -41,7 +43,7 @@ namespace vivael.forms
                 {
                     foreach (ToolStripItem item in menuItem.DropDownItems)
                     {
-                        if(item is wsToolStripMenuItem)
+                        if (item is wsToolStripMenuItem)
                         {
                             wsToolStripMenuItem btnMenu = (wsToolStripMenuItem)item;
 
@@ -53,7 +55,7 @@ namespace vivael.forms
 
                 if (menuItem is wsToolStripMenuItem)
                 {
-                    if(menuItem.Text_EN != null && menuItem.Text_FR != null)
+                    if (menuItem.Text_EN != null && menuItem.Text_FR != null)
                         menuItem.Text = IIF(m0frch, menuItem.Text_FR, menuItem.Text_EN);
                 }
             }
@@ -75,9 +77,10 @@ namespace vivael.forms
 
         private void Btn_utilisateurs_Click(object sender, EventArgs e)
         {
-            wsmuser2 form = new wsmuser2();
-            form.MdiParent = this;
-            form.Init("wsmuser2", " ");
+            //wsmuser2 wsmuser2 = new wsmuser2();
+            //wsmuser2.MdiParent = this;
+            //wsmuser2.Init("wsmuser2", " ");
+            oSession.Launch_Form("wsmuser2", " ", 0, false);
         }
 
         private void Btn_exit_Click(object sender, EventArgs e)
@@ -85,12 +88,29 @@ namespace vivael.forms
             Close();
         }
 
-        //******Method for Testing form only******
-        private void WsToolStripButton1_Click(object sender, EventArgs e)
+        private void ReprésentantsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            wsmaintform5 test = new wsmaintform5();
-            test.MdiParent = this;
-            test.Init("wsmaintform5", " ");
+            //armrep armrep = new armrep();
+            //armrep.MdiParent = this;
+            //armrep.Init("armrep", " ");
+            oSession.Launch_Form("armrep", " ", 0, false);
+        }
+
+        private void BtnTest_Click(object sender, EventArgs e)
+        {
+            //wsprintform wsprintform = new wsprintform();
+            //wsprintform.MdiParent = this;
+            //wsprintform.Show();
+            oPrintForm.Print("LISTIMPRIM", "lcCursorName", "VPFE," + STR(1000));
+        }
+
+        private void VivaMainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Alt && e.KeyCode == Keys.F1)
+            { 
+                XXALTF1();
+            }
         }
     }
 }
+   

@@ -15,24 +15,9 @@ using static vivael.Globals;
 
 namespace vivael
 {
-    public partial class wsmaintform2 : DataMenu, WsControl
+    public partial class wsmaintform2 : DataMenu
     {
-        [
-        Category("Translation"),
-        TypeConverter(typeof(WsControl)),
-        Editor(typeof(WsControl), typeof(string)),
-        Description("The english text of the title form.  You can enter an english text here.")
-        ]
-        public string Text_EN { get; set; }
-
-        [
-        Category("Translation"),
-        TypeConverter(typeof(WsControl)),
-        Editor(typeof(WsControl), typeof(string)),
-        Description("The french text of the title form.  You can enter an french text here.")
-        ]
-        public string Text_FR { get; set; }
-
+        
         public wsmaintform2()
         {
             InitializeComponent();

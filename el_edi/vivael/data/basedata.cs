@@ -93,6 +93,10 @@ namespace vivael
                 {
                     PropertyValue = Convert.ToBoolean(PropertyValue);
                 }
+                else if (type == typeof(long) || type == typeof(long?))
+                {
+                    PropertyValue = Convert.ToInt64(PropertyValue);
+                }
 
                 GetType().GetProperty(PropertyName).SetValue(this, PropertyValue);
             }
@@ -228,6 +232,7 @@ namespace vivael
                 sLOperationSQL = gCreateDelete(this);
             }
 
+            //Console.WriteLine(sLOperationSQL);
             if (sLOperationSQL != "")
                 gQuery(sLOperationSQL, isFoxpro);
 
@@ -255,6 +260,10 @@ namespace vivael
                 else if (properties[i].PropertyType == typeof(decimal) || properties[i].PropertyType == typeof(decimal?))
                 {
                     properties[i].SetValue(this, Convert.ToDecimal(0));
+                }
+                else if(properties[i].PropertyType == typeof(long) || properties[i].PropertyType == typeof(long?))
+                {
+                    properties[i].SetValue(this, Convert.ToInt64(0));
                 }
                 else
                 {

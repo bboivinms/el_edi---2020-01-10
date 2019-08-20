@@ -31,8 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(wsmaintform4));
             this.BtnNote = new System.Windows.Forms.PictureBox();
             this.Wsshape1 = new System.Windows.Forms.GroupBox();
-            this.BtnUndo = new System.Windows.Forms.Button();
-            this.BtnSave = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.BtnNote)).BeginInit();
             this.SuspendLayout();
             // 
@@ -103,7 +101,5 @@
 
         private System.Windows.Forms.PictureBox BtnNote;
         private System.Windows.Forms.GroupBox Wsshape1;
-        private System.Windows.Forms.Button BtnUndo;
-        private System.Windows.Forms.Button BtnSave;
     }
 }
