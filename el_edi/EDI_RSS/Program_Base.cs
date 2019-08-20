@@ -136,8 +136,7 @@ namespace EDI_RSS
         public string[] PortIds = { "ELE", "ETE", "ETI", "ETL",
                                     "MLE", "MTE", "MTI", "MTL" };
 
-        public string PortId_code;
-
+        
         public bool Routing(string[] args)
         {
             LogEventSource = "EDI RSS Processor";
@@ -205,7 +204,7 @@ namespace EDI_RSS
             IDedi_rss = GetFirstInt(Filename);
             gIDataEdi_path = GetIdedi_rss();
 
-            if (!vendor.After_Setup(true)) return false;
+            if (!vendor.After_Setup_Partner(true)) return false;
 
             if (gRss_request == "855P" && gRss_client == "ALL") { new Program_855(); return ProcessStep2_After(); }
             if (gRss_request == "856P" && gRss_client == "ALL") { new Program_856(); return ProcessStep2_After(); }
@@ -239,7 +238,7 @@ namespace EDI_RSS
 
             if (Array.IndexOf(PortIds, PortId_code) < 0)
             {
-                return vendor.After_Setup(false);
+                return vendor.After_Setup_Partner(false);
             }
 
             wscie = PortId_code.Substring(0, 1);
@@ -264,7 +263,7 @@ namespace EDI_RSS
                 gIDataEdi_path = GetEdi_partner("edi_arclient");
             }
 
-            if (!vendor.After_Setup(false))
+            if (!vendor.After_Setup_Partner(false))
             {
                 return false;
             }
@@ -298,6 +297,14 @@ namespace EDI_RSS
                     proc856.ProcessOrder(root, Filepath);
                 }
 
+                Filename = $"{wscie}{IDE}-Routing-IN-{IDpartner.ToString().PadLeft(5, '0')}-{edi_doc_number}-{ToAlphaNumeric(Fileidentifier)}-{(DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds}.xml";
+
+                Status += "Filename: " + Filename + NL;
+                
+                CopyFile(Filepath, Path.Combine(GetGlobalCopies_path(), Filename));
+
+                // File.Copy(Filepath, Path.Combine(RSS_send_path, Filename));
+
             } //if send or create
 
             return true;
@@ -311,12 +318,9 @@ namespace EDI_RSS
             
             if (Array.IndexOf(PortIds, PortId_code) < 0)
             {
-                return vendor.After_Setup(false);
+                return vendor.After_Setup_Partner(false);
             }
-
-            wscie = PortId_code.Substring(0, 1);
-            IDE = PortId_code.Substring(1, 2);
-
+            
             // Only on outgoing files that we have control overfilenames
             // Going to have to check port if its routing in or routing out
 
@@ -352,7 +356,7 @@ namespace EDI_RSS
                 gIDataEdi_path = GetEdi_partner("edi_apsupp");
             }
 
-            if (!vendor.After_Setup(false))
+            if (!vendor.After_Setup_Partner(false))
             {
                 return false;
             }

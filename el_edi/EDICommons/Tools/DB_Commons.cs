@@ -10,6 +10,9 @@ using EDI_RSS;
 using static EDI_DB.Data.Base;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Net.Mail;
+using System.Net;
+using System.IO;
 
 namespace EDI_DB.Data
 {
@@ -21,6 +24,7 @@ namespace EDI_DB.Data
         public static string TransactionCode = "";
         public static string PortId = "";
         public static string Filename = "";
+        public static string Fileidentifier = "";
         public static string Filepath = "";
         public static string ErrorMessage = "";
         public static string ProgramId = "";
@@ -33,8 +37,14 @@ namespace EDI_DB.Data
         public static string RSS_send_path = "";
         public static string NL = "\r\n";
         public static string Status = "";
+        public static string Debug = "";
         public static string Status_Queries = "";
         public static string Error = "";
+
+        // public static IDataRecord gDataIDedi_rss;
+        // public static IDataRecord gDataIDedi_path;
+        public static IDataRecord gIDataEdi_path;
+        public static string gRss_datapath = "";
 
         public static bool IsLocalTest = false;
 
@@ -56,9 +66,7 @@ namespace EDI_DB.Data
         public static string gRss_request;
         public static string gRss_client;
 
-        // public static IDataRecord gDataIDedi_rss;
-        // public static IDataRecord gDataIDedi_path;
-        public static IDataRecord gIDataEdi_path;
+        public static string PortId_code;
 
         public static T IIf<T>(bool expression, T truePart, T falsePart) { return expression ? truePart : falsePart; }
 
@@ -70,7 +78,54 @@ namespace EDI_DB.Data
             return TimeSpan.Compare(DateTime.Now.TimeOfDay, DateTime.Parse($"2010/01/01 {hour}:{minute}:00.000").TimeOfDay) > 0;
         }
 
-        public static void SetRouting_out_path(string TheType)
+        public static string Left(this string value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            maxLength = Math.Abs(maxLength);
+
+            return (value.Length <= maxLength
+                   ? value
+                   : value.Substring(0, maxLength)
+                   );
+        }
+
+        public static void CopyFile(string copyFromPath, string copyToPath)
+        {
+            Status += $"CopyFile(copyFromPath: {copyFromPath}, copyToPath: {copyToPath})"+ NL;
+
+            if (File.Exists(copyToPath))
+            {
+                var target = new FileInfo(copyToPath);
+                if (target.IsReadOnly)
+                    target.IsReadOnly = false;
+            }
+
+            var origin = new FileInfo(copyFromPath);
+            origin.CopyTo(copyToPath, true);
+
+            var destination = new FileInfo(copyToPath);
+            if (destination.IsReadOnly)
+            {
+                destination.IsReadOnly = false;
+                destination.CreationTime = DateTime.Now;
+                destination.LastWriteTime = DateTime.Now;
+                destination.LastAccessTime = DateTime.Now;
+                destination.IsReadOnly = true;
+            }
+            else
+            {
+                destination.CreationTime = DateTime.Now;
+                destination.LastWriteTime = DateTime.Now;
+                destination.LastAccessTime = DateTime.Now;
+            }
+        }
+
+        public static string GetGlobalCopies_path()
+        {
+            return @"C:\Program Files\RSSBus\RSSBus Connect\data\GlobalCopies\Send";
+        }
+
+        public static void SetRouting_out_path(string TheType, string ToWhere = "Send")
         {
             string where = "error";
             if (IDE.Substring(0, 1) == "L")
@@ -92,7 +147,7 @@ namespace EDI_DB.Data
             }
             else if (TheType == "routing_out" || TheType == "routing_in")
             {
-                RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\routing\{wscie}{IDE}_routing\{wscie}{IDE}_{TheType}\Send";
+                RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\routing\{wscie}{IDE}_routing\{wscie}{IDE}_{TheType}\{ToWhere}";
             }
             else 
             {
@@ -100,13 +155,15 @@ namespace EDI_DB.Data
 
                 if(wscie == "E")
                 {
-                    RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\envl\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\Send";
+                    RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\envl\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\{ToWhere}";
                 }
                 else if(wscie == "M")
                 {
-                    RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\ms\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\Send";
+                    RSS_send_path = $@"C:\Program Files\RSSBus\RSSBus Connect\{where}\ms\{alias}\{wscie}{IDE}_{alias}\{wscie}{IDE}_{alias}_{TheType}\{ToWhere}";
                 }  
             }
+
+            Status += ($"SetRouting_out_path(TheType: {TheType}, ToWhere: {ToWhere}): RSS_send_path: {RSS_send_path + NL}");
         }
 
         public static void SetupClient(int pArclient_ident)
@@ -121,7 +178,7 @@ namespace EDI_DB.Data
         {
             char[] arr = str.Where(c => (char.IsLetterOrDigit(c) ||
                              char.IsWhiteSpace(c) ||
-                             c == '-')).ToArray();
+                             c == '-' || c == '_')).ToArray();
 
             return new string(arr);
         }
@@ -245,6 +302,8 @@ namespace EDI_DB.Data
 
             IDataRecord result = results[0];
 
+            gRss_datapath = edi_path.ToUpper();
+
             return result;
         }
     }
@@ -258,12 +317,13 @@ namespace EDI_DB.Data
         public MySqlTransaction BeginTransaction() { return conn.BeginTransaction(); }
 
         public MySqlCommand CreateCommand() { return conn.CreateCommand(); }
+
         public string GetDatabase() { try { return conn.Database; } catch { } return ""; }
 
         // public void Open() { conn.Open(); }
 
         // public void Close() { conn.Close(); }
-        
+
         public long HExecuteSQLNonQuery(string slpMySQLQuery, Dictionary<string, string> pParams = null)
         {
             MySqlCommand cmd = conn.CreateCommand();
@@ -344,16 +404,14 @@ namespace EDI_DB.Data
             return sdPCursor;
         }
 
+
         public DataSet HExecuteSQLQueryDataSet(string slpMySQLQuery, Dictionary<string, string> pParams = null)
         {
             MySqlCommand cmd = conn.CreateCommand();
             cmd.CommandType = CommandType.Text;
             cmd.CommandText = slpMySQLQuery;
-
             string Parameters = "";
-
             DataSet sdPCursor = new DataSet();
-
             try
             {
                 if (pParams != null)
@@ -364,7 +422,6 @@ namespace EDI_DB.Data
                         Parameters += "Key: " + pParam.Key + " Value: " + pParam.Value + NL;
                     }
                 }
-
                 MySqlDataReader rd = cmd.ExecuteReader();
                 DataTable dt = new DataTable();
                 dt.Load(rd);
@@ -382,10 +439,10 @@ namespace EDI_DB.Data
                 Status_Queries += "Connection: " + conn.ConnectionString + NL;
                 Status_Queries += "HExecuteSQLQuery END" + NL;
             }
-
             // WIP
             return sdPCursor;
         }
+
 
         ~DB_Parent()
         {
@@ -430,7 +487,90 @@ namespace EDI_DB.Data
             {
             }
         }
+
+        
+        public void LogEmail(GMail mail)
+        {
+            MySqlCommand cmd = CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = @"INSERT INTO gmail ( mail_smtp,  mail_user,  mail_datapath,  mail_from,  mail_to,  mail_cc,  mail_bcc,  mail_body,  mail_subject) 
+                                VALUES            (?mail_smtp, ?mail_user, ?mail_datapath, ?mail_from, ?mail_to, ?mail_cc, ?mail_bcc, ?mail_body, ?mail_subject) ; ";
+
+            cmd.Parameters.AddWithValue("?mail_smtp", mail.mail_smtp);
+            cmd.Parameters.AddWithValue("?mail_user", mail.mail_user);
+            cmd.Parameters.AddWithValue("?mail_datapath", EdiPath);
+            cmd.Parameters.AddWithValue("?mail_from", mail.mail_from);
+            cmd.Parameters.AddWithValue("?mail_to", mail.mail_to);
+            cmd.Parameters.AddWithValue("?mail_cc", mail.mail_cc);
+            cmd.Parameters.AddWithValue("?mail_bcc", mail.mail_bcc);
+            cmd.Parameters.AddWithValue("?mail_body", mail.mail_body);
+            cmd.Parameters.AddWithValue("?mail_subject", mail.mail_subject);
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            finally
+            {
+            }
+        } 
     }
+
+    
+    public class GMail : MailMessage
+    {
+        public SmtpClient mail_client;
+        public string mail_smtp = "smtp-mail.outlook.com";
+        public string mail_user = "noreply@multi-services.org";
+        public string mail_pw = "Cuz813911";
+        public string mail_from = "web2@envl.ca";
+        public string mail_name = "";
+        public MailAddress mail_dev_email = new MailAddress("kjohnston@multi-services.org");
+
+        // readonly properties
+        public string mail_to { get { return this.To.ToString(); } }
+        public string mail_cc { get { return this.CC.ToString(); } }
+        public string mail_bcc { get { return this.Bcc.ToString(); } }
+        public string mail_body { get { return this.Body.ToString(); } }
+        public string mail_subject { get { return this.Subject.ToString(); } }
+        public string mail_header { get { return this.Headers.ToString(); } }
+
+        public GMail(string FromName)
+        {
+            mail_name = FromName;
+            mail_client = new SmtpClient(mail_smtp);
+            mail_client.Credentials = new NetworkCredential(mail_user, mail_pw);
+            mail_client.EnableSsl = true;
+
+            this.IsBodyHtml = true;
+            this.Headers.Add("Message-Id",
+                         String.Format("<{0}@{1}>",
+                         Guid.NewGuid().ToString(),
+                        "envl.ca"));
+
+            MailAddress from = new MailAddress(mail_from, mail_name, System.Text.Encoding.UTF8);
+            this.From = from;
+        }
+
+        public void Send()
+        {
+            if (this.To.Count == 0) { this.To.Add(mail_dev_email); }
+            else if (!this.To.Contains(mail_dev_email) &&
+                     !this.Bcc.Contains(mail_dev_email)) { this.Bcc.Add(mail_dev_email); }
+
+            string SubjectTestMsg = "Test server: " + wscie + IDE;
+
+            if (UseSystem != "live" && (this.Subject.Left(SubjectTestMsg.Length) != SubjectTestMsg))
+            {
+                this.Subject = "Test server: " + wscie + IDE + " : " + this.Subject;
+            }
+
+            DB_RSS.LogEmail(this);
+            mail_client.Send(this);
+        }
+
+    }
+    
 
     public class CDB_WEB : DB_Parent
     {
@@ -702,4 +842,5 @@ namespace EDI_DB.Data
             set {  }
         }
     }
+
 }

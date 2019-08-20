@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.452
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDI_850", "EDI_850\EDI_850.csproj", "{E458CB57-45E3-44E7-B90E-22695CEC5A5C}"
 EndProject
@@ -14,6 +14,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQL_Dll", "MySQL_Dll\MySQL_Dll\MySQL_Dll.csproj", "{389B7C74-3792-4AF6-B482-2C912F1C1B5A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vivael", "vivael\vivael.csproj", "{C2CC85B2-FDAE-4512-952B-245ADD93D6CB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{389B7C74-3792-4AF6-B482-2C912F1C1B5A} = {389B7C74-3792-4AF6-B482-2C912F1C1B5A}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoquilleViva", "CoquilleViva\CoquilleViva.csproj", "{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}"
 EndProject

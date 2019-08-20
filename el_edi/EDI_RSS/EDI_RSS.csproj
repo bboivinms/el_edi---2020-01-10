@@ -79,6 +79,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Resource_EDI_RSS.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource_EDI_RSS.resx</DependentUpon>
+    </Compile>
     <Compile Include="WscieBuyer\Email856Writer.cs" />
     <Compile Include="WscieBuyer\Email855Writer.cs" />
     <Compile Include="WscieBuyer\Email810Writer.cs" />
@@ -94,8 +99,12 @@
     <Compile Include="XMLProcessor_810.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EDICommons\EDICommons.csproj">
@@ -122,6 +131,9 @@
     </Content>
     <Content Include="Example\856-Example.xml" />
     <Content Include="Example\856.xml" />
+    <None Include="Ressource\template856Email.html" />
+    <None Include="Ressource\template810Email.html" />
+    <None Include="Ressource\template855Email.html" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.1">
@@ -134,6 +146,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource_EDI_RSS.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource_EDI_RSS.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

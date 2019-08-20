@@ -4,7 +4,7 @@ namespace vivael
 {
 	public class data_mysql_proc : DataSource
 	{
-		public data_mysql_proc() { Table_name = i.name = "mysql_proc"; i.primary_1 = "tablename"; i.primary_2 = null; i.primary_3 = null; isFoxpro = true; }
+		public data_mysql_proc() { Table_name = i.name = "mysql_proc"; i.primary_1 = "tablename"; i.primary_2 = null; i.primary_3 = null; isFoxpro = false; }
 
 		private string _Tablename; public string Tablename { get { return _Tablename; } set { Set(ref _Tablename, value, "Tablename"); } }
 		private byte? _Domysql_Sync; public byte? Domysql_Sync { get { return _Domysql_Sync; } set { Set(ref _Domysql_Sync, value, "Domysql_Sync"); } }

@@ -1,4 +1,5 @@
-﻿using EDICommons.Tools;
+﻿using EDI_DB.Data;
+using EDICommons.Tools;
 using MySql.Data;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace EDI_RSS
         {
             HtmlHeader = new StringBuilder();
             HtmlFooter = new StringBuilder();
-            Htmldoc = File.ReadAllText(@"template855Email.html");
+            Htmldoc = EDI_RSS.Resource_EDI_RSS.template855Email;
             program855Id = Id;
         }
 
@@ -86,12 +87,12 @@ namespace EDI_RSS
                          apsupp.NAME AS apsupp_name, apsupp.ADDR1 AS apsupp_addr1, apsupp.ADDR2 AS apsupp_addr2,
                          apsupp.CITY AS apsupp_city, apsupp.STATE AS apsupp_state, apsupp.ZIP AS apsupp_zip 
                          FROM popo 
-                         INNER JOIN apsupp 
-                         ON apsupp.ident = popo.IDVENDOR
+                         INNER JOIN apsupp ON apsupp.ident = popo.IDVENDOR
                          WHERE popo.ident = ?popo_ident
                         ", Params);
 
-            Htmldoc = Htmldoc.Replace("~#po#~", Data["popo_pono"].ToString());
+            Htmldoc = Htmldoc.Replace("~#popo_pono#~", Data["popo_pono"].ToString());
+            Htmldoc = Htmldoc.Replace("~#popo_clientpo#~", Data["popo_clientpo"].ToString());
 
             if (result.Count > 0)
             {
@@ -145,46 +146,23 @@ namespace EDI_RSS
 
         private void SendInternalEmail()
         {
-            SmtpClient client = new SmtpClient("smtp-mail.outlook.com");
-            client.Credentials = new NetworkCredential("noreply@multi-services.org", "Cuz813911");
-            client.EnableSsl = true;
+            
+            GMail msg = new GMail("EDI");
 
-            MailAddress from = new MailAddress("web2@envl.ca", "Ariva EDI (Enveloppes Laurentide)", System.Text.Encoding.UTF8);
-            MailAddress to = null;
-
-            if (UseSystem == "live")
+            if (UseSystem == "live" && IDE_status == "send")
             {
-                if (IDE_status == "send")
-                {
-                    to = new MailAddress("emilie@multi-services.org");
-                }
-            }
-            else
-            {
-               to = new MailAddress("buickremi.cool@hotmail.com");
+                msg.To.Add(new MailAddress("emilie@multi-services.org"));
             }
 
-            MailMessage msg = new MailMessage(from, to);
             msg.Body = Htmldoc.ToString();
             msg.Subject = $"Confirmation commande #{purchaseOrder} (PO)";
-            msg.IsBodyHtml = true;
-            msg.Headers.Add("Message-Id",
-                         String.Format("<{0}@{1}>",
-                         Guid.NewGuid().ToString(),
-                        "envl.ca"));
 
-            if (UseSystem != "live")
-            {
-                msg.Subject = "Test server: " + msg.Subject;
-            }
-
-            msg.CC.Add(new MailAddress("kjohnston@multi-services.org"));
-
-            client.Send(msg);
-
+            msg.Send();
+            
             // KJ: 2018-11-05: Add a 1 second delay after sending an email, 
             //                 in order to prevent the email from being considered spam
             System.Threading.Thread.Sleep(1000);
+            
         }
 
         public void SaveToFile(string path)

@@ -38,10 +38,11 @@ namespace EDI_RSS
                 MySqlCommand cmd = DB_VIVA.CreateCommand();
                 cmd.CommandType = CommandType.Text;
 
-                cmd.CommandText = "INSERT INTO edi_855v (idvendor, popo_ident, filename, popo_pono, po_dte, popo_del_name, iddel_addr, Xml855Raw, error, programId)" +
-                                  " VALUES(?idvendor, ?popo_ident, ?Filename, ?popo_pono, ?po_dte, ?popo_del_name, ?iddel_addr, ?Xml855Raw, ?error, ?programId);";
-
+                cmd.CommandText = "INSERT INTO edi_855v (idvendor,  popo_ident,  filename,  popo_pono,  popo_clientpo,  po_dte,  popo_del_name,  iddel_addr,  Xml855Raw,  error,  programId)" +
+                                  "             VALUES (?idvendor, ?popo_ident, ?Filename, ?popo_pono, ?popo_clientpo, ?po_dte, ?popo_del_name, ?iddel_addr, ?Xml855Raw, ?error, ?programId);";
                 string poNumber = IIF_NULL(XMLNode, "//BAK03"); //popo_pono
+                int popo_ident = 0;
+
                 XmlNode N1Loop1 = Get_Node(XMLNode, "//N1Loop1[N1/N101 = 'ST']");
 
                 //select ident of popo with the pono
@@ -54,7 +55,8 @@ namespace EDI_RSS
                 //if their purchase order is found in our popo table
                 if (result.Count != 0)
                 {
-                    cmd.Parameters.AddWithValue("?popo_ident", Convert.ToInt32(result[0]["ident"].ToString())); //popo_ident
+                    popo_ident = Convert.ToInt32(result[0]["ident"].ToString());
+                    cmd.Parameters.AddWithValue("?popo_ident", popo_ident.ToString()); //popo_ident
 
                     //if is our order we have pickup
                     if(result[0]["DEL_NAME"].ToString() == "PICK UP")
@@ -73,21 +75,25 @@ namespace EDI_RSS
                     else
                     {
                         cmd.Parameters.AddWithValue("?popo_del_name", IIF_NULL(N1Loop1, ".//N102"));  //popo_del_name / ship to address
-                    }    
+                    }
                 }
                 else
                 {
                     cmd.Parameters.AddWithValue("?popo_ident", null);
+                    cmd.Parameters.AddWithValue("?popo_del_name", "");
                     error += "Error : The Purchase number "+ poNumber + "is not found in popo table\n";
                 }
 
                 cmd.Parameters.AddWithValue("?Filename",     filepath);
                 cmd.Parameters.AddWithValue("?popo_pono",    poNumber);                             //popo_pono
+                cmd.Parameters.AddWithValue("?popo_clientpo", IIF_NULL(XMLNode, "//BAK08"));        //popo_clientpo
                 cmd.Parameters.AddWithValue("?po_dte", StringToDate(IIF_NULL(XMLNode, "//BAK04"))); //po_dte
                 cmd.Parameters.AddWithValue("?iddel_addr",     IIF_NULL(N1Loop1, ".//N104"));       //iddel_addr
                 cmd.Parameters.AddWithValue("?Xml855Raw", XMLNode.InnerXml);                        //Xml855Raw
                 cmd.Parameters.AddWithValue("?error", error);                                       //error dans xml
                 cmd.Parameters.AddWithValue("?programId", program855Id);                            //programId
+
+                Fileidentifier = "-POID-" + popo_ident.ToString() + "-PO-" + poNumber;
 
                 cmd.ExecuteNonQuery();
                 cmd.Parameters.Clear();
@@ -102,54 +108,63 @@ namespace EDI_RSS
                     for (int j = 0; j < xmlItems.Count; j++)
                     {
                         Params.Clear();
-                        Params.Add("?ident", result[0]["ident"].ToString());
+                        Params.Add("?ident", popo_ident.ToString());
                         List<IDataRecord> popoiData = DB_VIVA.HExecuteSQLQuery(@"SELECT ivprix.REF_FOURN, popoi.COST, popoi.QTY_ORD, ivprod.CODE, ivprod.desc AS ivprod_desc, popo.EXPE_DTE FROM popoi
                                                                                 inner join popo on popo.ident = popoi.IDPO
                                                                                 inner join ivprix on ivprix.IDVENDOR = popo.IDVENDOR and ivprix.IDPRODUIT = popoi.IDPROD 
                                                                                 inner join ivprod on popoi.IDPROD = ivprod.ident 
                                                                                 Where popoi.idpo = ?ident order by ivprix.ident desc limit 1", Params);
 
-                        string ivprod_desc = popoiData[0]["ivprod_desc"].ToString();
+                        string ivprod_desc = "";
                         string qty_ord = IIF_NULL(PO1Loop1.Item(i), ".//PO102"); //quantity ordered / popoi_qty_ord
-
-                        //verify if we have the same qty_ord
-                        if (popoiData[0]["QTY_ORD"].ToString() != qty_ord)
-                        {
-                            error += "Error : The qty " + qty_ord + " do not correspond with our popoi.QTY_ORD " + popoiData[0]["QTY_ORD"].ToString() + "\n";
-                        }
 
                         string cost = IIF_NULL(PO1Loop1.Item(i), ".//PO104"); //unit price / popoi_cost
 
+                        
                         //verify if unite price is not mille
                         if (IIF_NULL(PO1Loop1.Item(i), ".//PO105") != "TP")
                         {
                             cost = (decimal.Parse(IIF_NULL(PO1Loop1.Item(i), ".//PO104"), CultureInfo.InvariantCulture) * 1000).ToString("N4");
                         }
 
-                        //verify if we have the same cost
-                        if (popoiData[0]["cost"].ToString() != cost)
+                        if (popoiData.Count > 0)
                         {
-                            error += "Error : The cost per thousand : " + cost + " do not correspond with us popo.cost : " + popoiData[0]["cost"].ToString() + "\n";
-                        }
+                            ivprod_desc = popoiData[0]["ivprod_desc"].ToString();
 
-                        //verify if we have the same ref_fourn
-                        if (popoiData[0]["REF_FOURN"].ToString() != IIF_NULL(PO1Loop1.Item(i), ".//PO107"))
-                        {
-                            error += "Error : The ref_fourn provide : " + IIF_NULL(PO1Loop1.Item(i), ".//PO107") + " do not correspond with us ref_fourn : " + popoiData[0]["REF_FOURN"].ToString() + "\n";
-                        }
+                            //verify if we have the same qty_ord
+                            if (popoiData[0]["QTY_ORD"].ToString() != qty_ord)
+                            {
+                                error += "Error : The qty " + qty_ord + " do not correspond with our popoi.QTY_ORD " + popoiData[0]["QTY_ORD"].ToString() + "\n";
+                            }
 
-                        //verify if we have the same code
-                        if (popoiData[0]["CODE"].ToString() != IIF_NULL(PO1Loop1.Item(i), ".//PO109"))
-                        {
-                            error += "Error : The code of product provide : " + IIF_NULL(PO1Loop1.Item(i), ".//PO109") + " do not correspond with us code product : " + popoiData[0]["CODE"].ToString() + "\n";
-                        }
+                            //verify if we have the same cost
+                            if (popoiData[0]["cost"].ToString() != cost)
+                            {
+                                error += "Error : The cost per thousand : " + cost + " do not correspond with us popo.cost : " + popoiData[0]["cost"].ToString() + "\n";
+                            }
 
-                        //verify if we have the same EXPE_DTE
-                        if (popoiData[0]["EXPE_DTE"].ToString().Substring(0, 10) != StringToDate(IIF_NULL(xmlItems.Item(j), ".//ACK05")))
-                        {
-                            error += "Error : The Estimated Delivery date : " + StringToDate(IIF_NULL(xmlItems.Item(j), ".//ACK05")) + " do not correspond with us EXPE_DTE : " + popoiData[0]["EXPE_DTE"].ToString().Substring(0, 10) + "\n";
+                            //verify if we have the same ref_fourn
+                            if (popoiData[0]["REF_FOURN"].ToString() != IIF_NULL(PO1Loop1.Item(i), ".//PO107"))
+                            {
+                                error += "Error : The ref_fourn provide : " + IIF_NULL(PO1Loop1.Item(i), ".//PO107") + " do not correspond with us ref_fourn : " + popoiData[0]["REF_FOURN"].ToString() + "\n";
+                            }
+
+                            //verify if we have the same code
+                            if (popoiData[0]["CODE"].ToString() != IIF_NULL(PO1Loop1.Item(i), ".//PO109"))
+                            {
+                                error += "Error : The code of product provide : " + IIF_NULL(PO1Loop1.Item(i), ".//PO109") + " do not correspond with us code product : " + popoiData[0]["CODE"].ToString() + "\n";
+                            }
+
+                            //verify if we have the same EXPE_DTE
+                            if (popoiData[0]["EXPE_DTE"].ToString().Substring(0, 10) != StringToDate(IIF_NULL(xmlItems.Item(j), ".//ACK05")))
+                            {
+                                error += "Error : The Estimated Delivery date : " + StringToDate(IIF_NULL(xmlItems.Item(j), ".//ACK05")) + " do not correspond with us EXPE_DTE : " + popoiData[0]["EXPE_DTE"].ToString().Substring(0, 10) + "\n";
+                            }
                         }
-                        
+                        else
+                        {
+                            error += $"Error : popo_ident ({popo_ident}): Not found";
+                        }
                         cmd.CommandText = "INSERT INTO edi_855vd (popoi_line, popoi_qty_tot, popoi_unit, popoi_cost, popoi_unite, " +
                                           "ivprix_ref_fourn, ivprod_code, ivprod_desc, popo_pono, popoi_idpo, statusCode, popoi_qty_ord, popoi_item_unit, popo_expe_dte, programId, error, Xml855ItemRaw) " +
                                           "VALUES(?popoi_line, ?popoi_qty_ord, ?popoi_unit, ?popoi_cost, ?popoi_unite, ?ivprix_ref_fourn, ?ivprod_code, ?ivprod_desc, " +
@@ -165,8 +180,8 @@ namespace EDI_RSS
                         cmd.Parameters.AddWithValue("?ivprod_desc", ivprod_desc);                                               //BuyerPartNumber / ivprod_code
                         cmd.Parameters.AddWithValue("?popo_pono",   IIF_NULL(PO1Loop1.Item(i), ".//REF[REF01 = 'PO']//REF02")); // Purchase Order Number / popo_pono
 
-                        if (result[0]["ident"].ToString() != "")
-                            cmd.Parameters.AddWithValue("?popoi_idpo",  Convert.ToInt32(result[0]["ident"].ToString()));        // Vendor Order Number / popoi_idpo = popo_ident
+                        if (popo_ident != 0)
+                            cmd.Parameters.AddWithValue("?popoi_idpo", popo_ident);        // Vendor Order Number / popoi_idpo = popo_ident
                         else
                             cmd.Parameters.AddWithValue("?popoi_idpo",  null);
 
@@ -186,9 +201,9 @@ namespace EDI_RSS
                     }
                 }
 
-                //Email855Writer email855 = new Email855Writer(program855Id);
-                //email855.Build();
-                //email855.Send();
+                Email855Writer email855 = new Email855Writer(program855Id);
+                email855.Build();
+                email855.Send();
             }
             catch (Exception ex)
             {

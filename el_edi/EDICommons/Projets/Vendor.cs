@@ -47,10 +47,8 @@ namespace EDI_RSS
             return "";
         }
         
-        public bool After_Setup(bool SetupRss)
+        public bool After_Setup_Partner(bool SetupRss)
         {
-            string DB_VIVA_name = "";
-            string DB_WEB_name = "";
 
             if (gIDataEdi_path == null)
             {
@@ -63,22 +61,31 @@ namespace EDI_RSS
                 gRss_request = gIDataEdi_path["rss_request"].ToString();
                 gRss_client = gIDataEdi_path["rss_client"].ToString();
             }
-            else
-            {
-                EdiPath = gIDataEdi_path["IDE_path"].ToString().ToLower();
-            }
-            
-            DB_VIVA_name = gIDataEdi_path["edi_db_viva"].ToString();
-            DB_WEB_name = gIDataEdi_path["edi_db_web"].ToString();
+            // else { EdiPath = gIDataEdi_path["IDE_path"].ToString().ToLower(); }
 
-            wscie = gIDataEdi_path["edi_code"].ToString().Substring(0, 1);
-            IDE = gIDataEdi_path["edi_code"].ToString().Substring(1, 2);
+            After_Setup();
+
+            return true;
+
+        }
+
+        public void After_Setup()
+        {
+            string DB_VIVA_name = gIDataEdi_path["edi_db_viva"].ToString();
+            string DB_WEB_name = gIDataEdi_path["edi_db_web"].ToString();
+
+            PortId_code = gIDataEdi_path["edi_code"].ToString();
+            wscie = PortId_code.Substring(0, 1);
+            IDE = PortId_code.Substring(1, 2);
+
+            UseSystem = IDE == "LE" ? "live" :
+                       (IDE == "TL" ? "local" : "test");
 
             if (gIDataEdi_path["edi_code"].ToString().Substring(0, 1).ToUpper() == "E") vendor.SubVendor = new Vendor_EL();
             if (gIDataEdi_path["edi_code"].ToString().Substring(0, 1).ToUpper() == "M") vendor.SubVendor = new Vendor_MS();
 
             EdiPath = gIDataEdi_path["edi_path"].ToString();
-            
+
             vendor.SetupViva(DB_VIVA_name);
             vendor.SetupWeb(DB_WEB_name);
 
@@ -87,9 +94,6 @@ namespace EDI_RSS
 
             DB_VIVA = new EDI_DB.Data.CDB_VIVA(DB_VIVA_Connection);
             DB_WEB = new EDI_DB.Data.CDB_WEB(DB_WEB_Connection);
-
-            return true;
-
         }
 
         public bool Edi_path_after_Setup()

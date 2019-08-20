@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
-using System.Linq.Expressions;
-using System.ComponentModel;
-using static EDI_DB.Data.Base;
+﻿using static EDI_DB.Data.Base;
 
 namespace vivael
 {
@@ -102,15 +94,15 @@ namespace vivael
                     ORDER BY TABLE_NAME, COLUMN_NAME ", this);
             } 
 
-            public string table_name { get; set; }
-            public string column_name { get; set; }
-            public string data_type { get; set; }
-            public string column_comment { get; set; }
-            public string column_key { get; set; }
-            public string is_nullable { get; set; }
-            public string primary_1 { get; set; }
-            public string primary_2 { get; set; }
-            public string primary_3 { get; set; }
+            public string Table_Name { get; set; }
+            public string Column_Name { get; set; }
+            public string Data_Type { get; set; }
+            public string Column_Comment { get; set; }
+            public string Column_Key { get; set; }
+            public string Is_Nullable { get; set; }
+            public string Primary_1 { get; set; }
+            public string Primary_2 { get; set; }
+            public string Primary_3 { get; set; }
         }
 
         //public class data_wsseq : DataSource

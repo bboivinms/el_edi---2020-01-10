@@ -357,32 +357,7 @@ namespace vivael
         {
             return text.ToUpper();
         }
-
-        public static bool gConnect()
-        {
-            vendor = new EDI_RSS.Vendor();
-            DB_RSS = new EDI_DB.Data.CDB_RSS(vendor.SetupRSS("rss_bus"));
-
-            string datapath;
-            //if we are in Debug, set datapath to a default one
-            if (Directory.GetCurrentDirectory() == @"C:\Users\Multi-Service\source\repos\el_edi\el_edi\vivael\bin\Debug")
-            {
-                datapath = @"C:\Vivael\Data";
-                Directory.SetCurrentDirectory(datapath);
-            }
-            else //else get the current directory where the .exe is place, C:\Vivael\Data or D:\Vivael\Data
-            {
-                datapath = Directory.GetCurrentDirectory();
-            }
-
-            //avec le datapath, on connect avec la bonne DB
-            gIDataEdi_path = GetIDedi_path(datapath);
-            if (!vendor.Edi_path_after_Setup()) return false; //setup connection DB 
-            UseSystem = "test";
-
-            return true;
-        }
-
+        
         public static void gDisconnect()
         {
             return; //WIP not needed for now
@@ -741,14 +716,14 @@ namespace vivael
 
                 do
                 {
-                    if (Lower(fields_table.column_name) != "idhash" &&
-                        Lower(fields_table.column_name) != "timestamp")
+                    if (Lower(fields_table.Column_Name) != "idhash" &&
+                        Lower(fields_table.Column_Name) != "timestamp")
                     {
                         sLHashValues = sLHashValues + gCR();
 
-                        sLHashValues = sLHashValues + Lower(fields_table.column_name) + ": ";
+                        sLHashValues = sLHashValues + Lower(fields_table.Column_Name) + ": ";
 
-                        sLHashValues = sLHashValues + gFoxproValue(sdPTable.GetColumn(fields_table.column_name, "").ToString(), fields_table.data_type, sdPTable.i.name + "." + fields_table.column_name) + "|";
+                        sLHashValues = sLHashValues + gFoxproValue(sdPTable.GetColumn(fields_table.Column_Name, "").ToString(), fields_table.Data_Type, sdPTable.i.name + "." + fields_table.Column_Name) + "|";
                     }
 
                 } while (gNext(fields_table));
@@ -926,12 +901,12 @@ namespace vivael
                 do
                 {
                     // do not insert idhash, timestamp and skip_insert fields (foxpro auto keys)
-                    if (Lower(fields_table.column_name) != "idhash" &&
-                        Lower(fields_table.column_name) != "timestamp" &&
-                        Lower(fields_table.column_name) != "ident_fox" &&
-                        Lower(fields_table.column_name) != "ident_ai" &&
-                        !Contains(Lower(fields_table.column_comment), "fox_ai") &&
-                        !Contains(Lower(fields_table.column_comment), "skip_insert"))
+                    if (Lower(fields_table.Column_Name) != "idhash" &&
+                        Lower(fields_table.Column_Name) != "timestamp" &&
+                        Lower(fields_table.Column_Name) != "ident_fox" &&
+                        Lower(fields_table.Column_Name) != "ident_ai" &&
+                        !Contains(Lower(fields_table.Column_Comment), "fox_ai") &&
+                        !Contains(Lower(fields_table.Column_Comment), "skip_insert"))
                     {
 
                         if (sLColumnNames != "")
@@ -941,9 +916,9 @@ namespace vivael
                             sLColumnValues = sLColumnValues + ",  " + gCR();
                         }
 
-                        sLColumnNames = sLColumnNames + Lower(fields_table.column_name);
+                        sLColumnNames = sLColumnNames + Lower(fields_table.Column_Name);
 
-                        sLColumnValues = sLColumnValues + gFoxproValue(sdPTable.GetColumn(fields_table.column_name, ""), fields_table.data_type, sdPTable.i.name + "." + fields_table.column_name);
+                        sLColumnValues = sLColumnValues + gFoxproValue(sdPTable.GetColumn(fields_table.Column_Name, ""), fields_table.Data_Type, sdPTable.i.name + "." + fields_table.Column_Name);
                     }
 
                 } while (gNext(fields_table));
@@ -972,12 +947,12 @@ namespace vivael
                     fields_table.SetProperty("COLUMN_COMMENT", Data["COLUMN_COMMENT"]);
 
                     // do not update idhash, timestamp and primary keys
-                    if (Lower(fields_table.column_name) != "idhash" &&
-                            Lower(fields_table.column_name) != "timestamp" &&
-                            Lower(fields_table.column_name) != "ident_fox" &&
-                            !Contains(Lower(fields_table.column_comment), "fox_ai") &&
-                            !Contains(Lower(fields_table.column_comment), "skip_update") &&
-                            !Contains(Lower(fields_table.column_key), "pri"))
+                    if (Lower(fields_table.Column_Name) != "idhash" &&
+                            Lower(fields_table.Column_Name) != "timestamp" &&
+                            Lower(fields_table.Column_Name) != "ident_fox" &&
+                            !Contains(Lower(fields_table.Column_Comment), "fox_ai") &&
+                            !Contains(Lower(fields_table.Column_Comment), "skip_update") &&
+                            !Contains(Lower(fields_table.Column_Key), "pri"))
                     {
 
                         if (sLUpdate != "")
@@ -985,9 +960,9 @@ namespace vivael
                             sLUpdate = sLUpdate + ",  " + gCR();
                         }
 
-                        sLUpdate = sLUpdate + sdPTable.i.name + "." + Lower(fields_table.column_name) + " = ";
+                        sLUpdate = sLUpdate + sdPTable.i.name + "." + Lower(fields_table.Column_Name) + " = ";
 
-                        sLUpdate = sLUpdate + gFoxproValue(sdPTable.GetColumn(fields_table.column_name, ""), fields_table.data_type, sdPTable.i.name + "." + fields_table.column_name);
+                        sLUpdate = sLUpdate + gFoxproValue(sdPTable.GetColumn(fields_table.Column_Name, ""), fields_table.Data_Type, sdPTable.i.name + "." + fields_table.Column_Name);
                     }
                 }
 
@@ -1013,8 +988,8 @@ namespace vivael
 
             foreach (data_fields_table fields_table in data_Fields)
             {
-                string fieldname = Lower(fields_table.column_name);
-                string comment = Lower(fields_table.column_comment);
+                string fieldname = Lower(fields_table.Column_Name);
+                string comment = Lower(fields_table.Column_Comment);
                 // do not insert idhash, timestamp and fox_ai
                 if (fieldname != "idhash" &&
                         fieldname != "timestamp" &&
@@ -1040,7 +1015,7 @@ namespace vivael
                     if (isFoxpro)
                     {
                         sLColumnNames += Lower(fieldname);
-                        sLColumnValues += gFoxproValue(sdPTable.GetColumn(ToTitleCase(fieldname), ""), fields_table.data_type, tablename + "." + fieldname);
+                        sLColumnValues += gFoxproValue(sdPTable.GetColumn(ToTitleCase(fieldname), ""), fields_table.Data_Type, tablename + "." + fieldname);
                     }
                     else
                     {
@@ -1081,7 +1056,7 @@ namespace vivael
 
             foreach (data_fields_table Data in data_Fields)
             {
-                string fieldname = Lower(Data.column_name);
+                string fieldname = Lower(Data.Column_Name);
 
                 // do not update idhash, timestamp and primary keys
                 if (fieldname != "idhash" &&
@@ -1100,7 +1075,7 @@ namespace vivael
                     //à mettre dans fonction séparer
                     if (sdPTable.isFoxpro)
                     {
-                        sLUpdate += gFoxproValue(sdPTable.GetColumn(ToTitleCase(fieldname), ""), Data.data_type, sdPTable.i.name + "." + fieldname);
+                        sLUpdate += gFoxproValue(sdPTable.GetColumn(ToTitleCase(fieldname), ""), Data.Data_Type, sdPTable.i.name + "." + fieldname);
                     }
                     else
                     { 
@@ -1133,9 +1108,9 @@ namespace vivael
 
         public static string gGetWhere(DataSource sdPTable, data_fields_table sdLFieldsTable)
         {
-            string sLPrimary_1 = sdLFieldsTable.primary_1;
-            string sLPrimary_2 = sdLFieldsTable.primary_2;
-            string sLPrimary_3 = sdLFieldsTable.primary_3;
+            string sLPrimary_1 = sdLFieldsTable.Primary_1;
+            string sLPrimary_2 = sdLFieldsTable.Primary_2;
+            string sLPrimary_3 = sdLFieldsTable.Primary_3;
             string sLWhere = " WHERE ";
 
             if (sLPrimary_1 == "")
@@ -1145,14 +1120,14 @@ namespace vivael
 
             sLWhere = sLWhere + sLPrimary_1 + " = " + sdPTable.GetPrimary_1();
 
-            if (sdLFieldsTable.primary_2 != "")
+            if (sdLFieldsTable.Primary_2 != "")
             {
-                sLWhere = sLWhere + " AND " + sdLFieldsTable.primary_2 + " = " + sdPTable.GetPrimary_2();
+                sLWhere = sLWhere + " AND " + sdLFieldsTable.Primary_2 + " = " + sdPTable.GetPrimary_2();
             }
 
-            if (sdLFieldsTable.primary_3 != "")
+            if (sdLFieldsTable.Primary_3 != "")
             {
-                sLWhere = sLWhere + " AND " + sdLFieldsTable.primary_3 + " = " + sdPTable.GetPrimary_3();
+                sLWhere = sLWhere + " AND " + sdLFieldsTable.Primary_3 + " = " + sdPTable.GetPrimary_3();
             }
 
             return sLWhere;
@@ -1248,9 +1223,9 @@ namespace vivael
             {
                 do
                 {
-                    if (Contains(Lower(fields_table.column_comment), "fox_ai") || Lower(fields_table.column_name) == "ident_ai")
+                    if (Contains(Lower(fields_table.Column_Comment), "fox_ai") || Lower(fields_table.Column_Name) == "ident_ai")
                     {
-                        return fields_table.column_name;
+                        return fields_table.Column_Name;
                     }
 
                 } while (gNext(fields_table));
@@ -1275,7 +1250,7 @@ namespace vivael
             //WIP//
             if (gGetFields(sdPTable, ref fields_table))
             {
-                string sLPrimary_1 = fields_table.primary_1;
+                string sLPrimary_1 = fields_table.Primary_1;
 
                 if (sLPrimary_1 == "")
                 {
@@ -1307,20 +1282,20 @@ namespace vivael
 
             if (gGetFields(sdPTable, ref fields_table))
             {
-                string sLPrimary_1 = fields_table.primary_1;
-                string sLPrimary_2 = fields_table.primary_2;
-                string sLPrimary_3 = fields_table.primary_3;
+                string sLPrimary_1 = fields_table.Primary_1;
+                string sLPrimary_2 = fields_table.Primary_2;
+                string sLPrimary_3 = fields_table.Primary_3;
 
                 if (sLPrimary_1 == "")
                 {
                     sLPrimary_1 = "ident";
                 }
 
-                if (fields_table.primary_3 != "")
+                if (fields_table.Primary_3 != "")
                 {
                     return gGetRow(sdPTable, sdPTable.GetPrimary_1(), sdPTable.GetPrimary_2(), sdPTable.GetPrimary_3());
                 }
-                else if (fields_table.primary_2 != "")
+                else if (fields_table.Primary_2 != "")
                 {
                     return gGetRow(sdPTable, sdPTable.GetPrimary_1(), sdPTable.GetPrimary_2());
                 }
@@ -1347,9 +1322,9 @@ namespace vivael
 
             data_mysql_proc mysql_proc = new data_mysql_proc();
 
-            gQuery("SELECT * FROM mysql_proc", mysql_proc);
-
-            mysql_proc.Tablename = "mysql_proc";
+            gQuery("SELECT * FROM mysql_proc WHERE tablename = 'ivenformat' ", mysql_proc);
+     
+            // mysql_proc.Tablename = "mysql_proc";
 
             foreach (IDataRecord Data in mysql_proc.result)
             {
@@ -1375,9 +1350,9 @@ namespace vivael
 
                     lReturn = mysql_proc.My_Hash;
                     gQuery("UPDATE mysql_proc SET my_hash='"+ mysql_proc.My_Hash + "' WHERE tablename='" + vLMyTable + "'");
-                    //gQuery("UPDATE mysql_proc SET my_insert_fields='" + Test.my_insert_fields + "' WHERE tablename='" + vLMyTable + "'");
-                    //gQuery("UPDATE mysql_proc SET my_insert_values='" + Test.my_insert_values + "' WHERE tablename='" + vLMyTable + "'");
-                    //gQuery("UPDATE mysql_proc SET my_update='" + Test.my_update + "' WHERE tablename='" + vLMyTable + "'");
+                    gQuery("UPDATE mysql_proc SET my_insert_fields='" + mysql_proc.My_Insert_Fields + "' WHERE tablename='" + vLMyTable + "'");
+                    gQuery("UPDATE mysql_proc SET my_insert_values='" + mysql_proc.My_Insert_Values + "' WHERE tablename='" + vLMyTable + "'");
+                    gQuery("UPDATE mysql_proc SET my_update='" + mysql_proc.My_Update + "' WHERE tablename='" + vLMyTable + "'");
 
                 }
             }
@@ -1396,26 +1371,30 @@ namespace vivael
         {
             string sLValues = "";
 
+            // fields_table.setup();
+
             if (gGetFields(sdPTable, ref fields_table))
             {
-                string COLUMN_NAME = "COLUMN_NAME";
-                string DATA_TYPE = "DATA_TYPE";
-                string COLUMN_COMMENT = "COLUMN_COMMENT";
+                string COLUMN_NAME = "column_name";
+                string DATA_TYPE = "data_type";
+                string COLUMN_COMMENT = "column_comment";
 
                 foreach (IDataRecord Data in fields_table.result)
                 {
-                    fields_table.SetProperty(COLUMN_NAME, Data[COLUMN_NAME]);
-                    fields_table.SetProperty(DATA_TYPE, Data[DATA_TYPE]);
-                    fields_table.SetProperty(COLUMN_COMMENT, Data[COLUMN_COMMENT]);
+                    fields_table.LoadRow(Data);
+
+                    //fields_table.SetProperty(COLUMN_NAME, Data[COLUMN_NAME]);
+                    //fields_table.SetProperty(DATA_TYPE, Data[DATA_TYPE]);
+                    //fields_table.SetProperty(COLUMN_COMMENT, Data[COLUMN_COMMENT]);
                 
                 //do
                 //{
-                    string sPFieldType = Lower(fields_table.data_type);   //Lower(fields_table.result[0][1].ToString())
-                    string sPFieldName = Lower(fields_table.column_name); // Lower(fields_table.result[0][0].ToString())
+                    string sPFieldType = Lower(fields_table.Data_Type);   //Lower(fields_table.result[0][1].ToString())
+                    string sPFieldName = Lower(fields_table.Column_Name); // Lower(fields_table.result[0][0].ToString())
 
                     if (sPFieldName != "idhash" &&
                         sPFieldName != "timestamp" &&
-                        !Contains(Lower(fields_table.column_comment), "data_too_big")) //Lower(fields_table.result[0][2].ToString())
+                        !Contains(Lower(fields_table.Column_Comment), "data_too_big")) //Lower(fields_table.result[0][2].ToString())
                         
                     {
                         if (sLValues != "") { sLValues = sLValues + ", "; }
