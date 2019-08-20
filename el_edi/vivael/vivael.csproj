@@ -51,8 +51,9 @@
     <Reference Include="MySql.Data, Version=8.0.17.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.8.0.17\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="OptionGropup">
-      <HintPath>..\bin\Debug\OptionGropup.dll</HintPath>
+    <Reference Include="OptionGropup, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\OptionGropup.dll</HintPath>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
@@ -619,6 +620,12 @@
     <EmbeddedResource Include="wsforms\wsSearchForm.resx">
       <DependentUpon>wsSearchForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="code_dllFoxpro\Appl\main.FXP" />
+    <None Include="code_dllFoxpro\Appl\main.prg" />
+    <None Include="code_dllFoxpro\Appl\wsinit.FXP" />
+    <None Include="code_dllFoxpro\Appl\wsinit.prg" />
+    <None Include="code_dllFoxpro\dllFoxpro.PJT" />
+    <None Include="code_dllFoxpro\dllFoxpro.pjx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -634,6 +641,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bin\Debug\OptionGropup.dll" />
     <Content Include="images\BOUT_OFF.png" />
     <Content Include="images\BOUT_ON1.png" />
     <Content Include="images\BOUT_ON2.png" />
@@ -681,8 +689,8 @@
     <Folder Include="reports\" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="barcodet">
-      <Guid>{008F9BE3-4457-418B-A0EA-422A41091272}</Guid>
+    <COMReference Include="dllfoxpro">
+      <Guid>{A1EACEF2-78A7-4EF1-A1EF-1F3C08888F28}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
