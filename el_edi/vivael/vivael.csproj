@@ -53,7 +53,7 @@
     </Reference>
     <Reference Include="OptionGropup, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\OptionGropup.dll</HintPath>
+      <HintPath>lib\OptionGropup.dll</HintPath>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
@@ -641,13 +641,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\Debug\OptionGropup.dll" />
     <Content Include="images\BOUT_OFF.png" />
     <Content Include="images\BOUT_ON1.png" />
     <Content Include="images\BOUT_ON2.png" />
     <Content Include="images\BT_GREEN.png" />
     <Content Include="images\BT_GREY.png" />
     <Content Include="images\BT_RED.png" />
+    <Content Include="lib\OptionGropup.dll" />
     <None Include="images\coupole.jpg" />
     <None Include="images\Lookx.bmp" />
     <None Include="images\LOOK.BMP" />
