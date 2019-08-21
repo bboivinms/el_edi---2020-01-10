@@ -1,4 +1,6 @@
-﻿namespace vivael.forms
+﻿
+
+namespace barcode.forms
 {
     partial class ffpapiercli
     {
@@ -289,13 +291,13 @@
 
         #endregion
 
-        private wscontrols.Wscommandbutton wscommandbutton1;
-        private wscontrols.Wscommandbutton wscommandbutton2;
-        private wscontrols.wstextbox wstextbox1;
-        private wscontrols.wstextbox wstextbox2;
-        private wscontrols.wstextbox wstextbox3;
-        private wscontrols.Wscommandbutton wscommandbutton3;
-        private wscontrols.wsGrid wsGrid1;
+        private vivael.wscontrols.Wscommandbutton wscommandbutton1;
+        private vivael.wscontrols.Wscommandbutton wscommandbutton2;
+        private vivael.wscontrols.wstextbox wstextbox1;
+        private vivael.wscontrols.wstextbox wstextbox2;
+        private vivael.wscontrols.wstextbox wstextbox3;
+        private vivael.wscontrols.Wscommandbutton wscommandbutton3;
+        private vivael.wscontrols.wsGrid wsGrid1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
@@ -305,8 +307,8 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column7;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
-        private wscontrols.wslabel wslabel1;
-        private wscontrols.wslabel wslabel2;
-        private wscontrols.Wsbtnsearch wsbtnsearch1;
+        private vivael.wscontrols.wslabel wslabel1;
+        private vivael.wscontrols.wslabel wslabel2;
+        private vivael.wscontrols.Wsbtnsearch wsbtnsearch1;
     }
 }

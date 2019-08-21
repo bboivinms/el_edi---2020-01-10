@@ -5,10 +5,12 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using vivael.wsforms;
+using vivael.wscontrols;
 
-namespace vivael.forms
+namespace barcode.forms
 {
-    public partial class ffpapiercli : wsforms.wsform
+    public partial class ffpapiercli : wsform
     {
         public ffpapiercli()
         {
