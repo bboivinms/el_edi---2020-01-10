@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.757
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDI_850", "EDI_850\EDI_850.csproj", "{E458CB57-45E3-44E7-B90E-22695CEC5A5C}"
 EndProject
@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vivael", "vivael\vivael.csp
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoquilleViva", "CoquilleViva\CoquilleViva.csproj", "{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "barcode", "barcode\barcode.csproj", "{02C5D972-0841-4FBA-A9A1-7C51247BA490}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +56,10 @@ Global
 		{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02C5D972-0841-4FBA-A9A1-7C51247BA490}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02C5D972-0841-4FBA-A9A1-7C51247BA490}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02C5D972-0841-4FBA-A9A1-7C51247BA490}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02C5D972-0841-4FBA-A9A1-7C51247BA490}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -42,9 +42,9 @@ namespace vivael
         [STAThread]
         static void Main()
         {
-            pMySQL_Dll.Load_DB("", @"D:\Vivael\Data");
-            gCreateFoxMysql_proc();
-            // StartFoxproForm();
+            pMySQL_Dll.Load_DB("", @"C:\Vivael\Data");
+            //gCreateFoxMysql_proc();
+            StartFoxproForm();
         }
 
         static public void StartFoxproForm()
@@ -54,40 +54,40 @@ namespace vivael
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            wsemailinfo wsemailinfo = new wsemailinfo();
-            wsemailinfo.Init(204);
-            //if (oSession.opened == true)
-            //{
-            //    oSession.Logon();
-            //    if (EMPTY(oSession.UserCode))
-            //    {
-            //        oSession.opened = false;
-            //    }
-            //}
+            //wsemailinfo wsemailinfo = new wsemailinfo();
+            //wsemailinfo.Init(204);
+            if (oSession.opened == true)
+            {
+                oSession.Logon();
+                if (EMPTY(oSession.UserCode))
+                {
+                    oSession.opened = false;
+                }
+            }
 
-            ////*oSession.wich_email = "CDOSYS"
+            //*oSession.wich_email = "CDOSYS"
 
-            //if (oSession.opened == true)
-            //{
-            //    oSession.curapplication = "VIVASoft2.0";
-            //    oSession.nocheckcredit = false;
+            if (oSession.opened == true)
+            {
+                oSession.curapplication = "VIVASoft2.0";
+                oSession.nocheckcredit = false;
 
-            //    if (oSession.date_format == "DMY")
-            //    {
-            //        //SET DATE DMY
-            //    }
-            //    else
-            //    {
-            //        //SET DATE MDY
-            //    }
+                if (oSession.date_format == "DMY")
+                {
+                    //SET DATE DMY
+                }
+                else
+                {
+                    //SET DATE MDY
+                }
 
-            //    oPrintForm = new wsPrintForm();
-            //    oPrintForm.cFormCode = "LISTIMPRIM";
+                oPrintForm = new wsPrintForm();
+                oPrintForm.cFormCode = "LISTIMPRIM";
 
-            //    menu = new VivaMainWindow();
-            //    menu.SetSession(oSession);
-            //    Application.Run(menu);
-            //}
+                menu = new VivaMainWindow();
+                menu.SetSession(oSession);
+                Application.Run(menu);
+            }
 
         }
 
