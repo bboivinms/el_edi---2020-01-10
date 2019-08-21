@@ -97,11 +97,41 @@
     <Compile Include="forms\armrep.Designer.cs">
       <DependentUpon>armrep.cs</DependentUpon>
     </Compile>
+    <Compile Include="forms\BRUNO.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\BRUNO.Designer.cs">
+      <DependentUpon>BRUNO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\DataMenuOld.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\DataMenuOld.Designer.cs">
+      <DependentUpon>DataMenuOld.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\gMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\gMessageBox.Designer.cs">
+      <DependentUpon>gMessageBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="forms\ReportPreview.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="forms\ReportPreview.Designer.cs">
       <DependentUpon>ReportPreview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\TEST.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\TEST.Designer.cs">
+      <DependentUpon>TEST.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\TESTMOD.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\TESTMOD.Designer.cs">
+      <DependentUpon>TESTMOD.cs</DependentUpon>
     </Compile>
     <Compile Include="forms\VivaMainWindow.cs">
       <SubType>Form</SubType>
@@ -120,6 +150,24 @@
     </Compile>
     <Compile Include="forms\wsLogin.designer.cs">
       <DependentUpon>wsLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\wsm1permis.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsm1permis.Designer.cs">
+      <DependentUpon>wsm1permis.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\WSMENU.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\WSMENU.Designer.cs">
+      <DependentUpon>WSMENU.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\wsMesg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\wsMesg.Designer.cs">
+      <DependentUpon>wsMesg.cs</DependentUpon>
     </Compile>
     <Compile Include="forms\wsmuser2.cs">
       <SubType>Form</SubType>
@@ -467,18 +515,6 @@
     <Compile Include="wsforms\DataMenu.Designer.cs">
       <DependentUpon>DataMenu.cs</DependentUpon>
     </Compile>
-    <Compile Include="forms\gMessageBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="forms\gMessageBox.Designer.cs">
-      <DependentUpon>gMessageBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="forms\wsm1permis.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="forms\wsm1permis.Designer.cs">
-      <DependentUpon>wsm1permis.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="functions\AutoClosingMessageBox.cs" />
@@ -493,12 +529,6 @@
     </Compile>
     <Compile Include="wsforms\wsmaintform2.Designer.cs">
       <DependentUpon>wsmaintform2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="forms\wsMesg.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="forms\wsMesg.Designer.cs">
-      <DependentUpon>wsMesg.cs</DependentUpon>
     </Compile>
     <Compile Include="wsforms\wsmaintform4.cs">
       <SubType>Form</SubType>
@@ -534,8 +564,20 @@
     <EmbeddedResource Include="forms\armrep.resx">
       <DependentUpon>armrep.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="forms\BRUNO.resx">
+      <DependentUpon>BRUNO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\DataMenuOld.resx">
+      <DependentUpon>DataMenuOld.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\gMessageBox.resx">
+      <DependentUpon>gMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="forms\ReportPreview.resx">
       <DependentUpon>ReportPreview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\TEST.resx">
+      <DependentUpon>TEST.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\VivaMainWindow.resx">
       <DependentUpon>VivaMainWindow.cs</DependentUpon>
@@ -548,6 +590,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="forms\wsm1permis.resx">
       <DependentUpon>wsm1permis.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\WSMENU.resx">
+      <DependentUpon>WSMENU.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\wsmuser2.resx">
       <DependentUpon>wsmuser2.cs</DependentUpon>
@@ -598,9 +643,6 @@
     <EmbeddedResource Include="wsforms\DataMenu.resx">
       <DependentUpon>DataMenu.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="forms\gMessageBox.resx">
-      <DependentUpon>gMessageBox.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="wsforms\wsform.resx">
       <DependentUpon>wsform.cs</DependentUpon>
     </EmbeddedResource>
@@ -647,6 +689,12 @@
     <Content Include="images\BT_GREEN.png" />
     <Content Include="images\BT_GREY.png" />
     <Content Include="images\BT_RED.png" />
+    <Content Include="images\IMPRIMAN.ICO" />
+    <Content Include="images\Textu000.bmp" />
+    <Content Include="images\VivaSoft.ico" />
+    <Content Include="images\WinSys search.ico" />
+    <Content Include="images\WinSys.ico" />
+    <Content Include="lib\dllfoxpro.dll" />
     <Content Include="lib\OptionGropup.dll" />
     <None Include="images\coupole.jpg" />
     <None Include="images\Lookx.bmp" />
