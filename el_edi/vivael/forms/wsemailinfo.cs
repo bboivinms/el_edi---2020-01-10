@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using vivael.wscontrols;
 using static vivael.Globals;
 
 namespace vivael.forms
@@ -59,8 +60,6 @@ namespace vivael.forms
             this.ScnMailBcc.Text = wsemail.Bcc;         
 
             this.ScnMailTo.Focus();
-
-            this.ShowDialog();
         }
 
         private void ScnAttachments_DoubleClick(object sender, EventArgs e)
@@ -81,6 +80,7 @@ namespace vivael.forms
         private void Wsbtnsearch2_Click(object sender, EventArgs e)
         {
             string lEmail = "";
+            //TODO : Create foxpro form ffscontactemail
             //DO FORM ffscontactemail NAME Fsearch TO lEmail
             this.ScnMailBcc.Text = lEmail;
         }
@@ -88,6 +88,7 @@ namespace vivael.forms
         private void Wsbtnsearch1_Click(object sender, EventArgs e)
         {
             string lEmail = "";
+            //TODO : Create foxpro form ffscontactemail
             //DO FORM ffscontactemail NAME Fsearch TO lEmail
             this.ScnMailCc.Text = lEmail;
         }
@@ -95,6 +96,7 @@ namespace vivael.forms
         private void BtnSearchEmail_Click(object sender, EventArgs e)
         {
             string lEmail = "";
+            //TODO : Create foxpro form ffscontactemail
             //DO FORM ffscontactemail NAME Fsearch TO lEmail
             this.ScnMailTo.Text = lEmail;
         }
@@ -132,16 +134,16 @@ namespace vivael.forms
                     lAttachments = ALLTRIM(lAttachments.ToString()) + ";" + vattach;
                 }
 
-                //UPDATE wsemail SET dest_adr = lMailTo,;
-                //subject = lSubject,;
-                //notes = lNotes,;
-                //attached = lAttachments,;
-                //cc = lCc,;
-                //bcc = lBcc;
-                //WHERE wsemail.ident = THISFORM.MesgIdent
+                //Requete sql 
+                string queryUpdate = $"UPDATE wsemail SET dest_adr = {lMailTo}," +
+                                     $" subject = {lSubject}," +
+                                     $" notes = {lNotes}," +
+                                     $" attached = {lAttachments}," +
+                                     $" cc = {lCc}," +
+                                     $" bcc = {lBcc}" +
+                                     $" WHERE wsemail.ident = {this.MesgIdent}";
 
-                //SELECT wsemail
-                //= TABLEUPDATE(2,.T.)
+                gQuery(queryUpdate, wsemail.isFoxpro);
 
                 this.action = 1;
 
@@ -172,8 +174,7 @@ namespace vivael.forms
             {
                 string DelQuery = $"DELETE FROM wsemail WHERE wsemail.ident = {this.MesgIdent}";
 
-                //SELECT wsemail
-                //= TABLEUPDATE(2,.T.)
+                //gQuery(DelQuery, wsemail.isFoxpro); //decomment when ready for testing the delete query
 
                 this.action = 3;
                 this.Close();
@@ -200,7 +201,7 @@ namespace vivael.forms
 
         private void Wscommandbutton4_Click(object sender, EventArgs e)
         {
-
+            ChooseFile(ScnAttachment1);
         }
 
         private void ScnAttachment2_Leave(object sender, EventArgs e)
@@ -210,7 +211,7 @@ namespace vivael.forms
 
         private void Wscommandbutton1_Click(object sender, EventArgs e)
         {
-
+            ChooseFile(ScnAttachment2);
         }
 
         private void ScnAttachment3_Leave(object sender, EventArgs e)
@@ -220,7 +221,21 @@ namespace vivael.forms
 
         private void Wscommandbutton2_Click(object sender, EventArgs e)
         {
+            ChooseFile(ScnAttachment3);
+        }
 
+        private void ChooseFile(wstextbox txtAttachement)
+        {
+            string glname;
+
+            glname = GETFILE("", IIF(m0frch,"Choisir fichier","Select file"), 
+                            IIF(m0frch,"Sélectionner","Select"),
+                            0,
+                            IIF(m0frch,"Fichier à envoyer","File to send"));
+
+            if (!EMPTY(glname))
+                txtAttachement.Text = glname;
+           
         }
     }
 }

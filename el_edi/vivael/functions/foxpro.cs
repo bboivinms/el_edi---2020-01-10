@@ -472,5 +472,29 @@ namespace vivael
         {
             return date.Month;
         }
+
+        public static string GETFILE(string cFileExtensions = "txt files (*.txt)|*.txt|All files (*.*)|*.*", string cText = "", string cOpenButtonCaption = "", int nButtonType = 0, string cTitleBarCaption = "")
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            if (EMPTY(cFileExtensions))
+            {
+                cFileExtensions = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            }
+
+            openFileDialog.InitialDirectory = "c:\\";
+            openFileDialog.Filter = cFileExtensions;
+            openFileDialog.FilterIndex = 2;
+            openFileDialog.RestoreDirectory = true;
+            openFileDialog.Title = cTitleBarCaption;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                return openFileDialog.FileName;
+            }
+
+            return "";
+        }
     }
 }

@@ -582,7 +582,7 @@ namespace vivael
 
         public void Dispatch(object paction)
         {
-            
+            //WIP
         }
 
         public void do_menu(object p_lang)
@@ -592,7 +592,7 @@ namespace vivael
 
         public void enabled_bar(object nInstance)
         {
-            
+            //WIP 
         }
 
         public object exist_bar(object cBarname)
@@ -1032,15 +1032,29 @@ namespace vivael
         /// 2 if user has selected SEND LATER on the email screen 
         /// 3 if user has deleted the email(CANCEL EMAIL)
         /// </returns>
-        public int? mail_get_info(int? pIdent)
+        public int? mail_get_info(int pIdent)
         {
             int? lresult = null;
 
             //GetForm("wsemailinfo");
-            //DO FORM wsemailinfo NAME emailinfo;
-            //            WITH pIdent;
-            //            TO lresult;
-            //            LINKED
+            wsemailinfo emailInfo = new wsemailinfo();
+            emailInfo.Init(pIdent);
+            DialogResult result = emailInfo.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                // user has selected SEND NOW on the email screen
+                lresult = emailInfo.action;
+            }
+            else if (result == DialogResult.Cancel)
+            {
+                // user has selected SEND LATER on the email screen
+                lresult = emailInfo.action;
+            }
+            else if (result == DialogResult.Abort)
+            {
+                //if user has deleted the email(CANCEL EMAIL)
+                lresult = emailInfo.action;
+            }
 
             return lresult;
         }
@@ -1137,7 +1151,7 @@ namespace vivael
                 //*2) If pAction = "Ask", email screen
                 if (pAction == "Ask")
                 {
-                    luseraction = this.mail_get_info(lident);  // 1 = send now 2 = send later 3 = email cancelled
+                    luseraction = this.mail_get_info((int)lident);  // 1 = send now 2 = send later 3 = email cancelled
                 }
                 else
                 {
@@ -1208,6 +1222,13 @@ namespace vivael
                 la_mesg[7] = "web2@envl.ca"; //sender in wsemail
                 loSmtp.Credentials = new NetworkCredential("noreply@multi-services.org", "Cuz813911");
                 //* STORE "Bonjour, voici votre facture en attachement, Merci " TO la_mesg(4) 
+            }
+
+            if (la_mesg.Length == 0)
+            {
+                MESSAGEBOX(IIF(m0frch, "Message inexistant", "Message not found"), 0 + 16, IIF(m0frch, "Envoi impossible", "Impossible to send"));
+                //SELECT(cur_area)
+                return false;
             }
 
             return true;
