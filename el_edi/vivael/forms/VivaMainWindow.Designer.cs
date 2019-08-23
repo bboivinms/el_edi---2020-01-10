@@ -30,19 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VivaMainWindow));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.toolStrip = new System.Windows.Forms.ToolStrip();
-            this.HiddenLink = new System.Windows.Forms.LinkLabel();
-            this.toolStripButton1 = new vivael.wscontrols.WsToolStripButton();
-            this.toolStripButton2 = new vivael.wscontrols.WsToolStripButton();
-            this.toolStripButton3 = new vivael.wscontrols.WsToolStripButton();
-            this.toolStripButton8 = new vivael.wscontrols.WsToolStripButton();
-            this.toolStripButton7 = new vivael.wscontrols.WsToolStripButton();
-            this.toolStripButton6 = new vivael.wscontrols.WsToolStripButton();
-            this.toolStripButton5 = new vivael.wscontrols.WsToolStripButton();
-            this.toolStripButton4 = new vivael.wscontrols.WsToolStripButton();
-            this.toolStripButton10 = new vivael.wscontrols.WsToolStripButton();
-            this.toolStripButton9 = new vivael.wscontrols.WsToolStripButton();
-            this.btnTest = new vivael.wscontrols.WsToolStripButton();
             this.fileMenu = new vivael.wscontrols.wsToolStripMenuItem();
             this.btn_rechercheRapide = new vivael.wscontrols.wsToolStripMenuItem();
             this.btn_exportDesProduits = new vivael.wscontrols.wsToolStripMenuItem();
@@ -68,6 +55,18 @@
             this.typeDePaiementpayableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aideMenu = new vivael.wscontrols.wsToolStripMenuItem();
             this.btn_aPropos = new vivael.wscontrols.wsToolStripMenuItem();
+            this.toolStrip = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton1 = new vivael.wscontrols.WsToolStripButton();
+            this.toolStripButton2 = new vivael.wscontrols.WsToolStripButton();
+            this.toolStripButton3 = new vivael.wscontrols.WsToolStripButton();
+            this.toolStripButton8 = new vivael.wscontrols.WsToolStripButton();
+            this.toolStripButton7 = new vivael.wscontrols.WsToolStripButton();
+            this.toolStripButton6 = new vivael.wscontrols.WsToolStripButton();
+            this.toolStripButton5 = new vivael.wscontrols.WsToolStripButton();
+            this.toolStripButton4 = new vivael.wscontrols.WsToolStripButton();
+            this.toolStripButton10 = new vivael.wscontrols.WsToolStripButton();
+            this.toolStripButton9 = new vivael.wscontrols.WsToolStripButton();
+            this.btnTest = new vivael.wscontrols.WsToolStripButton();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
@@ -93,155 +92,6 @@
             this.menuStrip.Size = new System.Drawing.Size(1127, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "MenuStrip";
-            // 
-            // toolStrip
-            // 
-            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1,
-            this.toolStripButton2,
-            this.toolStripButton3,
-            this.toolStripButton8,
-            this.toolStripButton7,
-            this.toolStripButton6,
-            this.toolStripButton5,
-            this.toolStripButton4,
-            this.toolStripButton10,
-            this.toolStripButton9,
-            this.btnTest});
-            this.toolStrip.Location = new System.Drawing.Point(0, 24);
-            this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(1127, 25);
-            this.toolStrip.TabIndex = 1;
-            this.toolStrip.Text = "ToolStrip";
-            // 
-            // HiddenLink
-            // 
-            this.HiddenLink.Location = new System.Drawing.Point(0, 0);
-            this.HiddenLink.Name = "HiddenLink";
-            this.HiddenLink.Size = new System.Drawing.Size(100, 23);
-            this.HiddenLink.TabIndex = 0;
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(47, 22);
-            this.toolStripButton1.Text = "Clients";
-            this.toolStripButton1.Text_EN = "Customers";
-            this.toolStripButton1.Text_FR = "Clients";
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(77, 22);
-            this.toolStripButton2.Text = "Fournisseurs";
-            this.toolStripButton2.Text_EN = "Suppliers";
-            this.toolStripButton2.Text_FR = "Fournisseurs";
-            // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(90, 22);
-            this.toolStripButton3.Text = "Comm. Achats";
-            this.toolStripButton3.Text_EN = "Purchase Order";
-            this.toolStripButton3.Text_FR = "Comm. Achats";
-            // 
-            // toolStripButton8
-            // 
-            this.toolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton8.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton8.Image")));
-            this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton8.Name = "toolStripButton8";
-            this.toolStripButton8.Size = new System.Drawing.Size(79, 22);
-            this.toolStripButton8.Text = "Commandes";
-            this.toolStripButton8.Text_EN = "Orders";
-            this.toolStripButton8.Text_FR = "Commandes";
-            // 
-            // toolStripButton7
-            // 
-            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton7.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton7.Image")));
-            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton7.Name = "toolStripButton7";
-            this.toolStripButton7.Size = new System.Drawing.Size(55, 22);
-            this.toolStripButton7.Text = "Produits";
-            this.toolStripButton7.Text_EN = "Products";
-            this.toolStripButton7.Text_FR = "Produits";
-            // 
-            // toolStripButton6
-            // 
-            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
-            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(84, 22);
-            this.toolStripButton6.Text = "Bons livraison";
-            this.toolStripButton6.Text_EN = "Delivery notes";
-            this.toolStripButton6.Text_FR = "Bons livraison";
-            // 
-            // toolStripButton5
-            // 
-            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
-            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(55, 22);
-            this.toolStripButton5.Text = "Factures";
-            this.toolStripButton5.Text_EN = "Invoices";
-            this.toolStripButton5.Text_FR = "Factures";
-            // 
-            // toolStripButton4
-            // 
-            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
-            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(57, 22);
-            this.toolStripButton4.Text = "Relâches";
-            this.toolStripButton4.Text_EN = "Releases";
-            this.toolStripButton4.Text_FR = "Relâches";
-            // 
-            // toolStripButton10
-            // 
-            this.toolStripButton10.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton10.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton10.Image")));
-            this.toolStripButton10.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton10.Name = "toolStripButton10";
-            this.toolStripButton10.Size = new System.Drawing.Size(88, 22);
-            this.toolStripButton10.Text = "Rec. Inventaire";
-            this.toolStripButton10.Text_EN = "Rec. Inventory";
-            this.toolStripButton10.Text_FR = "Rec. Inventaire";
-            // 
-            // toolStripButton9
-            // 
-            this.toolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton9.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton9.Image")));
-            this.toolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton9.Name = "toolStripButton9";
-            this.toolStripButton9.Size = new System.Drawing.Size(90, 22);
-            this.toolStripButton9.Text = "Dem. transport";
-            this.toolStripButton9.Text_EN = "Transport request";
-            this.toolStripButton9.Text_FR = "Dem. transport";
-            // 
-            // btnTest
-            // 
-            this.btnTest.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnTest.Image = ((System.Drawing.Image)(resources.GetObject("btnTest.Image")));
-            this.btnTest.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(61, 22);
-            this.btnTest.Text = "Test form";
-            this.btnTest.Text_EN = "Test form";
-            this.btnTest.Text_FR = "Test form";
-            this.btnTest.Click += new System.EventHandler(this.BtnTest_Click);
             // 
             // fileMenu
             // 
@@ -449,6 +299,148 @@
             this.btn_aPropos.Text_EN = "About";
             this.btn_aPropos.Text_FR = "À propos";
             this.btn_aPropos.Click += new System.EventHandler(this.Btn_aPropos_Click);
+            // 
+            // toolStrip
+            // 
+            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton1,
+            this.toolStripButton2,
+            this.toolStripButton3,
+            this.toolStripButton8,
+            this.toolStripButton7,
+            this.toolStripButton6,
+            this.toolStripButton5,
+            this.toolStripButton4,
+            this.toolStripButton10,
+            this.toolStripButton9,
+            this.btnTest});
+            this.toolStrip.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip.Name = "toolStrip";
+            this.toolStrip.Size = new System.Drawing.Size(1127, 25);
+            this.toolStrip.TabIndex = 1;
+            this.toolStrip.Text = "ToolStrip";
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(47, 22);
+            this.toolStripButton1.Text = "Clients";
+            this.toolStripButton1.Text_EN = "Customers";
+            this.toolStripButton1.Text_FR = "Clients";
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(77, 22);
+            this.toolStripButton2.Text = "Fournisseurs";
+            this.toolStripButton2.Text_EN = "Suppliers";
+            this.toolStripButton2.Text_FR = "Fournisseurs";
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(90, 22);
+            this.toolStripButton3.Text = "Comm. Achats";
+            this.toolStripButton3.Text_EN = "Purchase Order";
+            this.toolStripButton3.Text_FR = "Comm. Achats";
+            // 
+            // toolStripButton8
+            // 
+            this.toolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton8.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton8.Image")));
+            this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton8.Name = "toolStripButton8";
+            this.toolStripButton8.Size = new System.Drawing.Size(79, 22);
+            this.toolStripButton8.Text = "Commandes";
+            this.toolStripButton8.Text_EN = "Orders";
+            this.toolStripButton8.Text_FR = "Commandes";
+            // 
+            // toolStripButton7
+            // 
+            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton7.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton7.Image")));
+            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton7.Name = "toolStripButton7";
+            this.toolStripButton7.Size = new System.Drawing.Size(55, 22);
+            this.toolStripButton7.Text = "Produits";
+            this.toolStripButton7.Text_EN = "Products";
+            this.toolStripButton7.Text_FR = "Produits";
+            // 
+            // toolStripButton6
+            // 
+            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
+            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton6.Name = "toolStripButton6";
+            this.toolStripButton6.Size = new System.Drawing.Size(84, 22);
+            this.toolStripButton6.Text = "Bons livraison";
+            this.toolStripButton6.Text_EN = "Delivery notes";
+            this.toolStripButton6.Text_FR = "Bons livraison";
+            // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(55, 22);
+            this.toolStripButton5.Text = "Factures";
+            this.toolStripButton5.Text_EN = "Invoices";
+            this.toolStripButton5.Text_FR = "Factures";
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(57, 22);
+            this.toolStripButton4.Text = "Relâches";
+            this.toolStripButton4.Text_EN = "Releases";
+            this.toolStripButton4.Text_FR = "Relâches";
+            // 
+            // toolStripButton10
+            // 
+            this.toolStripButton10.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton10.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton10.Image")));
+            this.toolStripButton10.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton10.Name = "toolStripButton10";
+            this.toolStripButton10.Size = new System.Drawing.Size(88, 22);
+            this.toolStripButton10.Text = "Rec. Inventaire";
+            this.toolStripButton10.Text_EN = "Rec. Inventory";
+            this.toolStripButton10.Text_FR = "Rec. Inventaire";
+            // 
+            // toolStripButton9
+            // 
+            this.toolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton9.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton9.Image")));
+            this.toolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton9.Name = "toolStripButton9";
+            this.toolStripButton9.Size = new System.Drawing.Size(90, 22);
+            this.toolStripButton9.Text = "Dem. transport";
+            this.toolStripButton9.Text_EN = "Transport request";
+            this.toolStripButton9.Text_FR = "Dem. transport";
+            // 
+            // btnTest
+            // 
+            this.btnTest.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnTest.Image = ((System.Drawing.Image)(resources.GetObject("btnTest.Image")));
+            this.btnTest.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(61, 22);
+            this.btnTest.Text = "Test form";
+            this.btnTest.Text_EN = "Test form";
+            this.btnTest.Text_FR = "Test form";
+            this.btnTest.Click += new System.EventHandler(this.BtnTest_Click);
             // 
             // VivaMainWindow
             // 

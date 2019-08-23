@@ -54,8 +54,8 @@ namespace vivael
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //wsemailinfo wsemailinfo = new wsemailinfo();
-            //wsemailinfo.Init(204);
+
+
             if (oSession.opened == true)
             {
                 oSession.Logon();
@@ -82,7 +82,6 @@ namespace vivael
                 }
 
                 oPrintForm = new wsPrintForm();
-                oPrintForm.cFormCode = "LISTIMPRIM";
 
                 menu = new VivaMainWindow();
                 menu.SetSession(oSession);

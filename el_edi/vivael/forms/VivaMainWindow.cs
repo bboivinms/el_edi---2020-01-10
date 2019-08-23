@@ -10,7 +10,6 @@ namespace vivael.forms
 {
     public partial class VivaMainWindow : Form
     {
-        private System.Windows.Forms.LinkLabel HiddenLink;
         private WsSession Session;
 
         public VivaMainWindow()

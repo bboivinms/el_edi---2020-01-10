@@ -1,4 +1,5 @@
-﻿using System;
+﻿using forms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -77,28 +78,31 @@ namespace vivael.forms
             oSession.Shellexec(this.ScnAttachments.Text);
         }
 
-        private void Wsbtnsearch2_Click(object sender, EventArgs e)
+        private void BtnSearchEmail_Click(object sender, EventArgs e)
         {
-            string lEmail = "";
-            //TODO : Create foxpro form ffscontactemail
-            //DO FORM ffscontactemail NAME Fsearch TO lEmail
-            this.ScnMailBcc.Text = lEmail;
+            this.ScnMailTo.Text = SearchEmail();
         }
 
         private void Wsbtnsearch1_Click(object sender, EventArgs e)
         {
-            string lEmail = "";
-            //TODO : Create foxpro form ffscontactemail
-            //DO FORM ffscontactemail NAME Fsearch TO lEmail
-            this.ScnMailCc.Text = lEmail;
+            this.ScnMailCc.Text = SearchEmail();
         }
 
-        private void BtnSearchEmail_Click(object sender, EventArgs e)
+        private void Wsbtnsearch2_Click(object sender, EventArgs e)
         {
-            string lEmail = "";
-            //TODO : Create foxpro form ffscontactemail
-            //DO FORM ffscontactemail NAME Fsearch TO lEmail
-            this.ScnMailTo.Text = lEmail;
+            this.ScnMailBcc.Text = SearchEmail();
+        }
+
+        private string SearchEmail()
+        {
+            string lEmail;
+
+            ffscontactemail Fsearch = new ffscontactemail();
+            Fsearch.Init();
+            Fsearch.ShowDialog();
+            lEmail = Fsearch.Email;
+
+             return lEmail;
         }
 
         private void BtnSend_Click(object sender, EventArgs e)

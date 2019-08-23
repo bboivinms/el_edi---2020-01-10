@@ -1075,6 +1075,7 @@ namespace vivael.wsforms
 
             if (dr == DialogResult.OK || dr == DialogResult.Cancel)
             {
+                after_search();
                 NavGo(wsSearch.RecordId);
             }
 
@@ -1657,7 +1658,17 @@ namespace vivael.wsforms
 
         private void BtnSearch_Click(object sender, EventArgs e)
         {
+            before_search();
             NavSearch();
+        }
+
+        public virtual void before_search()
+        {
+            //call in child
+        }
+        public virtual void after_search()
+        {
+            //call in child
         }
 
         private void BtnModify_Click(object sender, EventArgs e)

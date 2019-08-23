@@ -398,6 +398,7 @@ namespace vivael
             if (!bFoxpro)
             {
                 slpMySQLQuery = Replace(slpMySQLQuery, "~", "");
+                slpMySQLQuery = Replace(slpMySQLQuery, "$", "LIKE");
                 if (count != 0)
                 {
                     slpMySQLQuery = slpMySQLQuery + " limit " + noRec + ", " + count;

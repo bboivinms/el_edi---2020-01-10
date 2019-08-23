@@ -97,9 +97,8 @@
         }
 
         #endregion
-
-        private wscontrols.wsGrid wsGrid1;
-        private wscontrols.Commandbutton Btn_Ok;
-        private wscontrols.Commandbutton Btn_cancel;
+        protected wscontrols.wsGrid wsGrid1;
+        protected wscontrols.Commandbutton Btn_Ok;
+        protected wscontrols.Commandbutton Btn_cancel;
     }
 }

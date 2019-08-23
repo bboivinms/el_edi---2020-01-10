@@ -134,5 +134,14 @@ namespace vivael.forms
                 wsuser.Language = "EN";
         }
 
+        public override void before_search()
+        {
+            sdPTable.MyQuery = "SELECT NAME FROM wsuser"; //Specified the query for the searchform
+        }
+
+        public override void after_search()
+        {
+            sdPTable.MyQuery = "SELECT * FROM wsuser";
+        }
     }
 }

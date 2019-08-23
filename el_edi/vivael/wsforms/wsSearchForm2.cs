@@ -25,17 +25,21 @@ namespace vivael.wsforms
         private int WindowType = 1;
         private object Picture;
 
-        public wsSearchForm2(DataSource dataSource)
+        public wsSearchForm2()
         {
             InitializeComponent();
-            tableSource = dataSource;
-            gQuery(dataSource.MyQuery, dataSource, 0, 0, dataSource.isFoxpro);
-            wsGrid1.DataSource = dataSource.ds.Tables[0];
-            wsGrid1.ReadOnly = true;
         }
 
-        public bool Init(string cParam, int nInstance)
+        public bool Init(string cParam = "", int nInstance = 0, DataSource dataSource = null)
         {
+            if(dataSource != null)
+            {
+                tableSource = dataSource;
+                gQuery(dataSource.MyQuery, dataSource, 0, 0, dataSource.isFoxpro);
+                wsGrid1.DataSource = dataSource.ds.Tables[0];
+                wsGrid1.ReadOnly = true;
+            }
+
             if (!ISNULL(oSession) && TYPE(oSession) == typeof(object))
             {
                 if (this.fixcolor == false) {
@@ -65,11 +69,6 @@ namespace vivael.wsforms
             }
             this.Param = cParam;
 
-            //*Si modal on désactive tout les tools bars.
-            if (this.WindowType == 1)
-            {
-                oSession.Disabled_bar(0);
-            }
 
             this.doAfter_init();
 
@@ -106,8 +105,7 @@ namespace vivael.wsforms
 
         private void Btn_cancel_Click(object sender, EventArgs e)
         {
-            this.RecordId = RECNO(tableSource);
-            this.Release();
+            BtnCancel_OnClick();
         }
 
         public void Release()
@@ -115,7 +113,7 @@ namespace vivael.wsforms
             Close();
         }
 
-        private void BtnOk_OnClick()
+        public virtual void BtnOk_OnClick()
         {
             if (wsGrid1.RowCount > 0)
             {
@@ -125,6 +123,12 @@ namespace vivael.wsforms
                 this.RecordId = RECNO(tableSource);
 
             this.DialogResult = DialogResult.OK;
+            this.Release();
+        }
+
+        public virtual void BtnCancel_OnClick()
+        {
+            this.RecordId = RECNO(tableSource);
             this.Release();
         }
 
