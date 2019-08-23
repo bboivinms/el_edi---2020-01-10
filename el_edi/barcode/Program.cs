@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using vivael;
+using static vivael.Globals;
 
 namespace barcode
 {
@@ -18,6 +20,8 @@ namespace barcode
         static void Main()
         {
             pMySQL_Dll.Load_DB("", @"C:\Vivael\Data");
+
+            oSession = new WsSession();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

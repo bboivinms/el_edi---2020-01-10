@@ -34,12 +34,12 @@ namespace barcode.forms
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ffpapiercli));
-            this.wscommandbutton1 = new vivael.wscontrols.Wscommandbutton();
-            this.wscommandbutton2 = new vivael.wscontrols.Wscommandbutton();
-            this.wstextbox1 = new vivael.wscontrols.wstextbox();
-            this.wstextbox2 = new vivael.wscontrols.wstextbox();
-            this.wstextbox3 = new vivael.wscontrols.wstextbox();
-            this.wscommandbutton3 = new vivael.wscontrols.Wscommandbutton();
+            this.btnQuit2 = new vivael.wscontrols.Wscommandbutton();
+            this.btnApply = new vivael.wscontrols.Wscommandbutton();
+            this.ScnCode = new vivael.wscontrols.wstextbox();
+            this.txtclient_code = new vivael.wscontrols.wstextbox();
+            this.txtClient_name = new vivael.wscontrols.wstextbox();
+            this.btn_raf = new vivael.wscontrols.Wscommandbutton();
             this.wsGrid1 = new vivael.wscontrols.wsGrid();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -52,7 +52,7 @@ namespace barcode.forms
             this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.wslabel1 = new vivael.wscontrols.wslabel();
             this.wslabel2 = new vivael.wscontrols.wslabel();
-            this.wsbtnsearch1 = new vivael.wscontrols.Wsbtnsearch();
+            this.btnSearchCli = new vivael.wscontrols.Wsbtnsearch();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wsGrid1)).BeginInit();
             this.SuspendLayout();
@@ -66,73 +66,76 @@ namespace barcode.forms
             // 
             this.BtnQuit.Location = new System.Drawing.Point(12, 530);
             // 
-            // wscommandbutton1
+            // btnQuit2
             // 
-            this.wscommandbutton1.Location = new System.Drawing.Point(839, 428);
-            this.wscommandbutton1.Name = "wscommandbutton1";
-            this.wscommandbutton1.Size = new System.Drawing.Size(75, 23);
-            this.wscommandbutton1.TabIndex = 4;
-            this.wscommandbutton1.Text = "Quitter";
-            this.wscommandbutton1.Text_EN = null;
-            this.wscommandbutton1.Text_FR = null;
-            this.wscommandbutton1.ToolTipText = null;
-            this.wscommandbutton1.UseVisualStyleBackColor = true;
+            this.btnQuit2.Location = new System.Drawing.Point(839, 428);
+            this.btnQuit2.Name = "btnQuit2";
+            this.btnQuit2.Size = new System.Drawing.Size(75, 23);
+            this.btnQuit2.TabIndex = 4;
+            this.btnQuit2.Text = "Quitter";
+            this.btnQuit2.Text_EN = null;
+            this.btnQuit2.Text_FR = null;
+            this.btnQuit2.ToolTipText = null;
+            this.btnQuit2.UseVisualStyleBackColor = true;
+            this.btnQuit2.Click += new System.EventHandler(this.btnQuit2_Click);
             // 
-            // wscommandbutton2
+            // btnApply
             // 
-            this.wscommandbutton2.Location = new System.Drawing.Point(753, 428);
-            this.wscommandbutton2.Name = "wscommandbutton2";
-            this.wscommandbutton2.Size = new System.Drawing.Size(75, 23);
-            this.wscommandbutton2.TabIndex = 5;
-            this.wscommandbutton2.Text = "Confirmer";
-            this.wscommandbutton2.Text_EN = null;
-            this.wscommandbutton2.Text_FR = null;
-            this.wscommandbutton2.ToolTipText = null;
-            this.wscommandbutton2.UseVisualStyleBackColor = true;
+            this.btnApply.Location = new System.Drawing.Point(753, 428);
+            this.btnApply.Name = "btnApply";
+            this.btnApply.Size = new System.Drawing.Size(75, 23);
+            this.btnApply.TabIndex = 5;
+            this.btnApply.Text = "Confirmer";
+            this.btnApply.Text_EN = null;
+            this.btnApply.Text_FR = null;
+            this.btnApply.ToolTipText = null;
+            this.btnApply.UseVisualStyleBackColor = true;
+            this.btnApply.Click += new System.EventHandler(this.btnApply_Click);
             // 
-            // wstextbox1
+            // ScnCode
             // 
-            this.wstextbox1.apControlSource = null;
-            this.wstextbox1.apType = null;
-            this.wstextbox1.Location = new System.Drawing.Point(119, 11);
-            this.wstextbox1.Name = "wstextbox1";
-            this.wstextbox1.Size = new System.Drawing.Size(100, 20);
-            this.wstextbox1.State = null;
-            this.wstextbox1.TabIndex = 6;
-            this.wstextbox1.Leave += new System.EventHandler(this.wstextbox1_Leave);
+            this.ScnCode.apControlSource = null;
+            this.ScnCode.apType = null;
+            this.ScnCode.Location = new System.Drawing.Point(119, 11);
+            this.ScnCode.Name = "ScnCode";
+            this.ScnCode.Size = new System.Drawing.Size(100, 20);
+            this.ScnCode.State = null;
+            this.ScnCode.TabIndex = 6;
+            this.ScnCode.Leave += new System.EventHandler(this.ScnCode_Leave);
             // 
-            // wstextbox2
+            // txtclient_code
             // 
-            this.wstextbox2.apControlSource = null;
-            this.wstextbox2.apType = null;
-            this.wstextbox2.Location = new System.Drawing.Point(331, 11);
-            this.wstextbox2.Name = "wstextbox2";
-            this.wstextbox2.Size = new System.Drawing.Size(100, 20);
-            this.wstextbox2.State = null;
-            this.wstextbox2.TabIndex = 7;
+            this.txtclient_code.apControlSource = null;
+            this.txtclient_code.apType = null;
+            this.txtclient_code.Location = new System.Drawing.Point(331, 11);
+            this.txtclient_code.Name = "txtclient_code";
+            this.txtclient_code.Size = new System.Drawing.Size(100, 20);
+            this.txtclient_code.State = null;
+            this.txtclient_code.TabIndex = 7;
             // 
-            // wstextbox3
+            // txtClient_name
             // 
-            this.wstextbox3.apControlSource = null;
-            this.wstextbox3.apType = null;
-            this.wstextbox3.Location = new System.Drawing.Point(477, 11);
-            this.wstextbox3.Name = "wstextbox3";
-            this.wstextbox3.ReadOnly = true;
-            this.wstextbox3.Size = new System.Drawing.Size(200, 20);
-            this.wstextbox3.State = null;
-            this.wstextbox3.TabIndex = 8;
+            this.txtClient_name.apControlSource = null;
+            this.txtClient_name.apType = null;
+            this.txtClient_name.Location = new System.Drawing.Point(477, 11);
+            this.txtClient_name.Name = "txtClient_name";
+            this.txtClient_name.ReadOnly = true;
+            this.txtClient_name.Size = new System.Drawing.Size(200, 20);
+            this.txtClient_name.State = null;
+            this.txtClient_name.TabIndex = 8;
             // 
-            // wscommandbutton3
+            // btn_raf
             // 
-            this.wscommandbutton3.Location = new System.Drawing.Point(692, 9);
-            this.wscommandbutton3.Name = "wscommandbutton3";
-            this.wscommandbutton3.Size = new System.Drawing.Size(75, 23);
-            this.wscommandbutton3.TabIndex = 9;
-            this.wscommandbutton3.Text = "Rafraichir";
-            this.wscommandbutton3.Text_EN = null;
-            this.wscommandbutton3.Text_FR = null;
-            this.wscommandbutton3.ToolTipText = null;
-            this.wscommandbutton3.UseVisualStyleBackColor = true;
+            this.btn_raf.Location = new System.Drawing.Point(692, 9);
+            this.btn_raf.Name = "btn_raf";
+            this.btn_raf.Size = new System.Drawing.Size(75, 23);
+            this.btn_raf.TabIndex = 9;
+            this.btn_raf.Text = "Rafraichir";
+            this.btn_raf.Text_EN = null;
+            this.btn_raf.Text_FR = null;
+            this.btn_raf.ToolTipText = null;
+            this.btn_raf.UseVisualStyleBackColor = true;
+            this.btn_raf.Click += new System.EventHandler(this.btn_raf_Click);
             // 
             // wsGrid1
             // 
@@ -158,7 +161,6 @@ namespace barcode.forms
             this.wsGrid1.Name = "wsGrid1";
             this.wsGrid1.Size = new System.Drawing.Size(1098, 375);
             this.wsGrid1.TabIndex = 10;
-            this.wsGrid1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.wsGrid1_CellContentClick);
             // 
             // Column1
             // 
@@ -242,45 +244,46 @@ namespace barcode.forms
             this.wslabel2.Text_EN = null;
             this.wslabel2.Text_FR = null;
             // 
-            // wsbtnsearch1
+            // btnSearchCli
             // 
-            this.wsbtnsearch1.Image = ((System.Drawing.Image)(resources.GetObject("wsbtnsearch1.Image")));
-            this.wsbtnsearch1.Location = new System.Drawing.Point(433, 10);
-            this.wsbtnsearch1.Name = "wsbtnsearch1";
-            this.wsbtnsearch1.Size = new System.Drawing.Size(22, 22);
-            this.wsbtnsearch1.TabIndex = 13;
-            this.wsbtnsearch1.Text = "wsbtnsearch1";
-            this.wsbtnsearch1.Text_EN = null;
-            this.wsbtnsearch1.Text_FR = null;
-            this.wsbtnsearch1.ToolTipText = "Search";
-            this.wsbtnsearch1.UseVisualStyleBackColor = true;
+            this.btnSearchCli.Image = ((System.Drawing.Image)(resources.GetObject("btnSearchCli.Image")));
+            this.btnSearchCli.Location = new System.Drawing.Point(431, 10);
+            this.btnSearchCli.Name = "btnSearchCli";
+            this.btnSearchCli.Size = new System.Drawing.Size(22, 22);
+            this.btnSearchCli.TabIndex = 13;
+            this.btnSearchCli.Text = "wsbtnsearch1";
+            this.btnSearchCli.Text_EN = null;
+            this.btnSearchCli.Text_FR = null;
+            this.btnSearchCli.ToolTipText = "Search";
+            this.btnSearchCli.UseVisualStyleBackColor = true;
+            this.btnSearchCli.Click += new System.EventHandler(this.btnSearchCli_Click);
             // 
             // ffpapiercli
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.ClientSize = new System.Drawing.Size(1136, 475);
-            this.Controls.Add(this.wsbtnsearch1);
+            this.Controls.Add(this.btnSearchCli);
             this.Controls.Add(this.wslabel2);
             this.Controls.Add(this.wslabel1);
             this.Controls.Add(this.wsGrid1);
-            this.Controls.Add(this.wscommandbutton3);
-            this.Controls.Add(this.wstextbox3);
-            this.Controls.Add(this.wstextbox2);
-            this.Controls.Add(this.wstextbox1);
-            this.Controls.Add(this.wscommandbutton2);
-            this.Controls.Add(this.wscommandbutton1);
+            this.Controls.Add(this.btn_raf);
+            this.Controls.Add(this.txtClient_name);
+            this.Controls.Add(this.txtclient_code);
+            this.Controls.Add(this.ScnCode);
+            this.Controls.Add(this.btnApply);
+            this.Controls.Add(this.btnQuit2);
             this.Name = "ffpapiercli";
             this.Controls.SetChildIndex(this.panel1, 0);
-            this.Controls.SetChildIndex(this.wscommandbutton1, 0);
-            this.Controls.SetChildIndex(this.wscommandbutton2, 0);
-            this.Controls.SetChildIndex(this.wstextbox1, 0);
-            this.Controls.SetChildIndex(this.wstextbox2, 0);
-            this.Controls.SetChildIndex(this.wstextbox3, 0);
-            this.Controls.SetChildIndex(this.wscommandbutton3, 0);
+            this.Controls.SetChildIndex(this.btnQuit2, 0);
+            this.Controls.SetChildIndex(this.btnApply, 0);
+            this.Controls.SetChildIndex(this.ScnCode, 0);
+            this.Controls.SetChildIndex(this.txtclient_code, 0);
+            this.Controls.SetChildIndex(this.txtClient_name, 0);
+            this.Controls.SetChildIndex(this.btn_raf, 0);
             this.Controls.SetChildIndex(this.wsGrid1, 0);
             this.Controls.SetChildIndex(this.wslabel1, 0);
             this.Controls.SetChildIndex(this.wslabel2, 0);
-            this.Controls.SetChildIndex(this.wsbtnsearch1, 0);
+            this.Controls.SetChildIndex(this.btnSearchCli, 0);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wsGrid1)).EndInit();
@@ -291,12 +294,12 @@ namespace barcode.forms
 
         #endregion
 
-        private vivael.wscontrols.Wscommandbutton wscommandbutton1;
-        private vivael.wscontrols.Wscommandbutton wscommandbutton2;
-        private vivael.wscontrols.wstextbox wstextbox1;
-        private vivael.wscontrols.wstextbox wstextbox2;
-        private vivael.wscontrols.wstextbox wstextbox3;
-        private vivael.wscontrols.Wscommandbutton wscommandbutton3;
+        private vivael.wscontrols.Wscommandbutton btnQuit2;
+        private vivael.wscontrols.Wscommandbutton btnApply;
+        private vivael.wscontrols.wstextbox ScnCode;
+        private vivael.wscontrols.wstextbox txtclient_code;
+        private vivael.wscontrols.wstextbox txtClient_name;
+        private vivael.wscontrols.Wscommandbutton btn_raf;
         private vivael.wscontrols.wsGrid wsGrid1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
@@ -309,6 +312,6 @@ namespace barcode.forms
         private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
         private vivael.wscontrols.wslabel wslabel1;
         private vivael.wscontrols.wslabel wslabel2;
-        private vivael.wscontrols.Wsbtnsearch wsbtnsearch1;
+        private vivael.wscontrols.Wsbtnsearch btnSearchCli;
     }
 }
