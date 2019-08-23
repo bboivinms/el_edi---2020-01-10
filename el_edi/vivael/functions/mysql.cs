@@ -502,7 +502,6 @@ namespace vivael
             {
                 MESSAGEBOX(sPText1, 0, "");
             }
-            //YesNo(sPText1, sPText2);
         }
 
         public static string IIF(bool bTrue, string pValueTrue, string pValueFalse)

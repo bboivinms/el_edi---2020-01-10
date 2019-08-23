@@ -1,4 +1,4 @@
-﻿namespace forms
+﻿namespace vivael.forms
 {
     partial class ffscontactemail
     {
@@ -84,6 +84,8 @@
             // Btn_cancel
             // 
             this.Btn_cancel.Location = new System.Drawing.Point(489, 112);
+            this.Btn_cancel.Text_EN = "&Cancel";
+            this.Btn_cancel.Text_FR = "&Annuler";
             this.Btn_cancel.Click += new System.EventHandler(this.Btn_cancel_Click);
             // 
             // wsgroupbox1
@@ -110,8 +112,8 @@
             this.wslabel1.Size = new System.Drawing.Size(105, 13);
             this.wslabel1.TabIndex = 3;
             this.wslabel1.Text = "Search criteria";
-            this.wslabel1.Text_EN = null;
-            this.wslabel1.Text_FR = null;
+            this.wslabel1.Text_EN = "Search criteria";
+            this.wslabel1.Text_FR = "Critères de recherche";
             // 
             // BtnAll
             // 
@@ -145,8 +147,8 @@
             this.wslabel2.Size = new System.Drawing.Size(128, 15);
             this.wslabel2.TabIndex = 0;
             this.wslabel2.Text = "Extended search";
-            this.wslabel2.Text_EN = null;
-            this.wslabel2.Text_FR = null;
+            this.wslabel2.Text_EN = "Extended search";
+            this.wslabel2.Text_FR = "Recherche étendue";
             this.wslabel2.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // wscommandbutton2
@@ -549,6 +551,7 @@
             this.Controls.Add(this.wscommandbutton2);
             this.Controls.Add(this.wsgroupbox1);
             this.Name = "ffscontactemail";
+            this.Text = "E-mail search";
             this.Controls.SetChildIndex(this.wsGrid1, 0);
             this.Controls.SetChildIndex(this.Btn_Ok, 0);
             this.Controls.SetChildIndex(this.Btn_cancel, 0);

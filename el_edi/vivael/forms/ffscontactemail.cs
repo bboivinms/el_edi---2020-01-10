@@ -9,7 +9,7 @@ using vivael;
 using vivael.wsforms;
 using static vivael.Globals;
 
-namespace forms
+namespace vivael.forms
 {
     public partial class ffscontactemail : wsSearchForm2
     {
@@ -22,7 +22,10 @@ namespace forms
         public ffscontactemail()
         {
             InitializeComponent();
-            this.Text = IIF(m0frch, "Recherche d'un courriel", "E-mail search");
+            Text = IIF(m0frch, "Recherche d'un courriel", "E-mail search");
+            wsGrid1.Columns[0].HeaderText = IIF(m0frch, "Nom de contact", "Contact name");
+            wsGrid1.Columns[1].HeaderText = IIF(m0frch, "Courriel", "E-mail ");
+            TranslateForm(this);
         }
 
         private void Get_data()
