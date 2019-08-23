@@ -1,6 +1,6 @@
 ﻿namespace vivael.wsforms
 {
-    partial class wsSearchForm
+    partial class wsSearchForm2
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(wsSearchForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(wsSearchForm2));
             this.wsGrid1 = new vivael.wscontrols.wsGrid();
             this.Btn_Ok = new vivael.wscontrols.Commandbutton();
             this.Btn_cancel = new vivael.wscontrols.Commandbutton();
@@ -39,7 +39,6 @@
             // 
             this.wsGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.wsGrid1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.wsGrid1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.wsGrid1.Location = new System.Drawing.Point(13, 13);
             this.wsGrid1.MultiSelect = false;
@@ -78,7 +77,7 @@
             this.Btn_cancel.UseVisualStyleBackColor = true;
             this.Btn_cancel.Click += new System.EventHandler(this.Btn_cancel_Click);
             // 
-            // wsSearchForm
+            // wsSearchForm2
             // 
             this.AcceptButton = this.Btn_cancel;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -88,17 +87,18 @@
             this.Controls.Add(this.Btn_Ok);
             this.Controls.Add(this.wsGrid1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "wsSearchForm";
+            this.Name = "wsSearchForm2";
             this.Text = "Recherche...";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WsSearchForm2_FormClosing);
+            this.Click += new System.EventHandler(this.WsSearchForm2_Click);
             ((System.ComponentModel.ISupportInitialize)(this.wsGrid1)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private wscontrols.wsGrid wsGrid1;
-        private wscontrols.Commandbutton Btn_Ok;
-        private wscontrols.Commandbutton Btn_cancel;
+        protected wscontrols.wsGrid wsGrid1;
+        protected wscontrols.Commandbutton Btn_Ok;
+        protected wscontrols.Commandbutton Btn_cancel;
     }
 }

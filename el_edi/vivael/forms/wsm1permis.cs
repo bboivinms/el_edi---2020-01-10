@@ -17,5 +17,10 @@ namespace vivael
         {
             InitializeComponent();
         }
+
+        public void Init(string p1, string p2)
+        {
+
+        }
     }
 }

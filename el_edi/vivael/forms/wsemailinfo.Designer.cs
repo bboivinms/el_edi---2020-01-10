@@ -399,6 +399,7 @@
             // 
             // BtnCancel
             // 
+            this.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Abort;
             this.BtnCancel.Location = new System.Drawing.Point(413, 402);
             this.BtnCancel.Name = "BtnCancel";
             this.BtnCancel.Size = new System.Drawing.Size(85, 23);
@@ -412,6 +413,7 @@
             // 
             // BtnSend
             // 
+            this.BtnSend.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.BtnSend.Location = new System.Drawing.Point(504, 402);
             this.BtnSend.Name = "BtnSend";
             this.BtnSend.Size = new System.Drawing.Size(85, 23);

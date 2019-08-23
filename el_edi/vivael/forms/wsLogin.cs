@@ -38,7 +38,7 @@ namespace vivael.forms
             {
                 string code = ScnLogin.Text;
 
-                gQuery("SELECT * FROM WsUser WHERE code ~= "+ Q2(code), WsUser, 0, 0, WsUser.isFoxpro);
+                gQuery("SELECT * FROM WsUser WHERE UPPER(code) ~= "+ Q2(Upper(code)), WsUser, 0, 0, WsUser.isFoxpro);
                 WsUser.LoadRow();
 
                 if (WsUser.RECCOUNT() > 0)
@@ -73,25 +73,31 @@ namespace vivael.forms
 
         public void CheckPassword()
         {
-            if (ScnPasswd.Text != "")
+            if (!EMPTY(ScnPasswd.Text))
             {
-                if(ScnLogin.Text == "")
+                if(EMPTY(ScnLogin.Text))
                 {
                     MessageBox.Show(IIF(m0frch, "Utilisateur inexistant!", "User not found!"), IIF(m0frch, "Accès interdit", "Access denied"));
                     ScnPasswd.Focus();
                     ScnPasswd.SelectAll();
+                    BtnLogin.Enabled = false;
                     return;
                 }
 
-                if (ScnPasswd.Text != ValidPasswd)
+                if (Upper(ScnPasswd.Text) != Upper(ValidPasswd))
                 {
                     MessageBox.Show(IIF(m0frch, "Mot de passe invalide", "Invalid password"), IIF(m0frch, "Accès interdit", "Access denied"));
                     ScnPasswd.Focus();
                     ScnPasswd.SelectAll();
+                    BtnLogin.Enabled = false;
                     return;
                 }
                 //User_Validated = true;
                 BtnLogin.Enabled = true;
+            }
+            else
+            {
+                BtnLogin.Enabled = false;
             }
         }
 

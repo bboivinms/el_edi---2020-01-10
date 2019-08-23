@@ -190,7 +190,7 @@ namespace vivael.classes
         {
             string cReportCommand;
             ReportDocument reportDocument = new ReportDocument();
-            reportDocument.Load(@"C:\vivael\CrystalReport\" + this.cReportName);
+            reportDocument.Load(@"..\Report\" + this.cReportName.Replace("frx", "rpt"));
 
             reportDocument.DataSourceConnections.Clear();  //To remove when live or when test report mysql
             reportDocument.DataSourceConnections[0].SetConnection(@"C:\vivael\data", "", false); 

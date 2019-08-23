@@ -582,7 +582,7 @@ namespace vivael
 
         public void Dispatch(object paction)
         {
-            
+            //WIP
         }
 
         public void do_menu(object p_lang)
@@ -592,7 +592,7 @@ namespace vivael
 
         public void enabled_bar(object nInstance)
         {
-            
+            //WIP 
         }
 
         public object exist_bar(object cBarname)
@@ -617,7 +617,7 @@ namespace vivael
 
         public void fourn_valid()
         {
-
+            //WIP
         }
 
         public int? get_next_id(string ltable, object loption = null)
@@ -1032,15 +1032,29 @@ namespace vivael
         /// 2 if user has selected SEND LATER on the email screen 
         /// 3 if user has deleted the email(CANCEL EMAIL)
         /// </returns>
-        public int? mail_get_info(int? pIdent)
+        public int? mail_get_info(int pIdent)
         {
             int? lresult = null;
 
             //GetForm("wsemailinfo");
-            //DO FORM wsemailinfo NAME emailinfo;
-            //            WITH pIdent;
-            //            TO lresult;
-            //            LINKED
+            wsemailinfo emailInfo = new wsemailinfo();
+            emailInfo.Init(pIdent);
+            DialogResult result = emailInfo.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                // user has selected SEND NOW on the email screen
+                lresult = emailInfo.action;
+            }
+            else if (result == DialogResult.Cancel)
+            {
+                // user has selected SEND LATER on the email screen
+                lresult = emailInfo.action;
+            }
+            else if (result == DialogResult.Abort)
+            {
+                //if user has deleted the email(CANCEL EMAIL)
+                lresult = emailInfo.action;
+            }
 
             return lresult;
         }
@@ -1137,7 +1151,7 @@ namespace vivael
                 //*2) If pAction = "Ask", email screen
                 if (pAction == "Ask")
                 {
-                    luseraction = this.mail_get_info(lident);  // 1 = send now 2 = send later 3 = email cancelled
+                    luseraction = this.mail_get_info((int)lident);  // 1 = send now 2 = send later 3 = email cancelled
                 }
                 else
                 {
@@ -1165,50 +1179,55 @@ namespace vivael
         /// <returns>Returns true or false</returns>
         public bool mail_send(int? l_Queue_id)
         {
+            data_wsemail la_mesg = new data_wsemail();
             object cur_area, lok, lreturn;
-            string[] la_mesg = new string[8] { "", "", "", "", "", "", "", "" };
 
             //WAIT(IIF(m0frch, "Envoi message...", "Sending message..."), "WINDOW NOWAIT");
-
-            //STORE SELECT() TO cur_area
-            //#define WWIPSTUFF_SHAREWARE false
 
             if (TYPE(loSmtp) != typeof(object)) // Ne pas recreer pour rien(EC30)
                 loSmtp = new SmtpClient("smtp-mail.outlook.com");
 
-            //SELECT msgtype, dest_adr, subject, notes, attached, cc, bcc, sender;
-            //FROM wsemail;
-            //WHERE wsemail.ident = l_Queue_id;
-            //INTO ARRAY la_mesg
+            string query = $"SELECT msgtype, dest_adr, subject, notes, attached, cc, bcc, sender " +
+                           $"FROM wsemail WHERE wsemail.ident = {l_Queue_id}";
+            gQuery(query, la_mesg, 0, 0, la_mesg.isFoxpro);
+            la_mesg.LoadRow();
 
             loSmtp.Credentials = new NetworkCredential(ALLTRIM(this.UserEmail2), ALLTRIM(this.zart));
             loSmtp.EnableSsl = true;
 
-            //la_mesg[2] : Subject in wsemail
-            if (SUBSTR(la_mesg[2], 1, 6) == "FACTUR" || SUBSTR(la_mesg[2], 1, 6) == "CREDIT") {
-                //*STORE "payables@envl.ca" TO la_mesg(8) 
-                la_mesg[7] = "payable@envl.ca"; //sender in wsemail
+            if (SUBSTR(la_mesg.Subject, 1, 6) == "FACTUR" || SUBSTR(la_mesg.Subject, 1, 6) == "CREDIT") {
+                la_mesg.Sender = "payable@envl.ca";
                 loSmtp.Credentials = new NetworkCredential("payable@envl.ca", "Yow643171");
-                la_mesg[4] = "Bonjour, voici votre facture en attachement, Merci ";
+                la_mesg.Notes = "Bonjour, voici votre facture en attachement, Merci ";
             }
-            if (SUBSTR(la_mesg[2], 1, 7) == "DEMANDE")
-            { 
-                la_mesg[7] = "arolland@envl.ca"; //sender in wsemail
-                loSmtp.Credentials = new NetworkCredential("arolland@envl.ca", "Puq95627");
-                //* STORE "Bonjour, voici votre facture en attachement, Merci " TO la_mesg(4) 
-            }
-            if(SUBSTR(la_mesg[2],1,10) == "Commande #")
+            if (SUBSTR(la_mesg.Subject, 1, 7) == "DEMANDE")
             {
-                la_mesg[7] = "achat@envl.ca"; //sender in wsemail
+                la_mesg.Sender = "arolland@envl.ca";
                 loSmtp.Credentials = new NetworkCredential("arolland@envl.ca", "Puq95627");
-                //* STORE "Bonjour, voici votre facture en attachement, Merci " TO la_mesg(4) 
+                //*  la_mesg.Notes = "Bonjour, voici votre facture en attachement, Merci ";
             }
-            if (SUBSTR(la_mesg[2], 1, 7) == "#Erreur")
+            if (SUBSTR(la_mesg.Subject, 1,10) == "Commande #")
             {
-                la_mesg[7] = "web2@envl.ca"; //sender in wsemail
+                la_mesg.Sender = "achat@envl.ca"; 
+                loSmtp.Credentials = new NetworkCredential("arolland@envl.ca", "Puq95627");
+                //* la_mesg.Notes = "Bonjour, voici votre facture en attachement, Merci "; 
+            }
+            if (SUBSTR(la_mesg.Subject, 1, 7) == "#Erreur")
+            {
+                la_mesg.Sender = "web2@envl.ca";
                 loSmtp.Credentials = new NetworkCredential("noreply@multi-services.org", "Cuz813911");
-                //* STORE "Bonjour, voici votre facture en attachement, Merci " TO la_mesg(4) 
+                //* la_mesg.Notes = "Bonjour, voici votre facture en attachement, Merci ";
             }
+
+            if (la_mesg.RECCOUNT() == 0)
+            {
+                MESSAGEBOX(IIF(m0frch, "Message inexistant", "Message not found"), 0 + 16, IIF(m0frch, "Envoi impossible", "Impossible to send"));
+                return false;
+            }
+
+            //WIP
+            //TODO : copy & translate remaining foxpro code to c# here
+            //
 
             return true;
         }

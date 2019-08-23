@@ -398,6 +398,7 @@ namespace vivael
             if (!bFoxpro)
             {
                 slpMySQLQuery = Replace(slpMySQLQuery, "~", "");
+                slpMySQLQuery = Replace(slpMySQLQuery, "$", "LIKE");
                 if (count != 0)
                 {
                     slpMySQLQuery = slpMySQLQuery + " limit " + noRec + ", " + count;
@@ -501,7 +502,6 @@ namespace vivael
             {
                 MESSAGEBOX(sPText1, 0, "");
             }
-            //YesNo(sPText1, sPText2);
         }
 
         public static string IIF(bool bTrue, string pValueTrue, string pValueFalse)

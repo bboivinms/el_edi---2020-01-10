@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>vivael</RootNamespace>
     <AssemblyName>vivael</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -108,6 +108,12 @@
     </Compile>
     <Compile Include="forms\DataMenuOld.Designer.cs">
       <DependentUpon>DataMenuOld.cs</DependentUpon>
+    </Compile>
+    <Compile Include="forms\ffscontactemail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\ffscontactemail.Designer.cs">
+      <DependentUpon>ffscontactemail.cs</DependentUpon>
     </Compile>
     <Compile Include="forms\gMessageBox.cs">
       <SubType>Form</SubType>
@@ -555,6 +561,12 @@
     <Compile Include="wsforms\wsPrint.Designer.cs">
       <DependentUpon>wsPrint.cs</DependentUpon>
     </Compile>
+    <Compile Include="wsforms\wsSearchForm2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wsforms\wsSearchForm2.Designer.cs">
+      <DependentUpon>wsSearchForm2.cs</DependentUpon>
+    </Compile>
     <Compile Include="wsforms\wsSearchForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -569,6 +581,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="forms\DataMenuOld.resx">
       <DependentUpon>DataMenuOld.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\ffscontactemail.resx">
+      <DependentUpon>ffscontactemail.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\gMessageBox.resx">
       <DependentUpon>gMessageBox.cs</DependentUpon>
@@ -658,6 +673,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="wsforms\wsPrint.resx">
       <DependentUpon>wsPrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wsforms\wsSearchForm2.resx">
+      <DependentUpon>wsSearchForm2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="wsforms\wsSearchForm.resx">
       <DependentUpon>wsSearchForm.cs</DependentUpon>
