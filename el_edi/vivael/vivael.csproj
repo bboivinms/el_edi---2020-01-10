@@ -436,6 +436,12 @@
     <Compile Include="wscontrols\Wsbtnsearch.Designer.cs">
       <DependentUpon>Wsbtnsearch.cs</DependentUpon>
     </Compile>
+    <Compile Include="wscontrols\wsbutton2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="wscontrols\wsbutton2.Designer.cs">
+      <DependentUpon>wsbutton2.cs</DependentUpon>
+    </Compile>
     <Compile Include="wscontrols\wsCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -454,6 +460,7 @@
     <Compile Include="wscontrols\Wscommandbutton.Designer.cs">
       <DependentUpon>Wscommandbutton.cs</DependentUpon>
     </Compile>
+    <Compile Include="wscontrols\WsControl2.cs" />
     <Compile Include="wscontrols\WsControl.cs" />
     <Compile Include="wscontrols\wsGrid.cs">
       <SubType>Component</SubType>

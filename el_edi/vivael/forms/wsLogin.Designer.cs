@@ -177,7 +177,7 @@ namespace vivael.forms
         private wslabel Wslabel1;
         private System.Windows.Forms.TextBox ScnPasswd;
         private System.Windows.Forms.TextBox ScnLoginName;
-        private wsbutton BtnLogin;
+        private vivael.wscontrols.wsbutton BtnLogin;
         private wslink Wslink1;
         private System.Windows.Forms.TextBox ScnLogin;
         private wslabel Wslabel2;

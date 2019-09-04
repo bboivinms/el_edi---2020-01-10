@@ -49,17 +49,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="forms\ffentrerprod.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\ffentrerprod.designer.cs">
+      <DependentUpon>ffentrerprod.cs</DependentUpon>
+    </Compile>
     <Compile Include="forms\ffpapiercli.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="forms\ffpapiercli.Designer.cs">
       <DependentUpon>ffpapiercli.cs</DependentUpon>
     </Compile>
-    <Compile Include="forms\Form1.cs">
+    <Compile Include="forms\arsclient.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="forms\arsclient.Designer.cs">
+      <DependentUpon>arsclient.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,11 +75,14 @@
     <Compile Include="forms\wsprintformpc.designer.cs">
       <DependentUpon>wsprintformpc.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="forms\ffentrerprod.resx">
+      <DependentUpon>ffentrerprod.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="forms\ffpapiercli.resx">
       <DependentUpon>ffpapiercli.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="forms\Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="forms\arsclient.resx">
+      <DependentUpon>arsclient.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

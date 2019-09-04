@@ -9,19 +9,20 @@ using vivael.wsforms;
 using vivael.wscontrols;
 using static vivael.Globals;
 using vivael;
+using barcode.forms;
 
 namespace barcode.forms
 {
-    public partial class ffpapiercli : wsform
+    public partial class ffentrerprod : wsform
     {
         private int IDCLIENT;
-        public object wprno, wcode, wpapcli, wcodecli, wqte;
+        public object wprno, wcode,  wqte;
         private data_arclient arclient = new data_arclient();
         private DataSource lesrec = new DataSource();
         private bool SelectOnEntry;
         private int DataSessionId;
 
-        public ffpapiercli()
+        public ffentrerprod()
         {
             InitializeComponent();
             wsGrid1.AutoGenerateColumns = false;
@@ -57,7 +58,7 @@ namespace barcode.forms
                 }
             }
            
-            //* message
+            // message
             if (vcpt > 1)
             {
                 MESSAGEBOX("Vous avec trop de réception sélectionné, transaction refusé", 0 + 16, "Message avertissement");
@@ -89,9 +90,9 @@ namespace barcode.forms
                    
                     wprno=lesrec.result[nocurrent]["prno"];
                     wcode=lesrec.result[nocurrent]["code"];
-                    wpapcli="PAPIER DU CLIENT";
+                    
                     wqte=lesrec.result[nocurrent]["qte"];
-                    wcodecli=lesrec.result[nocurrent]["codecli"];
+                   
 
                     oPrintForm.Print("PAPCLI", "lcCursorName", "VPEF,", "", this.DataSessionId, "WSPRINTFORMPC");
 
@@ -108,12 +109,12 @@ namespace barcode.forms
 
         private void btn_raf_Click(object sender, EventArgs e)
         {
-            this.ScnCode.Text = "";
-            this.IDCLIENT = 0;
-            this.txtclient_code.Text = "";
-            this.txtClient_name.Text = "";
-            this.Refresh();
-            this.GET_DATA();
+            //this.ScnCode.Text = "";
+            //this.IDCLIENT = 0;
+            //this.txtclient_code.Text = "";
+            //this.txtClient_name.Text = "";
+            //this.Refresh();
+            //this.GET_DATA();
         }
 
         private void GET_DATA()
@@ -152,11 +153,6 @@ namespace barcode.forms
            this.Refresh();
         }
 
-        private void ScnCode_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void ScnCode_Leave(object sender, EventArgs e)
         {
             if (!EMPTY(this.ScnCode.Text))
@@ -166,8 +162,8 @@ namespace barcode.forms
                                                 
                 ncode = INT(VAL(this.ScnCode.Text));
                 this.IDCLIENT = 0;
-                this.txtclient_code.Text = "";
-                this.txtClient_name.Text = "";
+                //this.txtclient_code.Text = "";
+                //this.txtClient_name.Text = "";
                 this.Refresh();
                 this.get_data2();
              }
@@ -208,75 +204,74 @@ namespace barcode.forms
             this.wsGrid1.Refresh();
          }
 
-        private void txtclient_code_Leave(object sender, EventArgs e)
+        //private void txtclient_code_Leave(object sender, EventArgs e)
+        //{
+        //    this.ScnCode.Text = "";
+        //    this.Refresh();
+
+        //    if (!EMPTY(this.IDCLIENT))
+        //    {
+        //        int nclient = INT(this.IDCLIENT);
+        //        string q = $"SELECT * from arclient where arclient.ident={nclient} order by arclient.ident asc";
+        //        gQuery(q, arclient, 0, 0, arclient.isFoxpro);
+        //        arclient.LoadRow();
+        //        //this.txtclient_code.Text = arclient.Code;
+        //        //this.txtClient_name.Text = arclient.Name;
+        //    }
+
+        //    if (!EMPTY(this.txtclient_code.Text))
+        //    {
+        //        string q = $"SELECT * from arclient where arclient.code={ALLTRIM(this.txtclient_code.Text)} order by arclient.code asc";
+        //        gQuery(q, arclient, 0, 0, arclient.isFoxpro);
+
+
+        //        if (arclient.RECCOUNT() > 0)
+        //        {
+        //            this.IDCLIENT = arclient.Ident;
+        //            this.txtClient_name.Text = arclient.Name;
+        //        }
+
+        //        else
+        //        {
+        //            this.IDCLIENT = 0;
+        //            MESSAGEBOX(IIF(m0frch, "Code de client inexistant.",
+        //                  "Client not found."), 0 + 16, "");
+        //            this.SelectOnEntry = true;
+        //            return;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        this.IDCLIENT = 0;
+        //     }
+        //    this.get_data2();
+             
+        //}
+
+        private void btnSearchprod_Click(object sender, EventArgs e)
         {
+            // *Private lRecordId, cur_area
+
             this.ScnCode.Text = "";
             this.Refresh();
 
-            if (!EMPTY(this.IDCLIENT))
-            {
-                int nclient = INT(this.IDCLIENT);
-                string q = $"SELECT * from arclient where arclient.ident={nclient} order by arclient.ident asc";
-                gQuery(q, arclient, 0, 0, arclient.isFoxpro);
-                arclient.LoadRow();
-                this.txtclient_code.Text = arclient.Code;
-                this.txtClient_name.Text = arclient.Name;
-            }
+            //Do Form arsclient Name Fsearch To lRecordId Linked
+            //If lRecordId <> 0
+              
+            //    Select arclient
+            //    Go Record lRecordId
 
-            if (!EMPTY(this.txtclient_code.Text))
-            {
-                string q = $"SELECT * from arclient where arclient.code={ALLTRIM(this.txtclient_code.Text)} order by arclient.code asc";
-                gQuery(q, arclient, 0, 0, arclient.isFoxpro);
-
-
-                if (arclient.RECCOUNT() > 0)
-                {
-                    this.IDCLIENT = arclient.Ident;
-                    this.txtClient_name.Text = arclient.Name;
-                }
-
-                else
-                {
-                    this.IDCLIENT = 0;
-                    MESSAGEBOX(IIF(m0frch, "Code de client inexistant.",
-                          "Client not found."), 0 + 16, "");
-                    this.SelectOnEntry = true;
-                    return;
-                }
-            }
-            else
-            {
-                this.IDCLIENT = 0;
-             }
-            this.get_data2();
-             
-        }
-
-        private void btnSearchCli_Click(object sender, EventArgs e)
-        {
-            /*Private lRecordId, cur_area
-
-            THISFORM.SCnCode.Value=""
-            Thisform.refresh()
-
-            Do Form arsclient Name Fsearch To lRecordId Linked
-            If lRecordId <> 0
-                Store Select() To cur_area
-
-                Select arclient
-                Go Record lRecordId
-
-                Thisform.idclient = arclient.ident
-                This.Parent.txtClient_name.Value = arclient.Name
-                This.Parent.txtClient_code.Value = arclient.Code
+            //    Thisform.idclient = arclient.ident
+            //    This.Parent.txtClient_name.Value = arclient.Name
+            //    This.Parent.txtClient_code.Value = arclient.Code
 
 
 
-                Select (cur_area)
-            ENDIF
+            //    Select (cur_area)
+            //ENDIF
 
-            THISFORM.GEt_data2()
-            */
+            //THISFORM.GEt_data2()
+           
         }
     }
 }
