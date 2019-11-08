@@ -31,18 +31,15 @@ namespace barcode.forms
         private void InitializeComponent()
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ffentrerprod));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ffentrerprod));
             this.btnQuit2 = new vivael.wscontrols.Wscommandbutton();
             this.btnApply = new vivael.wscontrols.Wscommandbutton();
             this.ScnCode = new vivael.wscontrols.wstextbox();
             this.btn_raf = new vivael.wscontrols.Wscommandbutton();
             this.wsGrid1 = new vivael.wscontrols.wsGrid();
-            this.wslabel2 = new vivael.wscontrols.wslabel();
-            this.btnSearchprod = new vivael.wscontrols.Wsbtnsearch();
-            this.wslabel1 = new vivael.wscontrols.wslabel();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -54,6 +51,9 @@ namespace barcode.forms
             this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.wslabel2 = new vivael.wscontrols.wslabel();
+            this.btnSearchprod = new vivael.wscontrols.Wsbtnsearch();
+            this.wslabel1 = new vivael.wscontrols.wslabel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wsGrid1)).BeginInit();
             this.SuspendLayout();
@@ -145,44 +145,6 @@ namespace barcode.forms
             this.wsGrid1.Size = new System.Drawing.Size(1104, 375);
             this.wsGrid1.TabIndex = 10;
             // 
-            // wslabel2
-            // 
-            this.wslabel2.AutoSize = true;
-            this.wslabel2.Location = new System.Drawing.Point(36, 16);
-            this.wslabel2.Name = "wslabel2";
-            this.wslabel2.Size = new System.Drawing.Size(75, 13);
-            this.wslabel2.TabIndex = 12;
-            this.wslabel2.Text = "No Production";
-            this.wslabel2.Text_EN = null;
-            this.wslabel2.Text_FR = null;
-            // 
-            // btnSearchprod
-            // 
-            this.btnSearchprod.Image = ((System.Drawing.Image)(resources.GetObject("btnSearchprod.Image")));
-            this.btnSearchprod.Location = new System.Drawing.Point(219, 10);
-            this.btnSearchprod.Name = "btnSearchprod";
-            this.btnSearchprod.Size = new System.Drawing.Size(22, 22);
-            this.btnSearchprod.TabIndex = 13;
-            this.btnSearchprod.Text = "wsbtnsearch1";
-            this.btnSearchprod.Text_EN = null;
-            this.btnSearchprod.Text_FR = null;
-            this.btnSearchprod.ToolTipText = "Search";
-            this.btnSearchprod.UseVisualStyleBackColor = true;
-            this.btnSearchprod.Click += new System.EventHandler(this.btnSearchCli_Click);
-            // 
-            // wslabel1
-            // 
-            this.wslabel1.AutoSize = true;
-            this.wslabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.wslabel1.Location = new System.Drawing.Point(473, 29);
-            this.wslabel1.Name = "wslabel1";
-            this.wslabel1.Size = new System.Drawing.Size(640, 16);
-            this.wslabel1.TabIndex = 14;
-            this.wslabel1.Text = "***   Si votre production n\'est pas affiché, vérifier votre date de planification" +
-    " (plus de 2 jours)";
-            this.wslabel1.Text_EN = null;
-            this.wslabel1.Text_FR = null;
-            // 
             // Column1
             // 
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
@@ -256,6 +218,43 @@ namespace barcode.forms
             this.Column11.HeaderText = "Qte préparer";
             this.Column11.Name = "Column11";
             // 
+            // wslabel2
+            // 
+            this.wslabel2.AutoSize = true;
+            this.wslabel2.Location = new System.Drawing.Point(36, 16);
+            this.wslabel2.Name = "wslabel2";
+            this.wslabel2.Size = new System.Drawing.Size(75, 13);
+            this.wslabel2.TabIndex = 12;
+            this.wslabel2.Text = "No Production";
+            this.wslabel2.Text_EN = null;
+            this.wslabel2.Text_FR = null;
+            // 
+            // btnSearchprod
+            // 
+            this.btnSearchprod.Image = ((System.Drawing.Image)(resources.GetObject("btnSearchprod.Image")));
+            this.btnSearchprod.Location = new System.Drawing.Point(219, 10);
+            this.btnSearchprod.Name = "btnSearchprod";
+            this.btnSearchprod.Size = new System.Drawing.Size(22, 22);
+            this.btnSearchprod.TabIndex = 13;
+            this.btnSearchprod.Text = "wsbtnsearch1";
+            this.btnSearchprod.Text_EN = null;
+            this.btnSearchprod.Text_FR = null;
+            this.btnSearchprod.ToolTipText = "Search";
+            this.btnSearchprod.UseVisualStyleBackColor = true;
+            // 
+            // wslabel1
+            // 
+            this.wslabel1.AutoSize = true;
+            this.wslabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.wslabel1.Location = new System.Drawing.Point(473, 29);
+            this.wslabel1.Name = "wslabel1";
+            this.wslabel1.Size = new System.Drawing.Size(640, 16);
+            this.wslabel1.TabIndex = 14;
+            this.wslabel1.Text = "***   Si votre production n\'est pas affiché, vérifier votre date de planification" +
+    " (plus de 2 jours)";
+            this.wslabel1.Text_EN = null;
+            this.wslabel1.Text_FR = null;
+            // 
             // ffentrerprod
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -269,6 +268,7 @@ namespace barcode.forms
             this.Controls.Add(this.btnApply);
             this.Controls.Add(this.btnQuit2);
             this.Name = "ffentrerprod";
+            this.Load += new System.EventHandler(this.ffentrerprod_Load);
             this.Controls.SetChildIndex(this.panel1, 0);
             this.Controls.SetChildIndex(this.btnQuit2, 0);
             this.Controls.SetChildIndex(this.btnApply, 0);

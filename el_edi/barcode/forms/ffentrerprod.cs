@@ -119,34 +119,41 @@ namespace barcode.forms
 
         private void GET_DATA()
         {
-         //this.wsGrid1.RecordSource = "";
-         string q = $"SELECT prprod.ident, prprod.prcode, prprod.prno, prprod.idprod, prprod.idclient, " +
-                $" prprod.prclientpo, prprod.statut, prprod.termine, prprod.qte, prprod.qtettprod, SUBSTR(prprod.noteprod, 1, 240) + '' AS NOTEPROD," +
-                $" ivprod.code,ivprod.desc, arclient.code as codecli, 0000 as bo, 0000000000 as qtepr," +
-                $" .F. as recept, arclient.name" +
-                $" FROM prprod" +
-                $" LEFT OUTER JOIN prkit" +
-                $" ON prprod.prno = prkit.idfab" +
-                $" LEFT OUTER JOIN arclient" +
-                $" ON arclient.ident = prprod.idclient" +
-                $" LEFT OUTER JOIN ivprod" +
-                $" ON ivprod.ident = prprod.idprod" +
-                $" WHERE(prprod.statut = 'O' OR prprod.statut = 'C' OR prprod.statut = 'E') AND prprod.termine =.F. and" +
-                $" prkit.idprod = 7157 AND prprod.papier_recu =.F." +
-                $" ORDER BY prprod.prno";
+            //this.wsGrid1.RecordSource = "";
+            string q = $@"prprod.ident, prprod.prcode, prprod.prno, prkit.idprod, fffomach.location, 2 as vplanif, SPACE(20) as chcode, prprod.idprod as idmaitre,
+                   ivprod.code, ivprod.desc, prprod.prreq_date, prprod.statut, prprod.termine, prdetprod.ordre, prkit.unit, ivwarh.cie, prprod.qte,
+                   INT(prkit.qty*prprod.qte) as qteapp, INT(prkit.qtedjprep) as qtedjprep , fffomach.nomach, 000000000 as qteprep, DATE() as datepr,
+                   ivwarh.desc as sp_entrepot, ivqty.qty, ivqty.location as sp_local, ivqty.idwareh as id_entrepot, fffomach.loc_resv
+                  FROM prprod
+                  LEFT OUTER JOIN prkit
+                  ON prprod.prno = prkit.idfab
+                  LEFT OUTER JOIN prdetprod
+	              ON prdetprod.idfab=prprod.prno
+	              LEFT OUTER JOIN ivprod
+	              ON ivprod.ident=prkit.idprod
+	              LEFT OUTER JOIN ivqty
+	              ON ivqty.idprod=prkit.idprod
+	              LEFT OUTER JOIN ivwarh
+	              ON ivwarh.ident=ivqty.idwareh
+	              LEFT OUTER JOIN fffomach
+	              ON fffomach.ident=prdetprod.idmach
+                  WHERE(prprod.statut='O' OR prprod.statut='C' OR prprod.statut='E') AND prprod.termine=.F. AND
+	                    prdetprod.ordre=1 AND prdetprod.statut<>'T' AND ivwarh.cie='EL' AND
+                       (ALLTRIM(fffomach.nomach) = 'LATEX' OR ALLTRIM(fffomach.nomach) = 'JET')
+                   ORDER BY prprod.prreq_date asc";
 
-        
+
             gQuery(q, lesrec, 0, 0, lesrec.isFoxpro);
 
             wsGrid1.DataSource = lesrec.ds.Tables[0];
-            wsGrid1.Columns[0].DataPropertyName = "prno";
-            wsGrid1.Columns[1].DataPropertyName = "code";
-            wsGrid1.Columns[2].DataPropertyName = "desc";
-            wsGrid1.Columns[3].DataPropertyName = "qte";
-            wsGrid1.Columns[4].DataPropertyName = "codecli";
-            wsGrid1.Columns[5].DataPropertyName = "name";
-            wsGrid1.Columns[6].DataPropertyName = "recept";
-            wsGrid1.Columns[7].DataPropertyName = "noteprod";
+            wsGrid1.Columns[0].DataPropertyName = "prreq_date";
+            wsGrid1.Columns[1].DataPropertyName = "prno";
+            wsGrid1.Columns[2].DataPropertyName = "code";
+            wsGrid1.Columns[3].DataPropertyName = "qtedjprep";
+            wsGrid1.Columns[4].DataPropertyName = "qteapp";
+            wsGrid1.Columns[5].DataPropertyName = "nomach";
+            wsGrid1.Columns[6].DataPropertyName = "sp_local";
+            wsGrid1.Columns[7].DataPropertyName = "qteprep";
             wsGrid1.Columns[8].DataPropertyName = "prclientpo";
                       
            this.wsGrid1.Refresh();
@@ -169,25 +176,37 @@ namespace barcode.forms
              }
         }
 
+        private void ffentrerprod_Load(object sender, EventArgs e)
+        {
+
+        }
+
         private void get_data2()
         {
          
-            string q = $"SELECT prprod.ident, prprod.prcode, prprod.prno, prprod.idprod, prprod.idclient, " +
-                 $" prprod.prclientpo, prprod.statut, prprod.termine, prprod.qte, prprod.qtettprod, SUBSTR(prprod.noteprod, 1, 240) + '' AS NOTEPROD," +
-                 $" ivprod.code,ivprod.desc, arclient.code as codecli, 0000 as bo, 0000000000 as qtepr," +
-                 $" .F. as recept, arclient.name" +
-                 $" FROM prprod" +
-                 $" LEFT OUTER JOIN prkit" +
-                 $" ON prprod.prno = prkit.idfab" +
-                 $" LEFT OUTER JOIN arclient" +
-                 $" ON arclient.ident = prprod.idclient" +
-                 $" LEFT OUTER JOIN ivprod" +
-                 $" ON ivprod.ident = prprod.idprod" +
-                 $" WHERE(prprod.statut = 'O' OR prprod.statut = 'C' OR prprod.statut = 'E') AND prprod.termine =.F. and" +
-                 $" prkit.idprod = 7157 AND prprod.papier_recu =.F. AND" +
-                 $" (prprod.prno = INT(VAL('{this.ScnCode.Text}')) OR VAL('{this.IDCLIENT}') = PRPROD.IDCLIENT)"+
-            $" ORDER BY prprod.prno";
+            string q = $@"prprod.ident, prprod.prcode, prprod.prno, prkit.idprod, fffomach.location, 2 as vplanif, SPACE(20) as chcode, prprod.idprod as idmaitre,
+                   ivprod.code, ivprod.desc, prprod.prreq_date, prprod.statut, prprod.termine, prdetprod.ordre, prkit.unit, ivwarh.cie, prprod.qte,
+                   INT(prkit.qty*prprod.qte) as qteapp, INT(prkit.qtedjprep) as qtedjprep , fffomach.nomach, 000000000 as qteprep, DATE() as datepr,
+                   ivwarh.desc as sp_entrepot, ivqty.qty, ivqty.location as sp_local, ivqty.idwareh as id_entrepot, fffomach.loc_resv
+                  FROM prprod
+                  LEFT OUTER JOIN prkit
+                  ON prprod.prno = prkit.idfab
+                  LEFT OUTER JOIN prdetprod
+	              ON prdetprod.idfab=prprod.prno
+	              LEFT OUTER JOIN ivprod
+	              ON ivprod.ident=prkit.idprod
+	              LEFT OUTER JOIN ivqty
+	              ON ivqty.idprod=prkit.idprod
+	              LEFT OUTER JOIN ivwarh
+	              ON ivwarh.ident=ivqty.idwareh
+	              LEFT OUTER JOIN fffomach
+	              ON fffomach.ident=prdetprod.idmach
+                  WHERE(prprod.statut='O' OR prprod.statut='C' OR prprod.statut='E') AND prprod.termine=.F. AND
+	                    prdetprod.ordre=1 AND prdetprod.statut<>'T' AND ivwarh.cie='EL' AND
+                       (ALLTRIM(fffomach.nomach) = 'LATEX' OR ALLTRIM(fffomach.nomach) = 'JET')
+                   ORDER BY prprod.prreq_date asc";
 
+                        
             gQuery(q, lesrec, 0, 0, lesrec.isFoxpro);
 
             wsGrid1.DataSource = lesrec.ds.Tables[0];
