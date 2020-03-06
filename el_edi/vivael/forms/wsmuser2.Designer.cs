@@ -125,6 +125,7 @@ namespace vivael.forms
             this.txtCode.Size = new System.Drawing.Size(81, 20);
             this.txtCode.State = null;
             this.txtCode.TabIndex = 1;
+           // this.txtCode.TextChanged += new System.EventHandler(this.txtCode_TextChanged);
             // 
             // txtPasswd
             // 

@@ -134,17 +134,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="dllfoxpro">
-      <Guid>{A1EACEF2-78A7-4EF1-A1EF-1F3C08888F28}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\BOUT_OFF.png" />
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +210,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\WSBack.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="dllfoxpro">
+      <Guid>{A1EACEF2-78A7-4EF1-A1EF-1F3C08888F28}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

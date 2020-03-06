@@ -37,6 +37,10 @@
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
+            // BtnSearch
+            // 
+            this.BtnSearch.Click += new System.EventHandler(this.BtnSeach_click);
+            // 
             // wstextbox1
             // 
             this.wstextbox1.apControlSource = null;

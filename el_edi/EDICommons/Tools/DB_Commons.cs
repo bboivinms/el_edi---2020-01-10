@@ -213,6 +213,22 @@ namespace EDI_DB.Data
             return retval;
         }
 
+        public static double GetDouble(object value)
+        {
+            double retval = 0;
+
+            if (value == null) return 0;
+            if (value == DBNull.Value) return 0;
+            try
+            {
+                retval = Convert.ToDouble(value.ToString());
+            }
+            catch
+            {
+            }
+            return retval;
+        }
+
         public static DateTime SkipWeekendsAndHolidays(DateTime TheDate)
         {
             // KJ: 2018-11-05: Check ActualShipDate, ensure not on Saturday or Sunday

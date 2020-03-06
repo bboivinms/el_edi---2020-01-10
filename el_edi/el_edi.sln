@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29009.5
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDI_850", "EDI_850\EDI_850.csproj", "{E458CB57-45E3-44E7-B90E-22695CEC5A5C}"
 EndProject
@@ -21,6 +21,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoquilleViva", "CoquilleViva\CoquilleViva.csproj", "{8CEB5698-4BC2-465C-BD85-C4A4503A5BFD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "barcode", "barcode\barcode.csproj", "{02C5D972-0841-4FBA-A9A1-7C51247BA490}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GanttChart", "GanttChart\GanttChart.csproj", "{E4DEBE5C-C6D4-4B92-9931-65078A2FF6BB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{68235704-7A84-4696-B3D7-068EAC2152BC} = {68235704-7A84-4696-B3D7-068EAC2152BC}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,6 +65,10 @@ Global
 		{02C5D972-0841-4FBA-A9A1-7C51247BA490}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02C5D972-0841-4FBA-A9A1-7C51247BA490}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02C5D972-0841-4FBA-A9A1-7C51247BA490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4DEBE5C-C6D4-4B92-9931-65078A2FF6BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4DEBE5C-C6D4-4B92-9931-65078A2FF6BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4DEBE5C-C6D4-4B92-9931-65078A2FF6BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4DEBE5C-C6D4-4B92-9931-65078A2FF6BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

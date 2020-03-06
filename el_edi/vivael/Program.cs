@@ -1,19 +1,16 @@
 ﻿using static vivael.Globals;
-using MySQL_Dll;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using vivael.forms;
-using static EDI_DB.Data.Base;
-using EDI_RSS;
-using System.IO;
-using vivael.wsforms;
-using CrystalDecisions.CrystalReports.Engine;
-using CrystalDecisions.Shared;
-using MySql.Data.MySqlClient;
-using vivael.classes;
+using vivael;
+
+
+
+
+
 
 namespace vivael
 {
@@ -81,7 +78,7 @@ namespace vivael
                     //SET DATE MDY
                 }
 
-                oPrintForm = new wsPrintForm();
+                //oPrintForm = new wsPrintForm();
 
                 menu = new VivaMainWindow();
                 menu.SetSession(oSession);

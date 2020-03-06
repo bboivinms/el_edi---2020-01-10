@@ -156,10 +156,44 @@ namespace vivael
             gMsgBox(sParam1, sParam2);
         }
 
-        public static int CINT(object vValue)
+        public static int CINT(object vValue, int NullValue = 0)
         {
-            return Convert.ToInt32(vValue);
+            if (is_numeric(vValue)) return Convert.ToInt32(CDEC(vValue));
+            return NullValue;
         }
+
+        public static decimal CDEC(object vValue, decimal NullValue = 0)
+        {
+            if (is_numeric(vValue)) return Convert.ToDecimal(vValue);
+            return NullValue;
+        }
+
+        public static DateTime DATETIME()  
+        {
+            return DateTime.Now;
+        }
+
+        public static int HOUR(DateTime vValue)
+        {
+            return vValue.Hour;
+        }
+
+        public static string CMONTH(DateTime vValue)
+        {
+            return vValue.ToString("MMMM");
+        }
+        public static string TIME(DateTime vValue)
+        {
+            return vValue.ToString("HH:mm");
+        }
+
+        public static int DOW(DateTime vValue)
+        {
+            return (int)vValue.DayOfWeek + 1;
+        }
+
+
+        public static bool is_numeric(object svalue) { if (svalue == null) svalue = ""; decimal i = 0; return decimal.TryParse(svalue.ToString(), out i); }
 
         public static int RAND(int min = 0, int max = 1000000000)
         {
@@ -246,6 +280,7 @@ namespace vivael
         /// </summary>
         public static string SUBSTR(string cExpression, int nStartPosition)
         {
+            nStartPosition = nStartPosition - 1;
             return cExpression.Substring(nStartPosition);
         }
 
@@ -254,6 +289,7 @@ namespace vivael
         /// </summary>
         public static string SUBSTR(string cExpression, int nStartPosition, int nCharactersReturned)
         {
+            nStartPosition = nStartPosition - 1;
             return cExpression.Substring(nStartPosition, nCharactersReturned);
         }
 

@@ -129,6 +129,7 @@ namespace vivael.wsforms
         public virtual void BtnCancel_OnClick()
         {
             this.RecordId = RECNO(tableSource);
+            this.DialogResult = DialogResult.Cancel;
             this.Release();
         }
 

@@ -120,7 +120,7 @@ namespace barcode.forms
         private void GET_DATA()
         {
             //this.wsGrid1.RecordSource = "";
-            string q = $@"prprod.ident, prprod.prcode, prprod.prno, prkit.idprod, fffomach.location, 2 as vplanif, SPACE(20) as chcode, prprod.idprod as idmaitre,
+            string q = $@"SELECT prprod.ident, prprod.prcode, prprod.prno, prkit.idprod, fffomach.location, 2 as vplanif, SPACE(20) as chcode, prprod.idprod as idmaitre,
                    ivprod.code, ivprod.desc, prprod.prreq_date, prprod.statut, prprod.termine, prdetprod.ordre, prkit.unit, ivwarh.cie, prprod.qte,
                    INT(prkit.qty*prprod.qte) as qteapp, INT(prkit.qtedjprep) as qtedjprep , fffomach.nomach, 000000000 as qteprep, DATE() as datepr,
                    ivwarh.desc as sp_entrepot, ivqty.qty, ivqty.location as sp_local, ivqty.idwareh as id_entrepot, fffomach.loc_resv
@@ -142,6 +142,7 @@ namespace barcode.forms
                        (ALLTRIM(fffomach.nomach) = 'LATEX' OR ALLTRIM(fffomach.nomach) = 'JET')
                    ORDER BY prprod.prreq_date asc";
 
+            // q = $@"SELECT prprod.ident FROM prprod ";
 
             gQuery(q, lesrec, 0, 0, lesrec.isFoxpro);
 
@@ -179,6 +180,18 @@ namespace barcode.forms
         private void ffentrerprod_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnSearchprod_Click_1(object sender, EventArgs e)
+        {
+            arsclient wsSearch = new arsclient();
+            DialogResult dr = wsSearch.ShowDialog();
+
+            if (dr == DialogResult.OK)
+            {
+                int x = wsSearch.RecordId;
+                // select 
+            }
         }
 
         private void get_data2()

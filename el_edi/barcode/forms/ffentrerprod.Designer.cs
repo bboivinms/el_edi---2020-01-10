@@ -241,6 +241,7 @@ namespace barcode.forms
             this.btnSearchprod.Text_FR = null;
             this.btnSearchprod.ToolTipText = "Search";
             this.btnSearchprod.UseVisualStyleBackColor = true;
+            this.btnSearchprod.Click += new System.EventHandler(this.btnSearchprod_Click_1);
             // 
             // wslabel1
             // 

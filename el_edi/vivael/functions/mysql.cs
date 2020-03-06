@@ -17,8 +17,8 @@ namespace vivael
         private static bool _gStayAlive; public static bool gStayAlive { get { return _gStayAlive; } set { _gStayAlive = value; } }
 
         public static int DataOverride = (int)EData.hybrid;
-        public enum EData : int {hybrid, mysql, dbf };
-        public static string NL = "\r\n";
+        public enum EData : int { hybrid, mysql, dbf };
+        //public static string NL = "\r\n";
 
         private static TextInfo ti = new CultureInfo("en-US", false).TextInfo;
 
@@ -190,7 +190,7 @@ namespace vivael
         public static bool HReadNext(DataSource sdPCursor)
         {
             // WIP
-            if (sdPCursor.noCurrent < sdPCursor.RECCOUNT()-1)
+            if (sdPCursor.noCurrent < sdPCursor.RECCOUNT() - 1)
             {
                 sdPCursor.noCurrent += 1;
                 gQuery(sdPCursor.MyQuery, sdPCursor, sdPCursor.noCurrent, 1, sdPCursor.isFoxpro);
@@ -311,7 +311,7 @@ namespace vivael
 
         public static bool Contains(string text, string contains)
         {
-            if(text == contains)
+            if (text == contains)
             {
                 return true;
             }
@@ -320,10 +320,10 @@ namespace vivael
 
         public static string Charact(int asc)
         {
-            if(asc == 13)
+            if (asc == 13)
             {
                 return "\r";
-            }else if(asc == 10)
+            } else if (asc == 10)
             {
                 return "\n";
             }
@@ -357,7 +357,7 @@ namespace vivael
         {
             return text.ToUpper();
         }
-        
+
         public static void gDisconnect()
         {
             return; //WIP not needed for now
@@ -414,7 +414,7 @@ namespace vivael
             }
             else
             {
-                if ((sdPCursor.ds = gFoxproSQL(Replace(sPQuery, "~=", "=="), sdPCursor, noRec, count)) == null)
+                if ((sdPCursor.ds = gFoxproSQL(Replace(Replace(Replace(sPQuery, "~=", "=="), "\r", " "), "\n", " "), sdPCursor, noRec, count)) == null)
                 {
                     glog_error("ERROR DBF" + "DBF Error" + slpMySQLQuery + "data_syorg.constructor");
 
@@ -537,9 +537,9 @@ namespace vivael
             }
             catch(Exception e)
             {
+                Console.WriteLine(sPQuery);
                 Console.WriteLine(e.ToString());
             }
-            
             return sdPCursor.ds;
         }
 

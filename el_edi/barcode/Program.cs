@@ -21,11 +21,11 @@ namespace barcode
         {
             pMySQL_Dll.Load_DB("", @"C:\Vivael\Data");
 
-            oSession = new WsSession();
+            // oSession = new WsSession();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ffpapiercli());
+            Application.Run(new ffentrerprod());
         }
     }
 }

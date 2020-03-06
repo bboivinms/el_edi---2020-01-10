@@ -502,7 +502,7 @@ namespace EDI_850.Schema
 
             decimal TotalQty = Base.GetDecimal(DBresult[0]["TotalQty"]);
             decimal TotalQtyEnvl = Base.GetDecimal(DBresult[0]["TotalQtyEnvl"]);
-
+            
             //2. Obtenir la qty dans toutes les warehouses, mais cette fois seulement pour les items marqués "en production"
             //   KJ: 2018-11-23: Modifier pour être exclus dans le #1
 
